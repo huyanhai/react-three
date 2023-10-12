@@ -1,16 +1,18 @@
 "use client";
 
-import { Environment, GizmoHelper, GizmoViewport, Grid, Sky } from "@react-three/drei";
+import { Environment, GizmoHelper, GizmoViewport, Grid, PerformanceMonitor, Sky } from "@react-three/drei";
 
 const Base = () => {
   return (
     <>
+      {/* <color attach="background" args={['#f0f0f0']} /> */}
       <Environment preset="city" />
       <Sky />
       <GizmoHelper margin={[80, 80]}>
         <GizmoViewport></GizmoViewport>
       </GizmoHelper>
-      <Grid followCamera={true} args={[10.5, 10.5]} infiniteGrid={true} cellColor={"black"} sectionColor={"red"} sectionSize={2} />
+      <PerformanceMonitor />
+      {/* <Grid followCamera={true} args={[10.5, 10.5]} infiniteGrid={true} cellColor={"black"} sectionColor={"red"} sectionSize={2} /> */}
     </>
   );
 };
