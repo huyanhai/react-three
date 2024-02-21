@@ -1,9 +1,16 @@
-import React from 'react'
+"use client";
+
+import Common from "@/components/commpn/Common";
+import BoxContainer from "./Box";
 
 const BlanderPage = () => {
   return (
-    <div>BlanderPage</div>
-  )
-}
+    <div className="w-screen h-screen">
+      <Common>
+        <BoxContainer />
+      </Common>
+    </div>
+  );
+};
 
-export default BlanderPage
+export default BlanderPage;
