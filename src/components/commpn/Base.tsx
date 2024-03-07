@@ -6,7 +6,7 @@ const Base = () => {
   return (
     <>
       {/* <color attach="background" args={['#f0f0f0']} /> */}
-      <Environment preset="city" />
+      <Environment files={"hdr/studio_small_09_4k.exr"} />
       <Sky />
       <GizmoHelper margin={[80, 80]}>
         <GizmoViewport></GizmoViewport>

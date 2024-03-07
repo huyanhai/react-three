@@ -68,12 +68,12 @@ const BoxContainer = () => {
 
   return (
     <>
-      <primitive object={data1.scene} position={[2, 3, 3]}></primitive>
+      {/* <primitive object={data1.scene} position={[2, 3, 3]}></primitive> */}
       {/* <primitive object={scene} position={[1, 2, 3]}>
         <meshPhysicalMaterial color={"red"} />
       </primitive> */}
 
-      {/* <group ref={groupRef}>
+      <group ref={groupRef}>
         {geometryArray.map((item, index) => {
           return (
             <mesh scale={[2, 2, 2]} key={item.id} geometry={item} position={[index * 4, 0, 0]} name={`index_${index}`}>
@@ -81,7 +81,7 @@ const BoxContainer = () => {
             </mesh>
           );
         })}
-      </group> */}
+      </group>
       <OrbitControls />
     </>
   );
