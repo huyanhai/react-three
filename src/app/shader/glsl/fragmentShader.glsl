@@ -1,6 +1,8 @@
 uniform float uTime;
 uniform vec2 uScreen;
 
+uniform sampler2D u_texture;
+
 float plot(vec2 st, float value) {
     // smoothstep(起始值,结束值,当前值) - 当前值小于起始值则返回0，大于结束值则返回1,如果目标值介于起始值和目标值之间，则返回介于0-1之间的值
     return smoothstep(value - 0.01, value, st.x);
@@ -23,21 +25,35 @@ vec2 gen(vec2 _index, vec2 _dot, bool x) {
     }
 }
 
+// 255.0 / 255.0 颜色值转换
+vec4 rgb(float r, float g, float b) {
+    return vec4(r / 255.0, g / 255.0, b / 255.0, 1.0);
+}
+
 void main() {
     // 获取当前片元的坐标
     vec2 st = gl_FragCoord.xy / uScreen;
 
-    st *= 10.;
+    vec2 uv = fract(st * .1 + sin(uTime * 0.1));
+    // st *= 1.0;
 
     // 整数部分
     vec2 intNum = floor(st);
     // 小数部分
     vec2 docNum = fract(st);
+    vec4 pic = texture2D(u_texture, uv);
 
-    vec2 num = gen(intNum, docNum, true);
-    vec3 color = vec3(num, 0.);
-    num = gen(intNum, docNum, false);
-    color = color * vec3(num, 0.);
+    float disY = mix(-0.5, 0.5, uv.x);
 
-    gl_FragColor = vec4(color.x, 0., 0., 1.0);
+    // 将贴图中的红色过滤掉
+    // pic.x = 0.0;
+
+    vec4 tl = rgb(251.0, 41., 212.);
+    vec4 tr = rgb(0., 255.0, 224.);
+    vec4 bl = rgb(250., 255., 0.0);
+    vec4 br = rgb(231.0, 244.0, 255.0);
+
+    vec4 color = mix(mix(tl, tr, pic.x - 0.5), mix(bl, br, pic.x - 0.5), pic.y);
+
+    gl_FragColor = color;
 }
