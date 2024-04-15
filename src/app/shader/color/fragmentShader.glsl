@@ -1,11 +1,7 @@
 uniform float uTime;
-uniform float u_dpi;
 uniform vec2 uScreen;
 
 uniform sampler2D u_texture;
-
-#define PI 3.141592653589
-#define COUNT 10.0
 
 float plot(vec2 st, float value) {
     // smoothstep(起始值,结束值,当前值) - 当前值小于起始值则返回0，大于结束值则返回1,如果目标值介于起始值和目标值之间，则返回介于0-1之间的值
@@ -36,31 +32,29 @@ vec4 rgb(float r, float g, float b) {
 
 void main() {
     // 获取当前片元的坐标
-    vec2 uv = gl_FragCoord.xy / uScreen;
+    vec2 st = gl_FragCoord.xy / uScreen;
 
-    uv *= 2.0;
-    uv -= 1.0;
+    vec2 uv = fract(st * .1 + sin(uTime * 0.1));
+    // st *= 1.0;
 
-    float radius = length(uv);
-    float angle = atan(uv.y, uv.x);
+    // 整数部分
+    vec2 intNum = floor(st);
+    // 小数部分
+    vec2 docNum = fract(st);
+    vec4 pic = texture2D(u_texture, uv);
 
-    angle /= PI * 2.0;
-    angle *= COUNT;
-    if(mod(angle, 2.0) >= 1.0) {
-        angle = fract(angle);
-    } else {
-        angle = 1.0 - fract(angle);
-    }
+    float disX = mix(-0.5, 0.5, pic.x);
+    float disY = mix(-0.5, 0.5, pic.x);
 
-    angle += uTime * 0.1;
+    // 将贴图中的红色过滤掉
+    // pic.x = 0.0;
 
-    angle /= COUNT;
-    angle *= PI * 2.0;
+    vec4 tl = rgb(251.0, 41., 212.);
+    vec4 tr = rgb(0., 255.0, 224.);
+    vec4 bl = rgb(250., 255., 0.0);
+    vec4 br = rgb(231.0, 244.0, 255.0);
 
-    vec2 point = vec2(radius * cos(angle), radius * sin(angle));
-    point = fract(point);
-
-    vec4 color = texture2D(u_texture, point);
+    vec4 color = mix(mix(tl, tr, uv.x + disX), mix(bl, br, uv.x - disY), uv.y + disY);
 
     gl_FragColor = color;
 }
