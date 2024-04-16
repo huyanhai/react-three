@@ -1,6 +1,7 @@
 uniform float uTime;
 uniform float u_dpi;
 uniform vec2 uScreen;
+uniform vec2 u_mouse;
 
 uniform sampler2D u_texture;
 
@@ -41,18 +42,22 @@ void main() {
     uv *= 2.0;
     uv -= 1.0;
 
-    float radius = length(uv);
+    vec2 mouse = u_mouse / uScreen;
+
+    float radius = length(uv) * mix(1.0, 2.0, mouse.x);
     float angle = atan(uv.y, uv.x);
 
     angle /= PI * 2.0;
     angle *= COUNT;
+
     if(mod(angle, 2.0) >= 1.0) {
         angle = fract(angle);
     } else {
         angle = 1.0 - fract(angle);
     }
 
-    angle += uTime * 0.1;
+    angle += uTime * 0.2;
+    angle += mouse.y;
 
     angle /= COUNT;
     angle *= PI * 2.0;

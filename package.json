@@ -15,6 +15,7 @@
     "@react-three/fiber": "^8.14.3",
     "@react-three/postprocessing": "^2.16.0",
     "@types/three": "0.156.0",
+    "ahooks": "^3.7.11",
     "ai": "^2.2.29",
     "antd": "^5.12.2",
     "babel-plugin-glsl": "^1.0.0",

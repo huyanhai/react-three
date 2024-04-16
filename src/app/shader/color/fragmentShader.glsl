@@ -34,7 +34,7 @@ void main() {
     // 获取当前片元的坐标
     vec2 st = gl_FragCoord.xy / uScreen;
 
-    vec2 uv = fract(st * .1 + sin(uTime * 0.1));
+    vec2 uv = fract(st * 0.1 + sin(uTime * 0.1));
     // st *= 1.0;
 
     // 整数部分
