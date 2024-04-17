@@ -1,12 +1,13 @@
 uniform float uTime;
-uniform float u_dpi;
 uniform vec2 uScreen;
 uniform vec2 u_mouse;
 
 uniform sampler2D u_texture;
 
+varying vec2 vUv;
+
 #define PI 3.141592653589
-#define COUNT 10.0
+#define COUNT 32.0
 
 float plot(vec2 st, float value) {
     // smoothstep(起始值,结束值,当前值) - 当前值小于起始值则返回0，大于结束值则返回1,如果目标值介于起始值和目标值之间，则返回介于0-1之间的值
@@ -37,14 +38,14 @@ vec4 rgb(float r, float g, float b) {
 
 void main() {
     // 获取当前片元的坐标
-    vec2 uv = gl_FragCoord.xy / uScreen;
+    vec2 uv = vUv;
 
     uv *= 2.0;
     uv -= 1.0;
 
     vec2 mouse = u_mouse / uScreen;
 
-    float radius = length(uv) * mix(1.0, 2.0, mouse.x);
+    float radius = length(uv) * mix(1.0, 2.0, mouse.x * 0.1);
     float angle = atan(uv.y, uv.x);
 
     angle /= PI * 2.0;
@@ -56,13 +57,14 @@ void main() {
         angle = 1.0 - fract(angle);
     }
 
-    angle += uTime * 0.2;
+    angle += sin(uTime * 0.5);
     angle += mouse.y;
 
     angle /= COUNT;
     angle *= PI * 2.0;
 
     vec2 point = vec2(radius * cos(angle), radius * sin(angle));
+    point += vec2(10.0, .223);
     point = fract(point);
 
     vec4 color = texture2D(u_texture, point);
