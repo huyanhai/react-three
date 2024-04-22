@@ -9,65 +9,91 @@ varying vec2 vUv;
 #define PI 3.141592653589
 #define COUNT 32.0
 
-float plot(vec2 st, float value) {
-    // smoothstep(起始值,结束值,当前值) - 当前值小于起始值则返回0，大于结束值则返回1,如果目标值介于起始值和目标值之间，则返回介于0-1之间的值
-    return smoothstep(value - 0.01, value, st.x);
-    // return step(0.01, abs(st.x - st.y));
+#define NUM_OCTAVES 5
+
+float rand(vec2 n) {
+    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
 }
 
-float random(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) *
-        43758.5453123);
+float noise(vec2 p) {
+    vec2 ip = floor(p);
+    vec2 u = fract(p);
+    u = u * u * (3.0 - 2.0 * u);
+
+    float res = mix(mix(rand(ip), rand(ip + vec2(1.0, 0.0)), u.x), mix(rand(ip + vec2(0.0, 1.0)), rand(ip + vec2(1.0, 1.0)), u.x), u.y);
+    return res * res;
 }
 
-mat3 rgb2yuv = mat3(0.2126, 0.7152, 0.0722, -0.09991, -0.33609, 0.43600, 0.615, -0.5586, -0.05639);
-
-vec2 gen(vec2 _index, vec2 _dot, bool x) {
-    float num = x ? _index.x : _index.y;
-    if(mod(num, 2.0) == 0.0) {
-        return vec2(0.);
-    } else {
-        return vec2(1.0);
+float fbm(vec2 x) {
+    float v = 0.0;
+    float a = 0.5;
+    vec2 shift = vec2(100);
+	// Rotate to reduce axial bias
+    mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+    for(int i = 0; i < NUM_OCTAVES; ++i) {
+        v += a * noise(x);
+        x = rot * x * 2.0 + shift;
+        a *= 0.5;
     }
+    return v;
 }
 
-// 255.0 / 255.0 颜色值转换
-vec4 rgb(float r, float g, float b) {
-    return vec4(r / 255.0, g / 255.0, b / 255.0, 1.0);
+vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+mat2 rotation2d(float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+
+    return mat2(c, -s, s, c);
 }
 
 void main() {
     // 获取当前片元的坐标
     vec2 uv = vUv;
 
-    uv *= 2.0;
-    uv -= 1.0;
-
     vec2 mouse = u_mouse / uScreen;
 
-    float radius = length(uv) * mix(1.0, 2.0, mouse.x * 0.1);
-    float angle = atan(uv.y, uv.x);
+    float dist = distance(uv, mouse);
+    float strenth = smoothstep(0.1, 0.5, dist);
+    float hue = uTime * 0.1 + strenth + 0.2;
 
-    angle /= PI * 2.0;
-    angle *= COUNT;
+    vec3 hsv1 = vec3(hue, 1.0, 1.0);
+    vec3 hsv2 = vec3(0.2 + hue, 1.0, 1.0);
 
-    if(mod(angle, 2.0) >= 1.0) {
-        angle = fract(angle);
-    } else {
-        angle = 1.0 - fract(angle);
-    }
+    vec3 rgb1 = hsv2rgb(hsv1);
+    vec3 rgb2 = hsv2rgb(hsv2);
 
-    angle += sin(uTime * 0.5);
-    angle += mouse.y;
+    // uv = -2.0 * uv + 1.0;
+    vec4 color1 = vec4(rgb1, 1.0);
+    vec4 color2 = vec4(rgb2, 1.0);
 
-    angle /= COUNT;
-    angle *= PI * 2.0;
+    // 小于0.1为0,否则为1 
+    // step(0.1,uv.x)
 
-    vec2 point = vec2(radius * cos(angle), radius * sin(angle));
-    point += vec2(10.0, .223);
-    point = fract(point);
+    vec2 move = vec2(uTime * 0.01, uTime * -0.01);
 
-    vec4 color = texture2D(u_texture, point);
+    // 角度旋转
+    move *= rotation2d(uTime * 0.5);
+
+    // 添加杂色 
+    float grain = mix(-0.01, 0.01, rand(uv));
+
+    // 生成云雾效果
+    float f = fbm(uv + move);
+    f *= 10.0;
+    f += grain;
+    f += uTime * 0.2;
+    f = fract(f);
+
+    // float mixin = step(0.1, f) - smoothstep(0.2, 0.3, f);
+
+    float mixin = smoothstep(0.0, 0.1, f) - smoothstep(0.1, 0.2, f);
+
+    vec4 color = mix(color1, color2, mixin);
 
     gl_FragColor = color;
 }

@@ -23,8 +23,7 @@ const Shader = () => {
 
   useFrame((state, delta) => {
     setTime((time) => time + delta);
-    const size = Math.max(state.size.width, state.size.height);
-    setScreen(new Vector2(size * dpi, size * dpi));
+    setScreen(new Vector2(state.size.width, state.size.height));
   });
 
   useEffect(() => {

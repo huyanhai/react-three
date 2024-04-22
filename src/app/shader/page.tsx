@@ -5,7 +5,7 @@ import { OrbitControls } from "@react-three/drei";
 const Shader = () => {
   return (
     <div className="w-screen h-screen bg-slate-600">
-      <Canvas  camera={{ position: [0, 0, 10], fov: 40 }}>
+      <Canvas  camera={{ position: [0, 0, 10], fov: 100 }}>
         {/* <OrbitControls /> */}
         <mesh>
           <ShaderCom />
