@@ -1,6 +1,7 @@
 uniform float uTime;
 uniform vec2 uScreen;
 uniform vec2 u_mouse;
+uniform float u_strength;
 
 uniform sampler2D u_texture;
 
@@ -11,37 +12,12 @@ varying vec2 vUv;
 
 #define NUM_OCTAVES 5
 
-float rand(vec2 n) {
-    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
-}
-
-float noise(vec2 p) {
-    vec2 ip = floor(p);
-    vec2 u = fract(p);
-    u = u * u * (3.0 - 2.0 * u);
-
-    float res = mix(mix(rand(ip), rand(ip + vec2(1.0, 0.0)), u.x), mix(rand(ip + vec2(0.0, 1.0)), rand(ip + vec2(1.0, 1.0)), u.x), u.y);
-    return res * res;
-}
-
-float fbm(vec2 x) {
-    float v = 0.0;
-    float a = 0.5;
-    vec2 shift = vec2(100);
-	// Rotate to reduce axial bias
-    mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
-    for(int i = 0; i < NUM_OCTAVES; ++i) {
-        v += a * noise(x);
-        x = rot * x * 2.0 + shift;
-        a *= 0.5;
+vec4 samplerImg(vec2 uv) {
+    vec4 color = texture2D(u_texture, uv);
+    if(uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) {
+        color = vec4(0.0);
     }
-    return v;
-}
-
-vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    return color;
 }
 
 mat2 rotation2d(float angle) {
@@ -51,48 +27,21 @@ mat2 rotation2d(float angle) {
     return mat2(c, -s, s, c);
 }
 
+float rand2(vec2 seed) {
+    return fract(sin(dot(seed.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 void main() {
-    // 获取当前片元的坐标
-    vec2 uv = vUv;
 
-    vec2 mouse = u_mouse / uScreen;
+    // 将uv变为 -1.0 ~ 1.0
+    vec2 uv = -1.0 + 2.0 * vUv;
 
-    float dist = distance(uv, mouse);
-    float strenth = smoothstep(0.1, 0.5, dist);
-    float hue = uTime * 0.1 + strenth + 0.2;
+    vec4 color1 = vec4(1.0, 0.0, 0.0, 1.0);
+    vec4 color2 = vec4(1.0, 1.0, 1.0, 1.0);
 
-    vec3 hsv1 = vec3(hue, 1.0, 1.0);
-    vec3 hsv2 = vec3(0.2 + hue, 1.0, 1.0);
+    float dis = distance(uv, vec2(0.0, 0.0));
 
-    vec3 rgb1 = hsv2rgb(hsv1);
-    vec3 rgb2 = hsv2rgb(hsv2);
-
-    // uv = -2.0 * uv + 1.0;
-    vec4 color1 = vec4(rgb1, 1.0);
-    vec4 color2 = vec4(rgb2, 1.0);
-
-    // 小于0.1为0,否则为1 
-    // step(0.1,uv.x)
-
-    vec2 move = vec2(uTime * 0.01, uTime * -0.01);
-
-    // 角度旋转
-    move *= rotation2d(uTime * 0.5);
-
-    // 添加杂色 
-    float grain = mix(-0.01, 0.01, rand(uv));
-
-    // 生成云雾效果
-    float f = fbm(uv + move);
-    f *= 10.0;
-    f += grain;
-    f += uTime * 0.2;
-    f = fract(f);
-
-    // float mixin = step(0.1, f) - smoothstep(0.2, 0.3, f);
-
-    float mixin = smoothstep(0.0, 0.1, f) - smoothstep(0.1, 0.2, f);
-
+    float mixin = step(1.0, dis);
     vec4 color = mix(color1, color2, mixin);
 
     gl_FragColor = color;
