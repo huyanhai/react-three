@@ -1,14 +1,17 @@
+#define MAX 3
+#define NUM_OCTAVES 5
+
 uniform float uTime;
 uniform vec2 uScreen;
 uniform vec2 u_mouse;
 uniform float u_strength;
 
-uniform sampler2D u_nextTexture;
-uniform sampler2D u_texture;
+uniform sampler2D u_textures[MAX];
+
+uniform float u_start;
+uniform float u_end;
 
 varying vec2 vUv;
-
-#define NUM_OCTAVES 5
 
 float rand(vec2 n) {
     return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
@@ -37,6 +40,18 @@ float fbm(vec2 x) {
     return v;
 }
 
+vec4 samplerColor(int index, vec2 uv) {
+    if(index == 0) {
+        return texture2D(u_textures[0], uv);
+    } else if(index == 1) {
+        return texture2D(u_textures[1], uv);
+    } else if(index == 2) {
+        return texture2D(u_textures[2], uv);
+    }
+
+    return vec4(1.0, 1.0, 1.0, 1.0);
+}
+
 void main() {
     vec2 uv = vUv;
 
@@ -53,10 +68,10 @@ void main() {
         discard;
     }
 
-    vec4 current = texture2D(u_texture, uv);
-    vec4 next = texture2D(u_nextTexture, uv);
+    vec4 current = samplerColor(int(u_start), uv);
+    vec4 next =  samplerColor(int(u_end), uv);
 
-    float mixin = step(smoothstep(0.1, 0.7, sin((u_strength - 10.0) / 10.0)), water);
+    float mixin = step(smoothstep(0.1, 0.7, sin(u_strength / 10.0 - 1.0)), water);
 
     vec4 color = mix(current, next, mixin);
 
