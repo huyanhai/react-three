@@ -34,10 +34,10 @@ const Shader = () => {
   return (
     <div className="w-screen h-screen bg-slate-600">
       <Canvas camera={{ position: [0, 0, 10], fov: 100 }}>
-        {/* <OrbitControls /> */}
+        <OrbitControls />
         <mesh>
           <ShaderCom index={index} start={start} end={end} strength={strength} updateStrength={updateStrength} />
-          <planeGeometry args={[20, 20]} />
+          <boxGeometry args={[20, 20, 20]} />
         </mesh>
         <Html fullscreen className="text-slate-400 font-sans uppercase text-6xl">
           <button className="absolute top-0 left-0" onClick={() => next()}>
