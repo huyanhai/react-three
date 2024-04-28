@@ -10,7 +10,7 @@ import { useMouse } from "ahooks";
 const Shader = (props: any) => {
   const texture = useTexture(["p6.jpg", "p4.jpg", "p5.jpg"]);
 
-  const { strength, updateStrength, start, end, roughness, thickness } = props;
+  const { strength, updateStrength, start, end, roughness, thickness, light } = props;
   // 导入贴图
 
   const shaderRef = useRef<any>();
@@ -44,7 +44,8 @@ const Shader = (props: any) => {
               u_textures: { value: texture },
               u_start: { value: start },
               u_end: { value: end },
-              u_light: { value: new Vector3(2.5, 8, 5) },
+              u_lightPosition: { value: light.current?.position },
+              u_lightColor: { value: light.current?.color },
               u_camera: { value: camera },
               u_speed: { value: speed },
               u_roughness: { value: roughness },
@@ -52,6 +53,7 @@ const Shader = (props: any) => {
             },
             fragmentShader,
             vertexShader,
+            // lights: true, // 启用光照计算
           },
         ]}
       />

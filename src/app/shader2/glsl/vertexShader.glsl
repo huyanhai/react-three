@@ -60,7 +60,7 @@ void main() {
 
     float radio = 1.0;
 
-    float time = u_time;
+    float time = u_time * 0.1;
 
     float noise = fbm(position * time * u_speed * 0.6);
     float noise1 = fbm(position * time * u_speed * 2.0);

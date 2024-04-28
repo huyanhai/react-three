@@ -2,10 +2,11 @@
 import { Canvas } from "@react-three/fiber";
 import ShaderCom from "./Shader";
 import { Html, OrbitControls, useTexture } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useControls } from "leva";
 
 const Shader = () => {
+  const light = useRef<any>();
   const [index, setIndex] = useState(0);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(0);
@@ -42,14 +43,14 @@ const Shader = () => {
       <Canvas camera={{ position: [0, 0, 30], fov: 20 }}>
         <OrbitControls />
         <mesh>
-          <ShaderCom index={index} start={start} end={end} strength={strength} updateStrength={updateStrength} roughness={roughness} thickness={thickness} />
+          <ShaderCom light={light} index={index} start={start} end={end} strength={strength} updateStrength={updateStrength} roughness={roughness} thickness={thickness} />
           <sphereGeometry args={[3, 100, 100]} />
         </mesh>
         {/* <mesh>
           <meshPhysicalMaterial />
           <boxGeometry args={[10, 10, 10]} />
         </mesh> */}
-        <directionalLight color={"blue"} castShadow position={[2.5, 8, 5]} intensity={1.5} shadow-mapSize={1024}></directionalLight>
+        <directionalLight ref={light} color={"blue"} castShadow position={[2.5, 8, 5]} intensity={1.5} shadow-mapSize={1024}></directionalLight>
         {/* <Html fullscreen className="text-slate-400 font-sans uppercase text-6xl"></Html> */}
       </Canvas>
     </div>
