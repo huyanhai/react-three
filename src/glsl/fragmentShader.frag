@@ -17,12 +17,12 @@ varying float v_radio;
 
 void main(void) {
 
-	vec3 color1 = vec3(1.0);
-	vec3 color2 = vec3(0.0);
+	vec3 color1 = u_color1;
+	vec3 color2 = u_color2;
 
 	// 1.0 * u_time * 0.5
 
-	vec3 color = mix(color1, color2, step(0.1, fbm(v_position)));
+	vec3 color = mix(color1, color2, step(u_time, fbm(v_position * 1.0) * 0.5 + 0.5));
 
 	gl_FragColor = vec4(color, 1.0);
 }
