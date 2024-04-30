@@ -18,6 +18,13 @@ const Shader = () => {
     check: false,
     select: {
       value: [1, 2, 3]
+    },
+    transition: {
+      value: 0,
+      options: {
+        Screen1: 0,
+        Screen2: 1
+      }
     }
   });
 
