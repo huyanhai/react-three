@@ -3,6 +3,7 @@ import ShaderCom from './Shader';
 import { Html, OrbitControls, useTexture } from '@react-three/drei';
 import { useState, useRef } from 'react';
 import { useControls } from 'leva';
+import Test from './Test';
 
 const Shader = () => {
   const light = useRef<any>();

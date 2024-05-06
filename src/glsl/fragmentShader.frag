@@ -13,7 +13,7 @@ varying vec3 v_normal;
 varying vec3 v_position;
 varying float v_radio;
 
-#include "../../node_modules/lygia/generative/fbm.glsl";
+#include "lygia/generative/fbm.glsl"
 
 void main(void) {
 

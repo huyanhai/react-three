@@ -8,7 +8,7 @@ uniform float u_speed;
 uniform float u_roughness;
 uniform float u_thickness;
 
-#include "../../node_modules/lygia/generative/fbm.glsl";
+#include "lygia/generative/fbm.glsl"
 
 void main() {
 
