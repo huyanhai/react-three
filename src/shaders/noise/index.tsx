@@ -1,7 +1,7 @@
 'use client';
 import React, { memo, useEffect, useRef, useState } from 'react';
-import vertexShaderText from '@/glsl/vertexShader.vert?raw';
-import fragmentShaderText from '@/glsl/fragmentShader.frag?raw';
+import vertexShaderText from './glsl/vertexShader.vert?raw';
+import fragmentShaderText from './glsl/fragmentShader.frag?raw';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { Vector2, Vector3 } from 'three';
 import { useTexture, Html } from '@react-three/drei';

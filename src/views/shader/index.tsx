@@ -3,7 +3,6 @@ import ShaderCom from './Shader';
 import { Html, OrbitControls, useTexture } from '@react-three/drei';
 import { useState, useRef } from 'react';
 import { useControls } from 'leva';
-import Test from './Test';
 
 const Shader = () => {
   const light = useRef<any>();
@@ -55,7 +54,7 @@ const Shader = () => {
       <Canvas camera={{ position: [0, 0, 30], fov: 20 }} ref={canvas}>
         <OrbitControls />
         <mesh>
-          <ShaderCom
+          {/* <ShaderCom
             light={light}
             index={index}
             start={start}
@@ -65,7 +64,8 @@ const Shader = () => {
             roughness={roughness}
             thickness={thickness}
             check={check}
-          />
+          /> */}
+          <test />
           <sphereGeometry args={[3, 100, 100]} />
         </mesh>
         {/* <mesh>
