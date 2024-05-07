@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls, Sky } from '@react-three/drei';
 import Screen from './Screen';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import Screen1 from './Screen1';
 
 const Shader = () => {
   return (
@@ -15,12 +16,14 @@ const Shader = () => {
           {/* 模糊效果 */}
           <Bloom
             mipmapBlur
-            luminanceThreshold={1}
+            luminanceSmoothing={0}
+            luminanceThreshold={0.1}
             intensity={1.42}
             radius={0.72}
           />
         </EffectComposer>
-        <Screen />
+        {/* <Screen /> */}
+        <Screen1 />
       </Canvas>
     </div>
   );
