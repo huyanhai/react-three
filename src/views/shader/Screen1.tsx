@@ -1,50 +1,107 @@
 import { useControls } from 'leva';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import {
+  Environment,
+  Float,
+  Lightformer,
+  Stars,
+  useFBX,
+  useGLTF,
+  useTexture
+} from '@react-three/drei';
+import { LayerMaterial, Depth } from 'lamina';
+import {
+  BackSide,
+  Mesh,
+  MeshBasicMaterial,
+  SphereGeometry,
+  TorusGeometry,
+  Color,
+  Vector3,
+  MeshPhysicalMaterial
+} from 'three';
+import Light from './Light';
 
 const Screen1 = () => {
   const torusKnotRef = useRef();
-  const { scene } = useGLTF('test1.glb');
+  const lightRef = useRef();
 
-  console.log('scene');
+  const { scene } = useGLTF('room.glb');
+  const s1 = useFBX('test.fbx');
+  const texture = useTexture('baked.jpg');
+  const texture1 = useTexture('ground.jpg');
+  texture.flipY = false;
 
-  const { roughness, metalness, color } = useControls({
-    roughness: {
-      min: 0,
-      max: 1,
-      value: 0.5
-    },
-    metalness: { min: 0, max: 1, value: 0.0 },
-    color: 'black'
-  });
+  const { roughness, metalness, color, strength, light1, light2, light3 } =
+    useControls({
+      roughness: {
+        min: 0,
+        max: 1,
+        value: 0.5
+      },
+      metalness: { min: 0, max: 1, value: 0.0 },
+      color: 'white',
+      light1: 'red',
+      light2: 'blue',
+      light3: 'green',
+      strength: {
+        min: 100,
+        max: 10000,
+        step: 1000,
+        value: 1000
+      }
+    });
 
   useFrame(() => {
-    torusKnotRef.current.rotation.y += 0.01;
+    // torusKnotRef.current.rotation.y += 0.01;
   });
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.name == 'ground') {
+        child.material = new MeshPhysicalMaterial({
+          emissive: 0xffffff,
+          emissiveMap: texture1
+        });
+        child.position.set(0, 0, -0.4);
+      } else {
+        child.material = new MeshPhysicalMaterial({
+          emissive: 0xffffff,
+          emissiveMap: texture,
+          opacity: 0.5
+        });
+      }
+    });
+    scene.scale.set(0.1, 0.1, 0.1);
+
+    s1.scale.set(0.1, 0.1, 0.1);
+  }, [scene]);
 
   return (
     <>
-      <primitive object={scene} ref={torusKnotRef} />
-      {/* <mesh ref={torusKnotRef}>
+      {/* <primitive object={scene} ref={torusKnotRef} /> */}
+
+      <primitive object={s1} />
+
+      {/* <mesh>
         <meshPhysicalMaterial
           metalness={metalness}
           roughness={roughness}
-          color={color}
-          ior={1.45}
-          emissive={'black'}
+          clearcoatRoughness={0}
+          clearcoat={0}
+          reflectivity={0.5}
+          transparent
+          opacity={0.5}
+          color={'white'}
         />
         <torusKnotGeometry args={[1, 0.4, 100, 100]} />
       </mesh> */}
 
-      {/* <mesh rotation-x={-90} position={[0, -1, 0]}>
-        <meshStandardMaterial color={'white'} />
-        <planeGeometry args={[10, 10]} />
-      </mesh> */}
-
-      <pointLight position={[-10.0, 5.0, 0.0]} color={'green'} intensity={5000.0} />
-      <pointLight position={[0.0, 5.0, -10.0]} color={'blue'} intensity={6000.0} />
-      <pointLight position={[10.0, 5.0, 0.0]} color={'red'} intensity={7000.0} />
+      <Light position={[-10.0, 5.0, 0.0]} color={light1} intensity={strength} />
+      <Light position={[0.0, 5.0, -10.0]} color={light2} intensity={strength} />
+      <Light position={[10.0, 5.0, 0.0]} color={light3} intensity={strength} />
+      <Light position={[0.0, 10.0, 10.0]} color={color} intensity={strength} />
     </>
   );
 };

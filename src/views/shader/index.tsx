@@ -4,7 +4,8 @@ import {
   OrbitControls,
   Sky,
   GizmoHelper,
-  GizmoViewport
+  GizmoViewport,
+  Stars
 } from '@react-three/drei';
 import Screen from './Screen';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
@@ -14,15 +15,22 @@ const Shader = () => {
   return (
     <div className="w-screen h-screen bg-slate-600">
       <Canvas camera={{ position: [0, 20, 30], fov: 10 }} shadows>
-        <GizmoHelper margin={[80, 80]}>
-          <GizmoViewport></GizmoViewport>
-        </GizmoHelper>
         <Environment files={'studio_small_09_4k.exr'} />
-        {/* <Sky /> */}
+        <Sky />
         <OrbitControls />
         <color attach="background" args={['#15151a']} />
+        {/* 星空 */}
+        <Stars
+          radius={10}
+          depth={30}
+          count={5000}
+          factor={4}
+          saturation={10}
+          fade
+          speed={10}
+        />
+        {/* 模糊效果 */}
         <EffectComposer>
-          {/* 模糊效果 */}
           <Bloom
             mipmapBlur
             luminanceSmoothing={0.025}
@@ -32,7 +40,11 @@ const Shader = () => {
           />
         </EffectComposer>
         {/* <Screen /> */}
+
         <Screen1 />
+        <GizmoHelper alignment="bottom-right" margin={[100, 100]}>
+          <GizmoViewport labelColor="white" axisHeadScale={1} />
+        </GizmoHelper>
       </Canvas>
     </div>
   );
