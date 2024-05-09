@@ -27,8 +27,8 @@ const Screen1 = () => {
   const torusKnotRef = useRef();
   const lightRef = useRef();
 
-  const { scene } = useGLTF('room.glb');
-  const s1 = useFBX('test.fbx');
+//   const { scene } = useGLTF('room.glb');
+  const {scene} = useGLTF('test.glb');
   const texture = useTexture('baked.jpg');
   const texture1 = useTexture('ground.jpg');
   texture.flipY = false;
@@ -58,31 +58,28 @@ const Screen1 = () => {
   });
 
   useEffect(() => {
-    scene.traverse((child) => {
-      if (child.name == 'ground') {
-        child.material = new MeshPhysicalMaterial({
-          emissive: 0xffffff,
-          emissiveMap: texture1
-        });
-        child.position.set(0, 0, -0.4);
-      } else {
-        child.material = new MeshPhysicalMaterial({
-          emissive: 0xffffff,
-          emissiveMap: texture,
-          opacity: 0.5
-        });
-      }
-    });
+    // scene.traverse((child) => {
+    //   if (child.name == 'ground') {
+    //     child.material = new MeshPhysicalMaterial({
+    //       emissive: 0xffffff,
+    //       emissiveMap: texture1
+    //     });
+    //     child.position.set(0, 0, -0.4);
+    //   } else {
+    //     child.material = new MeshPhysicalMaterial({
+    //       emissive: 0xffffff,
+    //       emissiveMap: texture,
+    //       opacity: 0.5
+    //     });
+    //   }
+    // });
     scene.scale.set(0.1, 0.1, 0.1);
 
-    s1.scale.set(0.1, 0.1, 0.1);
   }, [scene]);
 
   return (
     <>
-      {/* <primitive object={scene} ref={torusKnotRef} /> */}
-
-      <primitive object={s1} />
+      <primitive object={scene} ref={torusKnotRef} />
 
       {/* <mesh>
         <meshPhysicalMaterial
