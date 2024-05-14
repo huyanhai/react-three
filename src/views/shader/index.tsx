@@ -9,15 +9,15 @@ import {
 } from '@react-three/drei';
 import Screen from './Screen';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
-import Screen1 from './Screen1';
+// import Screen1 from './Screen1';
+
 
 const Shader = () => {
   return (
     <div className="w-screen h-screen bg-slate-600">
       <Canvas camera={{ position: [0, 20, 30], fov: 10 }} shadows>
-        <Environment files={'studio_small_09_4k.exr'} />
-        <Sky />
-        <OrbitControls />
+        {/* <Environment files={'studio_small_09_4k.exr'} /> */}
+        {/* <Sky /> */}
         <color attach="background" args={['#15151a']} />
         {/* 星空 */}
         <Stars
@@ -39,12 +39,14 @@ const Shader = () => {
             radius={0.92}
           />
         </EffectComposer>
-        {/* <Screen /> */}
+        <Screen />
 
-        <Screen1 />
+        {/* <Screen1 /> */}
         <GizmoHelper alignment="bottom-right" margin={[100, 100]}>
           <GizmoViewport labelColor="white" axisHeadScale={1} />
         </GizmoHelper>
+        <OrbitControls />
+
       </Canvas>
     </div>
   );

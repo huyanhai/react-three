@@ -28,7 +28,7 @@ const Screen1 = () => {
   const lightRef = useRef();
 
 //   const { scene } = useGLTF('room.glb');
-  const {scene} = useGLTF('test.glb');
+  const {scene} = useGLTF('test1.glb');
   const texture = useTexture('baked.jpg');
   const texture1 = useTexture('ground.jpg');
   texture.flipY = false;
