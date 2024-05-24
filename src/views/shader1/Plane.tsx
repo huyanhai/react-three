@@ -3,14 +3,12 @@ import { useFrame } from '@react-three/fiber';
 import { useControls } from 'leva';
 import { forwardRef, useState } from 'react';
 import { Texture, WebGLRenderTarget } from 'three';
-import { MathUtils } from 'three';
 
 const Plane = (
   props: {
     renderTarget: WebGLRenderTarget<Texture>;
-    renderTarget1: WebGLRenderTarget<Texture>;
   },
-  ref
+  ref: any
 ) => {
   const [mode, setMode] = useState(false);
   const [time, setTime] = useState(0);
