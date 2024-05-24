@@ -52,9 +52,9 @@ const Screen = () => {
         <meshBasicMaterial side={DoubleSide} color={color} />
         <planeGeometry />
       </mesh>
-      <Environment>
+      {/* <Environment>
         <Lightformer form={'ring'} intensity={1000} position={[5, 5, 5]} />
-      </Environment>
+      </Environment> */}
       <mesh>
         <meshPhysicalMaterial color={color} roughness={0} metalness={1} />
         <sphereGeometry />

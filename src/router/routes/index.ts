@@ -42,6 +42,22 @@ export const routes: ISyncRoute[] = [
           title: 'shader',
           auth: false
         }
+      },
+      {
+        path: 'shader1',
+        component: lazy(() => import('@/views/shader1/index')),
+        meta: {
+          title: 'shader1',
+          auth: false
+        }
+      },
+      {
+        path: 'ship',
+        component: lazy(() => import('@/views/ship/index')),
+        meta: {
+          title: 'ship',
+          auth: false
+        }
       }
     ]
   },

@@ -12,13 +12,13 @@ const Light = (props: Props) => {
 
   return (
     <pointLight {...props}>
-      {/* <mesh>
+      <mesh>
         <meshStandardMaterial
           emissive={color}
           emissiveIntensity={intensity / 1000}
         />
         <sphereGeometry args={[0.1, 10, 10]} />
-      </mesh> */}
+      </mesh>
     </pointLight>
   );
 };

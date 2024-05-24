@@ -9,7 +9,7 @@ import {
 } from '@react-three/drei';
 import Screen from './Screen';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
-// import Screen1 from './Screen1';
+import Screen1 from './Screen1';
 
 
 const Shader = () => {
@@ -41,7 +41,7 @@ const Shader = () => {
         </EffectComposer>
         <Screen />
 
-        {/* <Screen1 /> */}
+        <Screen1 />
         <GizmoHelper alignment="bottom-right" margin={[100, 100]}>
           <GizmoViewport labelColor="white" axisHeadScale={1} />
         </GizmoHelper>
