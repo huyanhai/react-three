@@ -39,7 +39,6 @@ const Plane = (
     } else {
       progression > 0.35 && setProgression(progression - 0.005);
     }
-    // console.log(mode, progression);
   });
 
   return (
