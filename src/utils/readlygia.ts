@@ -3,6 +3,8 @@ const getFile = async (url: string) => {
 
   if (data[`../../node_modules/lygia${url}`]) {
     const result = (await data[`../../node_modules/lygia${url}`]()) as any;
+    console.log(`../../node_modules/lygia${url}`);
+    
     return result.default;
   }
 

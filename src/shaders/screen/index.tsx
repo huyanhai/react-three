@@ -4,6 +4,8 @@ import { resolveLygia } from 'resolve-lygia';
 import { shaderMaterial } from '@react-three/drei';
 import { Color, DoubleSide, Texture } from 'three';
 
+console.log('fragmentShader', fragmentShader);
+
 const ScreenShader = shaderMaterial(
   {
     uTime: 0,
