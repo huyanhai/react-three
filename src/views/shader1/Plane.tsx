@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { useControls } from 'leva';
 import { forwardRef, useState } from 'react';
 import { Texture, WebGLRenderTarget } from 'three';
+import { easing } from 'maath';
 
 const Plane = (
   props: {
@@ -30,12 +31,19 @@ const Plane = (
     }
   });
 
-  useFrame(({ clock, gl }) => {
+  useFrame(({ clock, gl }, delate) => {
     setTime(clock.getElapsedTime());
     if (mode) {
-      progression < 0.65 && setProgression(progression + 0.005);
+      progression < 0.65 &&
+        easing.damp(ref.current.uniforms.uProgression, 'value', 1, 1.5, delate);
     } else {
-      progression > 0.35 && setProgression(progression - 0.005);
+      easing.damp(
+        ref.current.uniforms.uProgression,
+        'value',
+        0.35,
+        .5,
+        delate
+      );
     }
   });
 
