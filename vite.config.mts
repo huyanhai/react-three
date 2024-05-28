@@ -2,23 +2,23 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import glsl from 'vite-plugin-glsl';
-import lygia from './plugin';
+import lygia from 'vite-plugin-lygia';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    // glsl({
-    //   include: [
-    //     '**/*.glsl',
-    //     '**/*.wgsl',
-    //     '**/*.vert',
-    //     '**/*.frag',
-    //     '**/*.vs',
-    //     '**/*.fs'
-    //   ]
-    // }),
-    lygia()
+    lygia({ libraryPath: '' }),
+    glsl({
+      include: [
+        '**/*.glsl',
+        '**/*.wgsl',
+        '**/*.vert',
+        '**/*.frag',
+        '**/*.vs',
+        '**/*.fs'
+      ]
+    })
   ],
   resolve: {
     alias: {
@@ -26,6 +26,6 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    // exclude: ['lygia']
+    exclude: ['lygia']
   }
 });

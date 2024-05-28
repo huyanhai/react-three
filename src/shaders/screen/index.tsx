@@ -1,10 +1,7 @@
-import vertexShader from './glsl/vertexShader.vert?raw';
-import fragmentShader from './glsl/fragmentShader.frag?raw';
-import { resolveLygia } from 'resolve-lygia';
+import vertexShader from './glsl/vertexShader.vert';
+import fragmentShader from './glsl/fragmentShader.frag';
 import { shaderMaterial } from '@react-three/drei';
 import { Color, DoubleSide, Texture } from 'three';
-
-console.log('fragmentShader', fragmentShader);
 
 const ScreenShader = shaderMaterial(
   {
@@ -19,8 +16,8 @@ const ScreenShader = shaderMaterial(
     transparent: false,
     side: DoubleSide
   },
-  resolveLygia(vertexShader),
-  resolveLygia(fragmentShader)
+  vertexShader,
+  fragmentShader
 );
 
 export default ScreenShader;

@@ -16,9 +16,7 @@ void main(void) {
 	vec4 _texture = texture2D(uTexture, uv);
 	vec4 _texture1 = texture2D(uTexture1, uv);
 
-	// vec4 color = vec4(step(0.5, fbm(vec3(uv * 5.0, uTime)) * .1 + uProgression));
-
-	vec4 color = vec4(1.0, 0.0, 0.0, 1.0);
+	vec4 color = vec4(step(0.5, fbm(vec3(uv * 5.0, uTime)) * .1 + uProgression));
 
 	vec4 final = mix(_texture, _texture1, color);
 
