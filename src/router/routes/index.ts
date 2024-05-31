@@ -58,6 +58,22 @@ export const routes: ISyncRoute[] = [
           title: 'ship',
           auth: false
         }
+      },
+      {
+        path: 'screen',
+        component: lazy(() => import('@/views/screen/index')),
+        meta: {
+          title: 'screen',
+          auth: false
+        }
+      },
+      {
+        path: 'human',
+        component: lazy(() => import('@/views/human/index')),
+        meta: {
+          title: 'human',
+          auth: false
+        }
       }
     ]
   },

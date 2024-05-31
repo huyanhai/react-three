@@ -3,7 +3,7 @@ import fragmentShader from './glsl/fragmentShader.frag';
 import { shaderMaterial } from '@react-three/drei';
 import { Color, DoubleSide, Texture } from 'three';
 
-const ScreenShader = shaderMaterial(
+const HumanShader = shaderMaterial(
   {
     uTime: 0,
     uAlpha: 0,
@@ -20,4 +20,4 @@ const ScreenShader = shaderMaterial(
   fragmentShader
 );
 
-export default ScreenShader;
+export default HumanShader;

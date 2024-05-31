@@ -1,12 +1,18 @@
-import type { ISyncRoute } from "../types";
+import type { ISyncRoute } from '../types';
 
-import React from "react";
-import type { RouteObject } from "react-router-dom";
-import { Suspense } from "react";
+import React from 'react';
+import type { RouteObject } from 'react-router-dom';
+import { Suspense } from 'react';
 
 const initElement = (Component: React.LazyExoticComponent<any>) => {
   return (
-    <Suspense fallback={<div>加载中...</div>}>
+    <Suspense
+      fallback={
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          加载中...
+        </div>
+      }
+    >
       <Component />
     </Suspense>
   );
@@ -18,7 +24,7 @@ export const initRouterTable = (table: ISyncRoute[]): RouteObject[] => {
     routeTable.push({
       path: r.path,
       element: initElement(r.component),
-      children: r.children && initRouterTable(r.children),
+      children: r.children && initRouterTable(r.children)
     });
   });
 
