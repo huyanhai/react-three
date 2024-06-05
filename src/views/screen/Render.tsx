@@ -14,7 +14,7 @@ const Render = () => {
     <>
       <mesh>
         <screenShader uTime={time} />
-        <planeGeometry args={[5, 5]} />
+        <planeGeometry args={[10,10,30]} />
       </mesh>
     </>
   );

@@ -83,7 +83,7 @@ const Human = () => {
   });
 
   useEffect(() => {
-    setIntensity(5);
+    setIntensity(500);
   }, [renderer]);
 
   const onBeforeCompile = (shader: Shader) => {
@@ -135,7 +135,7 @@ const Human = () => {
         <BrightnessContrast brightness={0.01} contrast={0.6} />
         {/* <Scanline density={5} /> */}
         <ToneMapping mode={ToneMappingMode.LINEAR} />
-        <SMAA />
+        {/* <SMAA /> */}
       </EffectComposer>
     </>
   );

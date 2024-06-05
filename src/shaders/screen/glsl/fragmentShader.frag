@@ -7,6 +7,10 @@ uniform float uProgression;
 uniform float uStep;
 
 varying vec2 vUv;
+varying vec3 vPosition;
+
+#include "lygia/space/rotate.glsl"
+#include "lygia/generative/fbm.glsl"
 
 float DistLine(vec2 p, vec2 a, vec2 b) {
 	vec2 pa = p - a;
@@ -21,28 +25,36 @@ float Line(vec2 p, vec2 a, vec2 b) {
 	return m;
 }
 
+float line1(vec2 uv, float offset) {
+	return smoothstep(
+		0., 
+		0.5 + offset * 0.5, 
+		0.6*abs(sin(uv.x * 30.) + offset * .5)
+	);
+}
+
+mat2 rotate2D(float angle) {
+	return mat2(
+	cos(angle), -sin(angle), 
+	sin(angle), cos(angle)
+	);
+}
+
 void main(void) {
-	vec2 uv = vUv;
-	uv = uv * 5.0;
 
-	vec2 st = fract(uv);
+	float f = fbm(vUv+uTime*0.1);
 
-	st = st - 0.5;
+	vec2 uv = rotate2D(f) * vPosition.xy*0.1;
 
-	// vec3 color = vec3(0.0);
+	float n = line1(uv, 0.4);
+	float n1 = line1(uv, 0.5);
 
-	// color.rg = st - 0.5;
+	vec3 color1 = vec3(1.0, 0.0, 0.0);
+	vec3 color2 = vec3(0.0, 1.0, 0.0);
+	vec3 color3 = vec3(0.0, 0.0, 1.0);
 
-	// float d = length(st);
+	vec3 c = mix(color1, color2, n);
+	vec3 c1 = mix(c, color3, n1);
 
-	vec3 color = vec3(0.0);
-
-	float l = distance(vec2(sin(uTime) / 2.0, cos(uTime) / 2.0), st);
-
-	float d = smoothstep(0.1, 0.09, l);
-	color.r = d;
-	color.g = d;
-	color.b = d;
-
-	gl_FragColor = vec4(color, 1.0);
+	gl_FragColor = vec4(c1, 1.0);
 }
