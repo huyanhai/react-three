@@ -1,15 +1,17 @@
 import { Canvas } from '@react-three/fiber';
 import React, { useEffect, useRef } from 'react';
 import Human from './Human';
-import { Environment, OrbitControls } from '@react-three/drei';
+import { Environment, OrbitControls, Sky } from '@react-three/drei';
+import Light from './Light';
 
 const Render = () => {
   return (
-    <Canvas camera={{ position: [0, 0, 100], fov: 16 }} shadows>
+    <Canvas camera={{ position: [0, 30, 100], fov: 4 }} shadows>
       <Environment files={'studio_small_09_4k.exr'} />
       <Human />
       <OrbitControls />
-      <color attach="background" args={['#15151a']} />
+      {/* <Light /> */}
+      <color attach="background" args={['#14141c']} />
     </Canvas>
   );
 };

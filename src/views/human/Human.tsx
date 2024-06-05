@@ -1,15 +1,33 @@
-import { Center, useGLTF, useTexture } from '@react-three/drei';
+import { useGLTF, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { useControls } from 'leva';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import headShader from '@/shaders/human/glsl/head.frag';
+import bodyShader from '@/shaders/human/glsl/body.frag';
+
 import {
   PMREMGenerator,
   WebGLRenderer,
   Texture,
-  Mesh,
-  ACESFilmicToneMapping,
-  Shader
+  Shader,
+  ACESFilmicToneMapping
 } from 'three';
+import {
+  Bloom,
+  BrightnessContrast,
+  EffectComposer,
+  SMAA,
+  ToneMapping,
+  Scanline,
+  HueSaturation
+} from '@react-three/postprocessing';
+
+import {
+  BlendFunction,
+  ToneMappingMode,
+  WebGLExtension,
+  BlendMode
+} from 'postprocessing';
 
 const genPmrTexture = (renderer: WebGLRenderer, texture: Texture) => {
   const pmremGenerator = new PMREMGenerator(renderer!);
@@ -19,16 +37,12 @@ const genPmrTexture = (renderer: WebGLRenderer, texture: Texture) => {
   return envMap;
 };
 
-const setRendererExposure = (renderer: WebGLRenderer, exposure: number) => {
-  renderer.toneMappingExposure = Math.pow(exposure, 4.0);
-  renderer.toneMapping = ACESFilmicToneMapping;
-};
-
 const Human = () => {
   const env = useTexture('env.jpg');
   const { nodes } = useGLTF('human.glb');
 
   const [exposure, setExposure] = useState(0);
+  const [intensity, setIntensity] = useState(1);
 
   useControls({
     exposure: {
@@ -46,6 +60,7 @@ const Human = () => {
 
   const humanRef = useRef<any>();
   const shaderRef = useRef<any>();
+  const effectComposerRef = useRef<any>();
 
   const envMap = useMemo(() => {
     if (renderer) {
@@ -53,35 +68,76 @@ const Human = () => {
     }
   }, [renderer]);
 
-  useFrame(({ clock, gl }) => {
+  useFrame(({ clock, gl, camera, scene }) => {
     setTime(clock.getElapsedTime());
     setRenderer(gl);
-    setRendererExposure(gl, exposure);
-    humanRef.current.rotation.y += 0.001;
 
-    // console.log(shaderRef.current);
+    if (shaderRef.current.userData.shader) {
+      shaderRef.current.userData.shader.uniforms.uTime = {
+        value: time
+      };
+      humanRef.current.material = shaderRef.current;
+    }
+
+    scene.environment = envMap!;
   });
+
+  useEffect(() => {
+    setIntensity(5);
+  }, [renderer]);
 
   const onBeforeCompile = (shader: Shader) => {
     // 给shader添加uniform
     shader.uniforms.uTime = {
       value: time
     };
+
+    shader.fragmentShader = `${headShader}` + '\n' + shader.fragmentShader;
+
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <envmap_physical_pars_fragment>\n',
+      `${bodyShader}\n`
+    );
+
+    shaderRef.current.userData.shader = shader;
+    humanRef.current.material = shaderRef.current;
   };
 
   return (
-    <Center>
-      <mesh ref={humanRef} geometry={nodes.human.geometry}>
-        {/* <humanShader uTime={time} /> */}
+    <>
+      {/* <mesh geometry={nodes.human.geometry} position={[0, -16, 0]}>
         <meshStandardMaterial
-          ref={shaderRef}
-          roughness={0.28}
-          metalness={1}
-          envMap={envMap}
-          onBeforeCompile={onBeforeCompile}
+          color={'hotpink'}
+          emissive={'hotpink'}
+          emissiveIntensity={4 * exposure}
         />
-      </mesh>
-    </Center>
+      </mesh> */}
+      <group>
+        <mesh
+          ref={humanRef}
+          geometry={nodes.human.geometry}
+          position={[0, -16, 0]}
+        >
+          <meshStandardMaterial
+            toneMapped={false}
+            ref={shaderRef}
+            roughness={0.28}
+            metalness={0.5}
+            envMap={envMap}
+            color={'#fff'}
+            onBeforeCompile={onBeforeCompile}
+          />
+        </mesh>
+      </group>
+
+      <EffectComposer ref={effectComposerRef}>
+        <Bloom luminanceThreshold={0.9} intensity={intensity} mipmapBlur={true} />
+        <BrightnessContrast brightness={0.01} contrast={0.6} />
+        {/* <Scanline density={5} /> */}
+        <ToneMapping mode={ToneMappingMode.LINEAR} />
+        <SMAA />
+      </EffectComposer>
+    </>
   );
 };
 
