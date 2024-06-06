@@ -1,60 +1,147 @@
 uniform float uTime;
-uniform float uAlpha;
-uniform vec3 uColor;
-uniform sampler2D uTexture;
-uniform sampler2D uTexture1;
-uniform float uProgression;
-uniform float uStep;
+#define STANDARD
+#ifdef PHYSICAL
+	#define IOR
+	#define USE_SPECULAR
+#endif
+uniform vec3 diffuse;
+uniform vec3 emissive;
+uniform float roughness;
+uniform float metalness;
+uniform float opacity;
+#ifdef IOR
+uniform float ior;
+#endif
+#ifdef USE_SPECULAR
+uniform float specularIntensity;
+uniform vec3 specularColor;
+	#ifdef USE_SPECULAR_COLORMAP
+uniform sampler2D specularColorMap;
+	#endif
+	#ifdef USE_SPECULAR_INTENSITYMAP
+uniform sampler2D specularIntensityMap;
+	#endif
+#endif
+#ifdef USE_CLEARCOAT
+uniform float clearcoat;
+uniform float clearcoatRoughness;
+#endif
+#ifdef USE_DISPERSION
+uniform float dispersion;
+#endif
+#ifdef USE_IRIDESCENCE
+uniform float iridescence;
+uniform float iridescenceIOR;
+uniform float iridescenceThicknessMinimum;
+uniform float iridescenceThicknessMaximum;
+#endif
+#ifdef USE_SHEEN
+uniform vec3 sheenColor;
+uniform float sheenRoughness;
+	#ifdef USE_SHEEN_COLORMAP
+uniform sampler2D sheenColorMap;
+	#endif
+	#ifdef USE_SHEEN_ROUGHNESSMAP
+uniform sampler2D sheenRoughnessMap;
+	#endif
+#endif
+#ifdef USE_ANISOTROPY
+uniform vec2 anisotropyVector;
+	#ifdef USE_ANISOTROPYMAP
+uniform sampler2D anisotropyMap;
+	#endif
+#endif
+varying vec3 vViewPosition;
 
 varying vec2 vUv;
-varying vec3 vPosition;
+#include <common>
+#include <packing>
+#include <dithering_pars_fragment>
+#include <color_pars_fragment>
+#include <uv_pars_fragment>
+#include <map_pars_fragment>
+#include <alphamap_pars_fragment>
+#include <alphatest_pars_fragment>
+#include <alphahash_pars_fragment>
+#include <aomap_pars_fragment>
+#include <lightmap_pars_fragment>
+#include <emissivemap_pars_fragment>
+#include <iridescence_fragment>
+#include <cube_uv_reflection_fragment>
+#include <envmap_common_pars_fragment>
+#include <envmap_physical_pars_fragment>
+#include <fog_pars_fragment>
+#include <lights_pars_begin>
+#include <normal_pars_fragment>
+#include <lights_physical_pars_fragment>
+#include <transmission_pars_fragment>
+#include <shadowmap_pars_fragment>
+#include <bumpmap_pars_fragment>
+#include <normalmap_pars_fragment>
+#include <clearcoat_pars_fragment>
+#include <iridescence_pars_fragment>
+#include <roughnessmap_pars_fragment>
+#include <metalnessmap_pars_fragment>
+#include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 
-#include "lygia/space/rotate.glsl"
 #include "lygia/generative/fbm.glsl"
 
-float DistLine(vec2 p, vec2 a, vec2 b) {
-	vec2 pa = p - a;
-	vec2 ba = b - a;
-	float t = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-	return length(pa - ba * t);
+float draw_line(vec2 uv, float offset) {
+	return smoothstep(0., 0.5 + offset * 0.5, 0.6 * abs(sin(uv.x * 30.) + offset * .5));
 }
 
-float Line(vec2 p, vec2 a, vec2 b) {
-	float d = DistLine(p, a, b);
-	float m = smoothstep(0.02, 0.01, d);
-	return m;
-}
+void main() {
+	vec4 diffuseColor = vec4(diffuse, opacity);
+	#include <clipping_planes_fragment>
+	ReflectedLight reflectedLight = ReflectedLight(vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0));
+	vec3 totalEmissiveRadiance = emissive;
+	#include <logdepthbuf_fragment>
+	#include <map_fragment>
+	#include <color_fragment>
+	#include <alphamap_fragment>
+	#include <alphatest_fragment>
+	#include <alphahash_fragment>
+	#include <roughnessmap_fragment>
+	#include <metalnessmap_fragment>
+	#include <normal_fragment_begin>
+	#include <normal_fragment_maps>
+	#include <clearcoat_normal_fragment_begin>
+	#include <clearcoat_normal_fragment_maps>
+	#include <emissivemap_fragment>
+	#include <lights_physical_fragment>
+	#include <lights_fragment_begin>
+	#include <lights_fragment_maps>
+	#include <lights_fragment_end>
+	#include <aomap_fragment>
+	vec3 totalDiffuse = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;
+	vec3 totalSpecular = reflectedLight.directSpecular + reflectedLight.indirectSpecular;
+	#include <transmission_fragment>
+	vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;
+	#ifdef USE_SHEEN
+	float sheenEnergyComp = 1.0 - 0.157 * max3(material.sheenColor);
+	outgoingLight = outgoingLight * sheenEnergyComp + sheenSpecularDirect + sheenSpecularIndirect;
+	#endif
+	#ifdef USE_CLEARCOAT
+	float dotNVcc = saturate(dot(geometryClearcoatNormal, geometryViewDir));
+	vec3 Fcc = F_Schlick(material.clearcoatF0, material.clearcoatF90, dotNVcc);
+	outgoingLight = outgoingLight * (1.0 - material.clearcoat * Fcc) + (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
+	#endif
+	#include <opaque_fragment>
+	#include <tonemapping_fragment>
+	#include <fog_fragment>
+	#include <premultiplied_alpha_fragment>
 
-float line1(vec2 uv, float offset) {
-	return smoothstep(
-		0., 
-		0.5 + offset * 0.5, 
-		0.6*abs(sin(uv.x * 30.) + offset * .5)
-	);
-}
+	#ifdef DITHERING
+	gl_FragColor.rgb = vec4(1.0, 1.0, 1.0, 1.0);
+	#endif
 
-mat2 rotate2D(float angle) {
-	return mat2(
-	cos(angle), -sin(angle), 
-	sin(angle), cos(angle)
-	);
-}
+	float bm = draw_line(vViewPosition.xy * fbm(vViewPosition * 0.1 + uTime * 0.001), 0.1);
+	float bm1 = draw_line(vViewPosition.yz * fbm(vViewPosition * 0.5 + uTime * 0.001), 0.3);
 
-void main(void) {
+	// vec4 mix_color = vec4(gl_FragColor.xyz, smoothstep(bm, bm1 * 0.1, gl_FragColor.x));
+	vec3 mix_color = mix(gl_FragColor.rgb, vec3(0.0, 0.0, 0.0), 1.0 - bm);
 
-	float f = fbm(vUv+uTime*0.1);
-
-	vec2 uv = rotate2D(f) * vPosition.xy*0.1;
-
-	float n = line1(uv, 0.4);
-	float n1 = line1(uv, 0.5);
-
-	vec3 color1 = vec3(1.0, 0.0, 0.0);
-	vec3 color2 = vec3(0.0, 1.0, 0.0);
-	vec3 color3 = vec3(0.0, 0.0, 1.0);
-
-	vec3 c = mix(color1, color2, n);
-	vec3 c1 = mix(c, color3, n1);
-
-	gl_FragColor = vec4(c1, 1.0);
+	gl_FragColor = vec4(mix_color, 1.0);
+	gl_FragColor = linearToOutputTexel(gl_FragColor);
 }

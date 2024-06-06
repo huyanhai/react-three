@@ -21,7 +21,7 @@ float Line(vec2 p, vec2 a, vec2 b) {
 	return m;
 }
 
-void main(void) {
+void main() {
 	vec2 uv = vUv;
 	uv = uv * 5.0;
 
