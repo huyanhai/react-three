@@ -3,10 +3,17 @@ import React, { useRef, useState } from 'react';
 import { Shader, Vector2, WebGLRenderer } from 'three';
 
 import fragmentShader from '@/shaders/screen/glsl/fragmentShader.frag';
+import { useTexture } from '@react-three/drei';
 
 const Render = () => {
   const [size, setSize] = useState(new Vector2());
   const [time, setTime] = useState(0);
+
+  // const texture = useTexture('https://i.imgur.com/MqQY5Ww.png');
+
+  // 处理贴图重复
+  // texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  // texture.repeat.set(1, 1).multiplyScalar(0.5);
 
   const materialRef = useRef<Shader>();
   const meshRef = useRef<THREE.Mesh>();
@@ -44,6 +51,7 @@ const Render = () => {
           iridescenceIOR={1.4}
           onBeforeCompile={onBeforeCompile}
           transparent={true}
+          // normalScale={}
         />
         <planeGeometry args={[10, 10, 10]} />
       </mesh>
