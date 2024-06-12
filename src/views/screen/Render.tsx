@@ -5,13 +5,12 @@ import { Shader, Vector2, WebGLRenderer } from 'three';
 import fragmentShader from '@/shaders/screen/glsl/fragmentShader.frag';
 import vertexShader from '@/shaders/screen/glsl/vertexShader.vert';
 
-
 import { useTexture } from '@react-three/drei';
 
 const Render = () => {
   const [size, setSize] = useState(new Vector2());
   const [time, setTime] = useState(0);
-
+  const [mouse, setMouse] = useState(new Vector2());
   // const texture = useTexture('https://i.imgur.com/MqQY5Ww.png');
 
   // 处理贴图重复
@@ -23,6 +22,7 @@ const Render = () => {
 
   const onBeforeCompile = (shader: Shader, renderer: WebGLRenderer) => {
     shader.uniforms.uTime = { value: time };
+    shader.uniforms.uMouse = { value: mouse };
     shader.fragmentShader = fragmentShader;
     shader.vertexShader = vertexShader;
     materialRef.current.userData = shader;
@@ -34,10 +34,14 @@ const Render = () => {
   useFrame((state) => {
     setSize(new Vector2(state.size.width, state.size.height));
     setTime(state.clock.getElapsedTime());
+    setMouse(state.mouse);
 
     if (materialRef.current.userData.uniforms) {
       materialRef.current.userData.uniforms.uTime = {
         value: time
+      };
+      materialRef.current.userData.uniforms.uMouse = {
+        value: mouse
       };
       meshRef.current.material = materialRef.current;
     }
@@ -45,7 +49,6 @@ const Render = () => {
   return (
     <>
       <mesh ref={meshRef}>
-        <screenShader uTime={time} />
         <meshPhysicalMaterial
           ref={materialRef}
           color={'white'}
@@ -56,10 +59,14 @@ const Render = () => {
           onBeforeCompile={onBeforeCompile}
           transparent={true}
         />
-        <planeGeometry args={[10, 10, 10]} />
+        <sphereGeometry args={[1, 20, 20]} />
       </mesh>
-      <spotLight color={'blue'} position={[0, 0, 10]} intensity={1000} castShadow />
-      
+      <spotLight
+        color={'blue'}
+        position={[0, 0, 10]}
+        intensity={1000}
+        castShadow
+      />
     </>
   );
 };

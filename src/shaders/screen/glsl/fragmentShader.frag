@@ -184,16 +184,20 @@ void main() {
 
 	float bm = draw_line(cnoise(vUv + uTime * 0.01) * vec2(0.5, 0.5), 2.0);
 
-	float noise = cnoise(vViewPosition.xyz * 2.0 + uTime);
-
-	float h = bm;
-	float s = 1.0;
-	float l = 0.5;
-
 	vec2 center = vec2(0.5, 0.5);
 
-	vec2 pos = mod(vUv * 8.0, 1.0);
+	vec2 v = vUv;
 
-	gl_FragColor.a = 1.0 - step(abs(sin(uTime)) / 2.0, distance(pos, center));
+	v.x *= 2.0;
+
+	vec2 pos = mod(v * 8.0, 1.0);
+
+
+	float d = distance(pos, center);
+	
+	float n = cnoise(floor(v));
+	float left = step(0.25 + n, d);
+
+	gl_FragColor.a = 1.0 - left;
 	gl_FragColor = linearToOutputTexel(gl_FragColor);
 }
