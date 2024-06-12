@@ -7,7 +7,7 @@ const ScreenView = () => {
   return (
     <div className="w-full h-full">
       <Canvas>
-        {/* <Environment files={'studio_small_09_4k.exr'} /> */}
+        <Environment files={'studio_small_09_4k.exr'} />
         <Render />
         <OrbitControls />
       </Canvas>

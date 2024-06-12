@@ -3,6 +3,9 @@ import React, { useRef, useState } from 'react';
 import { Shader, Vector2, WebGLRenderer } from 'three';
 
 import fragmentShader from '@/shaders/screen/glsl/fragmentShader.frag';
+import vertexShader from '@/shaders/screen/glsl/vertexShader.vert';
+
+
 import { useTexture } from '@react-three/drei';
 
 const Render = () => {
@@ -21,6 +24,7 @@ const Render = () => {
   const onBeforeCompile = (shader: Shader, renderer: WebGLRenderer) => {
     shader.uniforms.uTime = { value: time };
     shader.fragmentShader = fragmentShader;
+    shader.vertexShader = vertexShader;
     materialRef.current.userData = shader;
     meshRef.current.material = materialRef.current;
 
@@ -44,18 +48,17 @@ const Render = () => {
         <screenShader uTime={time} />
         <meshPhysicalMaterial
           ref={materialRef}
-          color={'black'}
+          color={'white'}
           roughness={0.47}
           metalness={0.6}
           ior={1.5}
           iridescenceIOR={1.4}
           onBeforeCompile={onBeforeCompile}
           transparent={true}
-          // normalScale={}
         />
         <planeGeometry args={[10, 10, 10]} />
       </mesh>
-      <spotLight color={'white'} position={[0, 0, 10]} intensity={1000} castShadow />
+      <spotLight color={'blue'} position={[0, 0, 10]} intensity={1000} castShadow />
       
     </>
   );

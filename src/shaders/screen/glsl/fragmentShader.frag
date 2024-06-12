@@ -1,4 +1,6 @@
 uniform float uTime;
+uniform vec2 uMouse;
+
 #define STANDARD
 #ifdef PHYSICAL
 	#define IOR
@@ -52,7 +54,7 @@ uniform sampler2D anisotropyMap;
 	#endif
 #endif
 varying vec3 vViewPosition;
-
+varying vec3 vBitangent;
 varying vec2 vUv;
 #include <common>
 #include <packing>
@@ -86,9 +88,53 @@ varying vec2 vUv;
 #include <clipping_planes_pars_fragment>
 
 #include "lygia/generative/fbm.glsl"
+#include "lygia/generative/cnoise.glsl"
 
 float draw_line(vec2 uv, float offset) {
 	return smoothstep(0., 0.5 + offset * 0.5, 0.6 * abs(sin(uv.x * 30.) + offset * .5));
+}
+
+float hue2rgb(float f1, float f2, float hue) {
+	if(hue < 0.0)
+		hue += 1.0;
+	else if(hue > 1.0)
+		hue -= 1.0;
+	float res;
+	if((6.0 * hue) < 1.0)
+		res = f1 + (f2 - f1) * 6.0 * hue;
+	else if((2.0 * hue) < 1.0)
+		res = f2;
+	else if((3.0 * hue) < 2.0)
+		res = f1 + (f2 - f1) * ((2.0 / 3.0) - hue) * 6.0;
+	else
+		res = f1;
+	return res;
+}
+
+vec3 hsl2rgb(vec3 hsl) {
+	vec3 rgb;
+
+	if(hsl.y == 0.0) {
+		rgb = vec3(hsl.z); // Luminance
+	} else {
+		float f2;
+
+		if(hsl.z < 0.5)
+			f2 = hsl.z * (1.0 + hsl.y);
+		else
+			f2 = hsl.z + hsl.y - hsl.y * hsl.z;
+
+		float f1 = 2.0 * hsl.z - f2;
+
+		rgb.r = hue2rgb(f1, f2, hsl.x + (1.0 / 3.0));
+		rgb.g = hue2rgb(f1, f2, hsl.x);
+		rgb.b = hue2rgb(f1, f2, hsl.x - (1.0 / 3.0));
+	}
+	return rgb;
+}
+
+vec3 hsl2rgb(float h, float s, float l) {
+	return hsl2rgb(vec3(h, s, l));
 }
 
 void main() {
@@ -136,12 +182,18 @@ void main() {
 	gl_FragColor.rgb = vec4(1.0, 1.0, 1.0, 1.0);
 	#endif
 
-	float bm = draw_line(vViewPosition.xy * fbm(vViewPosition * 0.1 + uTime * 0.001), 0.1);
-	float bm1 = draw_line(vViewPosition.yz * fbm(vViewPosition * 0.5 + uTime * 0.001), 0.3);
+	float bm = draw_line(cnoise(vUv + uTime * 0.01) * vec2(0.5, 0.5), 2.0);
 
-	// vec4 mix_color = vec4(gl_FragColor.xyz, smoothstep(bm, bm1 * 0.1, gl_FragColor.x));
-	vec3 mix_color = mix(gl_FragColor.rgb, vec3(0.0, 0.0, 0.0), 1.0 - bm);
+	float noise = cnoise(vViewPosition.xyz * 2.0 + uTime);
 
-	gl_FragColor = vec4(mix_color, 1.0);
+	float h = bm;
+	float s = 1.0;
+	float l = 0.5;
+
+	vec2 center = vec2(0.5, 0.5);
+
+	vec2 pos = mod(vUv * 8.0, 1.0);
+
+	gl_FragColor.a = 1.0 - step(abs(sin(uTime)) / 2.0, distance(pos, center));
 	gl_FragColor = linearToOutputTexel(gl_FragColor);
 }
