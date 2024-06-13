@@ -5,6 +5,6 @@ import HumanShader from './human/index';
 export const registerShader = () => {
   extend({
     ScreenShader,
-    HumanShader
+    HumanShader,
   });
 };

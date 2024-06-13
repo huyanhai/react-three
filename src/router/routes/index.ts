@@ -74,6 +74,14 @@ export const routes: ISyncRoute[] = [
           title: 'human',
           auth: false
         }
+      },
+      {
+        path: 'icosahedron',
+        component: lazy(() => import('@/views/icosahedron/index')),
+        meta: {
+          title: 'icosahedron',
+          auth: false
+        }
       }
     ]
   },

@@ -20,7 +20,7 @@ const Shader1 = () => {
         <GizmoHelper alignment="bottom-right" margin={[100, 100]}>
           <GizmoViewport labelColor="white" axisHeadScale={1} />
         </GizmoHelper>
-        {/* <OrbitControls /> */}
+        <OrbitControls />
       </Canvas>
     </div>
   );
