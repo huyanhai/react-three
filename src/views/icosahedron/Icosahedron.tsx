@@ -11,15 +11,45 @@ const Icosahedron = () => {
   const { nodes } = useGLTF('test.glb');
   const i = new THREE.IcosahedronGeometry(1, 0);
 
-  const { lightPosition, lightColor } = useControls({
+  const {
+    lightPosition,
+    lightColor,
+    lightPosition1,
+    lightColor1,
+    lightColor2,
+    lightPosition2
+  } = useControls({
     lightPosition: {
-      value: [5, 5, 5]
+      value: [
+        Math.sin((Math.PI / 3) * 2) * 10,
+        Math.sin((Math.PI / 3) * 2) * 10,
+        Math.sin((Math.PI / 3) * 2) * 10
+      ]
     },
     lightColor: {
-      value: "red"
+      value: 'red'
+    },
+    lightPosition1: {
+      value: [
+        Math.sin((Math.PI / 2) * 2) * 10,
+        Math.sin((Math.PI / 2) * 2) * 10,
+        Math.sin((Math.PI / 2) * 2) * 10
+      ]
+    },
+    lightColor1: {
+      value: 'blue'
+    },
+    lightPosition2: {
+      value: [
+        Math.sin(Math.PI * 2) * 10,
+        Math.sin(Math.PI * 2) * 10,
+        Math.sin(Math.PI * 2) * 10
+      ]
+    },
+    lightColor2: {
+      value: 'green'
     }
   });
-
 
   const [time, setTime] = useState(0);
   const [cameraPosition, setCameraPosition] = useState(
@@ -35,13 +65,12 @@ const Icosahedron = () => {
 
   return (
     <>
-      {/* <spotLight color={lightColor} position={lightPosition} /> */}
       <mesh
         geometry={nodes.dragon.geometry}
         position={[0, 0, 0]}
         rotateY={Math.PI / 2}
       >
-        <sphereGeometry args={[1, 100, 100]} />
+        <sphereGeometry args={[1, 300, 300]} />
         <shaderMaterial
           args={[
             {
@@ -60,6 +89,18 @@ const Icosahedron = () => {
                 },
                 uLightColor: {
                   value: new THREE.Color(lightColor)
+                },
+                uLightPosition1: {
+                  value: lightPosition1
+                },
+                uLightColor1: {
+                  value: new THREE.Color(lightColor1)
+                },
+                uLightPosition2: {
+                  value: lightPosition1
+                },
+                uLightColor2: {
+                  value: new THREE.Color(lightColor1)
                 }
               },
               defines: {
@@ -69,6 +110,7 @@ const Icosahedron = () => {
           ]}
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
+          // glslVersion={THREE.GLSL3}
         />
       </mesh>
     </>
