@@ -1,25 +1,43 @@
 uniform float uTime;
+uniform vec3 uCameraPosition;
+uniform vec3 uLightPosition;
+uniform vec3 uLightColor;
 
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
-uniform sampler2D u_tex0;
-uniform vec3 u_camera;
+uniform sampler2D uTexture;
 
-#define GLSLVIEWER 311
-#define LIGHT_SHADOWMAP u_lightShadowMap
-#define LIGHT_SHADOWMAP_SIZE 2048.0
-#define MODEL_NAME_DRAGON 
-#define MODEL_PRIMITIVE_TRIANGLES 
-#define MODEL_VERTEX_COLOR v_color
-#define MODEL_VERTEX_NORMAL v_normal
-#define PLATFORM_OSX 
-
-#include "lygia/lighting/sphereMap.glsl"
+#include "lygia/lighting/diffuse.glsl";
+#include "lygia/lighting/pbr.glsl";
+#include "lygia/lighting/material/new.glsl"
+#include "lygia/color/tonemap.glsl";
 
 void main(void) {
-	vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
-	color = sphereMap(u_tex0, vNormal, u_camera);
+	vec4 final = vec4(0.0, 0.0, 0.0, 1.0);
 
-	gl_FragColor = color;
+
+	vec3 normal = normalize(vNormal);
+	vec3 lightDir = normalize(uLightPosition - vPosition);
+	vec3 viewDir = normalize(uCameraPosition - vPosition);
+
+	float diffuseTerm = diffuse(lightDir, vPosition, viewDir, 0.0);
+	final.rgb = diffuseTerm * uLightColor;
+
+	Material material = materialNew();
+	material.albedo.rgb = final.rgb;
+	// material.color.rgb = final.rgb;
+	// 环境光
+	// material.emissive.rgb = final.rgb;
+	material.normal = normalize(vNormal + uTime * 0.01);
+	// material.metallic = .0;
+	// material.roughness = 0.;
+	material.clearCoat = .0;
+	material.clearCoatRoughness = 0.1;
+	material.ambientOcclusion = 1.0;
+
+	final = pbr(material);
+	final.rgb = tonemap(final.rgb);
+
+	gl_FragColor = final;
 }

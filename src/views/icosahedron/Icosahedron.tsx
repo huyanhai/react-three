@@ -4,20 +4,44 @@ import fragmentShader from '@/shaders/sphere/glsl/fragmentShader.frag';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGLTF, useTexture } from '@react-three/drei';
+import { useControls } from 'leva';
 
 const Icosahedron = () => {
   const texture = useTexture('sem-0033.jpg');
   const { nodes } = useGLTF('test.glb');
   const i = new THREE.IcosahedronGeometry(1, 0);
 
+  const { lightPosition, lightColor } = useControls({
+    lightPosition: {
+      value: [5, 5, 5]
+    },
+    lightColor: {
+      value: "red"
+    }
+  });
+
+
   const [time, setTime] = useState(0);
-  useFrame(({ clock }) => {
+  const [cameraPosition, setCameraPosition] = useState(
+    new THREE.Vector3(0, 0, 0)
+  );
+
+  useFrame(({ clock, camera }) => {
     setTime(clock.getElapsedTime());
+    setCameraPosition(
+      new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z)
+    );
   });
 
   return (
     <>
-      <mesh geometry={nodes.dragon.geometry} position={[0, 0, 0]} rotateY={Math.PI / 2}>
+      {/* <spotLight color={lightColor} position={lightPosition} /> */}
+      <mesh
+        geometry={nodes.dragon.geometry}
+        position={[0, 0, 0]}
+        rotateY={Math.PI / 2}
+      >
+        <sphereGeometry args={[1, 100, 100]} />
         <shaderMaterial
           args={[
             {
@@ -25,11 +49,17 @@ const Icosahedron = () => {
                 uTime: {
                   value: time
                 },
-                u_tex0: {
+                uTexture: {
                   value: texture
                 },
-                u_camera: {
-                  value: new THREE.Vector3(-1.43923, 0.891203, 1.98093)
+                uCameraPosition: {
+                  value: cameraPosition
+                },
+                uLightPosition: {
+                  value: lightPosition
+                },
+                uLightColor: {
+                  value: new THREE.Color(lightColor)
                 }
               },
               defines: {
