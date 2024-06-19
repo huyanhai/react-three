@@ -7,7 +7,7 @@ import { useGLTF, useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 
 const Icosahedron = () => {
-  const texture = useTexture('sem-0033.jpg');
+  const [texture, matcap] = useTexture(['sem-0033.jpg', 'matcap.png']);
   const { nodes } = useGLTF('test.glb');
   const i = new THREE.IcosahedronGeometry(1, 0);
 
@@ -86,8 +86,10 @@ const Icosahedron = () => {
         position={[0, 0, 0]}
         rotateY={Math.PI / 2}
       >
-        <sphereGeometry args={[1, 300, 300]} />
-        <shaderMaterial
+        {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
+        {/* <sphereGeometry args={[1, 32, 32]} /> */}
+        <torusGeometry args={[10, 3, 200, 100]} />
+        {/* <shaderMaterial
           args={[
             {
               uniforms: {
@@ -127,6 +129,11 @@ const Icosahedron = () => {
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
           // glslVersion={THREE.GLSL3}
+        /> */}
+        <meshMatcapMaterial
+          matcap={matcap}
+          displacementScale={5}
+          normalScale={new THREE.Vector2(0.1, 0.5)}
         />
       </mesh>
     </>

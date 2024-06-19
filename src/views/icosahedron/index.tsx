@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import React from 'react';
 import Render from './Render';
-import { Environment } from '@react-three/drei';
+import { Environment, OrbitControls } from '@react-three/drei';
 
 const Icosahedron = () => {
   return (
@@ -9,6 +9,7 @@ const Icosahedron = () => {
       <color args={['#000']} attach="background" />
       <Environment files={'studio_small_09_4k.exr'} />
       <Render />
+      <OrbitControls />
     </Canvas>
   );
 };

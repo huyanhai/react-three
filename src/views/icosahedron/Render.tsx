@@ -5,7 +5,6 @@ import Icosahedron from './Icosahedron';
 const Render = () => {
   return (
     <>
-      <OrbitControls />
       <Icosahedron />
     </>
   );
