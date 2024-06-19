@@ -13,10 +13,10 @@ void main() {
 
     vec3 myPosition = position;
 
-    // vec3 ct = vec3(vNormal * .2 + uTime * 0.05);
+    vec3 ct = vec3(vNormal * .2 + uTime * 0.05);
 
-    // float n = fbm(ct) * 0.5 + 0.5;
-    // myPosition *= n;
+    float n = fbm(ct) * 0.5 + 0.5;
+    myPosition *= n;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(myPosition, 1.0);
 

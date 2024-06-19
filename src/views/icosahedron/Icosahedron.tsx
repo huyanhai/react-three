@@ -21,9 +21,9 @@ const Icosahedron = () => {
   } = useControls({
     lightPosition: {
       value: [
-        Math.sin((Math.PI / 3) * 2) * 10,
-        Math.sin((Math.PI / 3) * 2) * 10,
-        Math.sin((Math.PI / 3) * 2) * 10
+        Math.sin((Math.PI / 3) * 2) * 5,
+        0,
+        Math.cos((Math.PI / 3) * 2) * 5
       ]
     },
     lightColor: {
@@ -31,9 +31,9 @@ const Icosahedron = () => {
     },
     lightPosition1: {
       value: [
-        Math.sin((Math.PI / 2) * 2) * 10,
-        Math.sin((Math.PI / 2) * 2) * 10,
-        Math.sin((Math.PI / 2) * 2) * 10
+        Math.sin((Math.PI / 3) * 4) * 5,
+        0,
+        Math.cos((Math.PI / 3) * 4) * 5
       ]
     },
     lightColor1: {
@@ -41,9 +41,9 @@ const Icosahedron = () => {
     },
     lightPosition2: {
       value: [
-        Math.sin(Math.PI * 2) * 10,
-        Math.sin(Math.PI * 2) * 10,
-        Math.sin(Math.PI * 2) * 10
+        Math.sin((Math.PI / 3) * 6) * 5,
+        0,
+        Math.cos((Math.PI / 3) * 6) * 5
       ]
     },
     lightColor2: {
@@ -65,6 +65,22 @@ const Icosahedron = () => {
 
   return (
     <>
+      {/* <mesh position={lightPosition}>
+        <meshBasicMaterial color={lightColor} />
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+      </mesh>
+      <mesh position={lightPosition1}>
+        <meshBasicMaterial color={lightColor1} />
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+      </mesh>
+      <mesh position={lightPosition2}>
+        <meshBasicMaterial color={lightColor2} />
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+      </mesh>
+      <mesh position={[0, 0, 0]}>
+        <meshBasicMaterial color={'red'} />
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+      </mesh> */}
       <mesh
         geometry={nodes.dragon.geometry}
         position={[0, 0, 0]}
@@ -97,10 +113,10 @@ const Icosahedron = () => {
                   value: new THREE.Color(lightColor1)
                 },
                 uLightPosition2: {
-                  value: lightPosition1
+                  value: lightPosition2
                 },
                 uLightColor2: {
-                  value: new THREE.Color(lightColor1)
+                  value: new THREE.Color(lightColor2)
                 }
               },
               defines: {
