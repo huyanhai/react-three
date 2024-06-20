@@ -11,12 +11,7 @@ void main() {
     vUv = uv;
     vNormal = normal;
     vPosition = position;
-    
-    vec3 viewDir = normalize( position );
-	vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );
-	vec3 y = cross( viewDir, x );
 
-    vPoint = vec2( dot( x, normal ), dot( y, normal ) ) * 0.495 + 0.5;
     vec3 myPosition = position;
 
     // vec3 ct = vec3(vNormal * .2 + uTime * 0.05);

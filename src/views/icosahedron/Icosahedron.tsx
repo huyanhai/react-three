@@ -88,8 +88,8 @@ const Icosahedron = () => {
       >
         {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
         {/* <sphereGeometry args={[1, 32, 32]} /> */}
-        {/* <torusGeometry args={[10, 3, 200, 100]} /> */}
-        <planeGeometry args={[50, 50]} />
+        <torusGeometry args={[10, 3, 200, 100]} />
+        {/* <planeGeometry args={[50, 50]} /> */}
         <shaderMaterial
           args={[
             {
