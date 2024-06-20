@@ -88,8 +88,9 @@ const Icosahedron = () => {
       >
         {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
         {/* <sphereGeometry args={[1, 32, 32]} /> */}
-        <torusGeometry args={[10, 3, 200, 100]} />
-        {/* <shaderMaterial
+        {/* <torusGeometry args={[10, 3, 200, 100]} /> */}
+        <planeGeometry args={[50, 50]} />
+        <shaderMaterial
           args={[
             {
               uniforms: {
@@ -97,7 +98,7 @@ const Icosahedron = () => {
                   value: time
                 },
                 uTexture: {
-                  value: texture
+                  value: matcap
                 },
                 uCameraPosition: {
                   value: cameraPosition
@@ -129,12 +130,12 @@ const Icosahedron = () => {
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
           // glslVersion={THREE.GLSL3}
-        /> */}
-        <meshMatcapMaterial
+        />
+        {/* <meshMatcapMaterial
           matcap={matcap}
           displacementScale={5}
           normalScale={new THREE.Vector2(0.1, 0.5)}
-        />
+        /> */}
       </mesh>
     </>
   );
