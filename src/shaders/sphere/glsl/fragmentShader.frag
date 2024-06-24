@@ -56,36 +56,6 @@ vec2 matcapUv() {
 	return vec2(dot(x, vNormal), dot(y, vNormal)) * 0.495 + 0.5;
 }
 
-vec3 light() {
-
-	vec3 u_MaterialColor = vec3(1.0);
-
-	vec3 lightDir = normalize(uLightPosition - vPosition);
-	vec3 lightDir1 = normalize(uLightPosition1 - vPosition);
-	vec3 lightDir2 = normalize(uLightPosition2 - vPosition);
-
-	vec3 viewDir = normalize(uCameraPosition - vPosition);
-
-	float diffuseTerm = diffuse(lightDir, vNormal, viewDir, 0.);
-	 // 计算光源方向
-	vec3 lightDir = normalize(uLightPosition - gl_FragCoord.xyz);
-
-    // 计算漫反射光照
-	float diff = max(dot(n, lightDir), 0.0); // 仅考虑正面光照
-
-    // 计算镜面反射（简化版）
-	vec3 viewDir = normalize(-(gl_FragCoord.xyz));
-	vec3 reflectDir = reflect(-lightDir, n);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32); // 镜面高光
-
-    // 计算最终颜色
-	vec3 objectColor = u_MaterialColor * diff * uLightColor;
-	vec3 specularColor = vec3(1.0) * spec * uLightColor; // 假设白色高光
-
-    // 将漫反射和镜面反射颜色与 MatCap 颜色结合
-	return objectColor + specularColor;
-}
-
 void main(void) {
 
 	vec4 final = vec4(0.0, 0.0, 0.0, 1.0);
@@ -100,23 +70,7 @@ void main(void) {
 	float diffuseTerm1 = diffuse(lightDir1, vNormal, viewDir, 0.);
 	float diffuseTerm2 = diffuse(lightDir2, vNormal, viewDir, 0.);
 
-	// final.rgb = diffuseTerm * uLightColor + diffuseTerm1 * uLightColor1 + diffuseTerm2 * uLightColor2;
 
-	Material material = materialNew();
-	// material.albedo.rgb = final.rgb;
-	// 环境光
-	// material.emissive.rgb = final.rgb;
-	// material.normal = vNormal;
-	// material.metallic = 0.9;
-	// material.roughness = .0;
-	// material.ambientOcclusion = 1.0;
-
-	// final = pbr(material);
-
-	// final = linear2gamma(final);
-
-	// final = texture2D(uTexture, vPoint);
-	final.rgb = raymarchCast(uCameraPosition, vNormal).rgb;
 
     // 使用 MatCap 纹理来获取颜色
 	vec4 matcapColor = texture2D(uTexture, matcapUv());
@@ -124,5 +78,32 @@ void main(void) {
 	// 融合
 	// smin()
 
-	gl_FragColor = vec4(light() * matcapColor.rgb, matcapColor.a);
+	// 光照
+	// 一个叫做环境光（ambient），一个叫做漫反射光（diffuse），一个叫做镜面反射光（specular）
+	// color = ambient + diffuse + specular
+
+	// 环境光的计算
+
+	vec3 result = vec3(1.0);
+
+	// 环境光 - 光照颜色*光照强度
+	vec3 _ambient = uLightColor * 0.5;
+
+	// 漫反射
+	vec3 _normal = normalize(vNormal);
+	vec3 _lightDir = normalize(uLightPosition - vPosition); // 灯光到物体顶点的距离
+	float _diff = max(dot(_lightDir, _normal), 0.0);
+	vec3 _diffuse = _diff * uLightColor;
+
+	// 镜面反射
+	float _specularStrength = 1.0; // 镜面反射强度
+	vec3 _reflect = normalize(reflect(-_lightDir, _normal));
+	vec3 _viewDir = normalize(uCameraPosition - vPosition); //相机到物体顶点的距离
+	float _specular = pow(max(dot(_reflect, _viewDir), 0.0), 100.0);
+	vec3 _specularColor = uLightColor * _specularStrength * _specular;
+
+	// 最终颜色
+	result = _ambient + _diffuse + _specularColor;
+
+	gl_FragColor = matcapColor * vec4(pow((result), vec3(1.0 / 2.2)), 1.0);
 }

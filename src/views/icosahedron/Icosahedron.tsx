@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useState, useMemo } from 'react';
+import React, {
+  useCallback,
+  useRef,
+  useState,
+  useMemo,
+  useEffect
+} from 'react';
 import vertexShader from '@/shaders/sphere/glsl/vertexShader.vert';
 import fragmentShader from '@/shaders/sphere/glsl/fragmentShader.frag';
 import { useFrame } from '@react-three/fiber';
@@ -7,9 +13,12 @@ import { useGLTF, useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 
 const Icosahedron = () => {
-  const [texture, matcap] = useTexture(['sem-0033.jpg', 'matcap.png']);
+  const [texture, matcap] = useTexture(['sem-0033.jpg', 'matcap1.png']);
   const { nodes } = useGLTF('test.glb');
   const i = new THREE.IcosahedronGeometry(1, 0);
+  const shader = useRef();
+
+  const [all, setAll] = useState({});
 
   const {
     lightPosition,
@@ -63,6 +72,11 @@ const Icosahedron = () => {
     );
   });
 
+  const beforeCompile = (shader: any) => {
+    console.log('shader', shader.uniforms);
+    shader.uniforms && setAll(shader.uniforms);
+  };
+
   return (
     <>
       {/* <mesh position={lightPosition}>
@@ -82,6 +96,7 @@ const Icosahedron = () => {
         <boxGeometry args={[0.5, 0.5, 0.5]} />
       </mesh> */}
       <mesh
+        ref={shader}
         geometry={nodes.dragon.geometry}
         position={[0, 0, 0]}
         rotateY={Math.PI / 2}
@@ -120,7 +135,21 @@ const Icosahedron = () => {
                 },
                 uLightColor2: {
                   value: new THREE.Color(lightColor2)
-                }
+                },
+                color: {
+                  value: new THREE.Color(lightColor2)
+                },
+                metalness: {
+                  value: 1.0
+                },
+                roughness: {
+                  value: 0.0
+                },
+                emissive: {
+                  value: new THREE.Color(0xffffff)
+                },
+
+                
               },
               defines: {
                 COUNT: 0.25
@@ -129,13 +158,18 @@ const Icosahedron = () => {
           ]}
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
-          // glslVersion={THREE.GLSL3}
         />
         {/* <meshMatcapMaterial
           matcap={matcap}
           displacementScale={5}
           normalScale={new THREE.Vector2(0.1, 0.5)}
         /> */}
+        {/* <meshPhysicalMaterial
+        onBeforeCompile={beforeCompile}
+        color={'red'}
+        metalness={1.0}
+        roughness={0}
+      /> */}
       </mesh>
     </>
   );
