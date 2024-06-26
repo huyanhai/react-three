@@ -1,74 +1,126 @@
 uniform float uTime;
 uniform vec3 uCameraPosition;
 
-uniform vec3 uLightPosition;
-uniform vec3 uLightColor;
-uniform vec3 uLightPosition1;
-uniform vec3 uLightColor1;
-uniform vec3 uLightPosition2;
-uniform vec3 uLightColor2;
-
 uniform sampler2D uTexture;
+uniform sampler2D uEnv;
 
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
 
-vec2 matcapUv() {
-	vec3 viewDir = normalize(vPosition);
-	vec3 x = normalize(vec3(viewDir.z, 0.0, -viewDir.x));
-	vec3 y = cross(viewDir, x);
+// material parameters
+// 颜色
+uniform vec3 albedo;
+// 金属度
+uniform float metallic;
+// 粗糙度
+uniform float roughness;
+// 凹凸
+uniform float ao;
 
-	return vec2(dot(x, vNormal), dot(y, vNormal)) * 0.495 + 0.5;
+// 使用贴图代替
+// vec3 albedo = pow(texture(albedoMap, vUv).rgb, 2.2);
+// float metallic = texture(metallicMap, vUv).r;
+// float roughness = texture(roughnessMap, vUv).r;
+// float ao = texture(aoMap, vUv).r;
+
+// lights
+uniform vec3 lightPositions[4];
+uniform vec3 lightColors[4];
+
+const float PI = 3.14159265359;
+// --------------------------------------------------------------------
+float DistributionGGX(vec3 N, vec3 H, float roughness) {
+	float a = roughness * roughness;
+	float a2 = a * a;
+	float NdotH = max(dot(N, H), 0.0);
+	float NdotH2 = NdotH * NdotH;
+
+	float nom = a2;
+	float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+	denom = PI * denom * denom;
+
+	return nom / max(denom, 0.001); // prevent divide by zero for roughness=0.0 and NdotH=1.0
 }
+// --------------------------------------------------------------------
+float GeometrySchlickGGX(float NdotV, float roughness) {
+	float r = (roughness + 1.0);
+	float k = (r * r) / 8.0;
 
+	float nom = NdotV;
+	float denom = NdotV * (1.0 - k) + k;
 
-vec3 light () {
-
-	 // ambient lighting (global illuminance)
-  vec3 ambient = vec3(0.5, 0.5, 0.5); // color - grey
-
-  // diffuse (lambertian) lighting
-  // lightColor, lightSource, normal, diffuseStrength
-  vec3 normal = normalize(vNormal);
-  vec3 lightColor = uLightColor; // color - white
-  vec3 lightSource = uLightPosition; // coord - (1, 0, 0)
-  float diffuseStrength = max(0.0, dot(lightSource, normal));
-  vec3 diffuse = diffuseStrength * lightColor;
-
-  // specular light
-  // lightColor, lightSource, normal, specularStrength, viewSource
-  vec3 cameraSource = uCameraPosition;
-  vec3 viewSource = normalize(cameraSource);
-  vec3 reflectSource = normalize(reflect(-lightSource, normal));
-  float specularStrength = max(0.0, dot(viewSource, reflectSource));
-  specularStrength = pow(specularStrength, 256.0);
-  vec3 specular = specularStrength * lightColor;
-
-  // lighting = ambient + diffuse + specular
-  vec3 lighting = uLightColor; // color - black
-  // lighting = ambient;
-  // lighting = ambient * 0.0 + diffuse;
-  // lighting = ambient * 0.0 + diffuse * 0.0 + specular;
-  lighting = ambient * 0.0 + diffuse * 0.5 + specular * 0.5;
-
-  return lighting;
+	return nom / denom;
 }
+// --------------------------------------------------------------------
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+	float NdotV = max(dot(N, V), 0.0);
+	float NdotL = max(dot(N, L), 0.0);
+	float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+	float ggx1 = GeometrySchlickGGX(NdotL, roughness);
 
-void main(void) {
+	return ggx1 * ggx2;
+}
+// --------------------------------------------------------------------
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+// --------------------------------------------------------------------
+void main() {
+	vec3 N = normalize(vNormal);
+	vec3 V = normalize(uCameraPosition - vPosition);
 
+    // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
+    // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
+	vec3 F0 = vec3(0.04);
+	F0 = mix(F0, albedo, metallic);
 
+    // reflectance equation
+	vec3 Lo = vec3(0.0);
+	for(int i = 0; i < 4; ++i) {
+        // calculate per-light radiance
+		vec3 L = normalize(lightPositions[i] - vPosition);
+		vec3 H = normalize(V + L);
+		float distance = length(lightPositions[i] - vPosition);
+		float attenuation = 1.0 / (distance * distance);
+		vec3 radiance = lightColors[i] * attenuation;
 
-    // 使用 MatCap 纹理来获取颜色
-	vec4 matcapColor = texture2D(uTexture, matcapUv());
+        // Cook-Torrance BRDF
+		float NDF = DistributionGGX(N, H, roughness);
+		float G = GeometrySmith(N, V, L, roughness);
+		vec3 F = fresnelSchlick(clamp(dot(H, V), 0.0, 1.0), F0);
 
-	// 融合
-	// smin()
+		vec3 nominator = NDF * G * F;
+		float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+		vec3 specular = nominator / max(denominator, 0.001); // prevent divide by zero for NdotV=0.0 or NdotL=0.0
 
-	// 光照
-	// 环境光（ambient），漫反射光（diffuse），镜面反射光（specular）
-	// color = ambient + diffuse + specular
+        // kS is equal to Fresnel
+		vec3 kS = F;
+        // for energy conservation, the diffuse and specular light can't
+        // be above 1.0 (unless the surface emits light); to preserve this
+        // relationship the diffuse component (kD) should equal 1.0 - kS.
+		vec3 kD = vec3(1.0) - kS;
+        // multiply kD by the inverse metalness such that only non-metals 
+        // have diffuse lighting, or a linear blend if partly metal (pure metals
+        // have no diffuse light).
+		kD *= 1.0 - metallic;	  
 
-	
-	gl_FragColor = matcapColor * vec4(light(), 1.0);
+        // scale light by NdotL
+		float NdotL = max(dot(N, L), 0.0);        
+
+        // add to outgoing radiance Lo
+		Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+	}   
+
+    // 环境光
+	vec3 ambient = vec3(0.03) * albedo * ao;
+
+	vec3 color = ambient + Lo;
+
+    // HDR tonemapping
+	color = color / (color + vec3(1.0));
+    // gamma correct
+	color = pow(color, vec3(1.0 / 2.2));
+
+	gl_FragColor = vec4(color, 1.0);
 }

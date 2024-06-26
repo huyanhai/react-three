@@ -13,20 +13,18 @@ import { useGLTF, useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 
 const Icosahedron = () => {
-  const [texture, matcap] = useTexture(['sem-0033.jpg', 'matcap1.png']);
+  const [matcap, env] = useTexture(['sem-0033.jpg', 'hdr.png']);
   const { nodes } = useGLTF('test.glb');
   const i = new THREE.IcosahedronGeometry(1, 0);
-  const shader = useRef();
-
-  const [all, setAll] = useState({});
+  const shader = useRef<THREE.Mesh>();
 
   const {
     lightPosition,
-    lightColor,
     lightPosition1,
+    lightPosition2,
+    lightColor,
     lightColor1,
-    lightColor2,
-    lightPosition2
+    lightColor2
   } = useControls({
     lightPosition: {
       value: [
@@ -70,16 +68,13 @@ const Icosahedron = () => {
     setCameraPosition(
       new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z)
     );
-  });
 
-  const beforeCompile = (shader: any) => {
-    console.log('shader', shader.uniforms);
-    shader.uniforms && setAll(shader.uniforms);
-  };
+    shader.current.rotation.y += 0.01;
+  });
 
   return (
     <>
-      {/* <mesh position={lightPosition}>
+      <mesh position={lightPosition}>
         <meshBasicMaterial color={lightColor} />
         <boxGeometry args={[0.5, 0.5, 0.5]} />
       </mesh>
@@ -91,10 +86,6 @@ const Icosahedron = () => {
         <meshBasicMaterial color={lightColor2} />
         <boxGeometry args={[0.5, 0.5, 0.5]} />
       </mesh>
-      <mesh position={[0, 0, 0]}>
-        <meshBasicMaterial color={'red'} />
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
-      </mesh> */}
       <mesh
         ref={shader}
         geometry={nodes.dragon.geometry}
@@ -102,8 +93,8 @@ const Icosahedron = () => {
         rotateY={Math.PI / 2}
       >
         {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
-        {/* <sphereGeometry args={[1, 32, 32]} /> */}
-        <torusGeometry args={[10, 3, 200, 100]} />
+        <sphereGeometry args={[3, 32, 32]} />
+        {/* <torusGeometry args={[10, 3, 200, 100]} /> */}
         {/* <planeGeometry args={[50, 50]} /> */}
         <shaderMaterial
           args={[
@@ -111,6 +102,9 @@ const Icosahedron = () => {
               uniforms: {
                 uTime: {
                   value: time
+                },
+                uEnv: {
+                  value: env
                 },
                 uTexture: {
                   value: matcap
@@ -124,32 +118,46 @@ const Icosahedron = () => {
                 uLightColor: {
                   value: new THREE.Color(lightColor)
                 },
-                uLightPosition1: {
-                  value: lightPosition1
-                },
-                uLightColor1: {
-                  value: new THREE.Color(lightColor1)
-                },
-                uLightPosition2: {
-                  value: lightPosition2
-                },
-                uLightColor2: {
-                  value: new THREE.Color(lightColor2)
-                },
-                color: {
-                  value: new THREE.Color(lightColor2)
-                },
-                metalness: {
-                  value: 1.0
-                },
-                roughness: {
-                  value: 0.0
-                },
-                emissive: {
+                albedo: {
                   value: new THREE.Color(0xffffff)
                 },
-
-                
+                metallic: {
+                  value: .5
+                },
+                roughness: {
+                  value: .5
+                },
+                ao: {
+                  value: 1
+                },
+                lightPositions: {
+                  value: [
+                    new THREE.Vector3(
+                      lightPosition[0],
+                      lightPosition[1],
+                      lightPosition[2]
+                    ),
+                    new THREE.Vector3(
+                      lightPosition1[0],
+                      lightPosition1[1],
+                      lightPosition1[2]
+                    ),
+                    new THREE.Vector3(
+                      lightPosition2[0],
+                      lightPosition2[1],
+                      lightPosition2[2]
+                    ),
+                    new THREE.Vector3(0, 10, 10)
+                  ]
+                },
+                lightColors: {
+                  value: [
+                    new THREE.Color(lightColor),
+                    new THREE.Color(lightColor1),
+                    new THREE.Color(lightColor2),
+                    new THREE.Color('white')
+                  ]
+                }
               },
               defines: {
                 COUNT: 0.25
