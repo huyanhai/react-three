@@ -14,6 +14,8 @@ void main() {
 
     vec3 myPosition = position;
 
+    // modelViewMatrix 模型视图矩阵 模型和相机
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4(myPosition, 1.0);
 
 }

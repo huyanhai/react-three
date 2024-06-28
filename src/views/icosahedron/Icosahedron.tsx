@@ -13,7 +13,7 @@ import { useGLTF, useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 
 const Icosahedron = () => {
-  const [matcap, env] = useTexture(['sem-0033.jpg', 'hdr.png']);
+  const [matcap, env] = useTexture(['matcap.png', 'hdr.png']);
   const { nodes } = useGLTF('test.glb');
   const i = new THREE.IcosahedronGeometry(1, 0);
   const shader = useRef<THREE.Mesh>();
@@ -28,13 +28,13 @@ const Icosahedron = () => {
   } = useControls({
     lightPosition: {
       value: [
-        Math.sin((Math.PI / 3) * 2) * 5,
-        0,
-        Math.cos((Math.PI / 3) * 2) * 5
+        Math.sin((Math.PI / 3) * 2) * 10,
+        Math.sin((Math.PI / 3) * 2) * 10,
+        Math.cos((Math.PI / 3) * 2) * 10
       ]
     },
     lightColor: {
-      value: 'red'
+      value: 'white'
     },
     lightPosition1: {
       value: [
@@ -68,8 +68,6 @@ const Icosahedron = () => {
     setCameraPosition(
       new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z)
     );
-
-    shader.current.rotation.y += 0.01;
   });
 
   return (
@@ -87,14 +85,13 @@ const Icosahedron = () => {
         <boxGeometry args={[0.5, 0.5, 0.5]} />
       </mesh>
       <mesh
-        ref={shader}
         geometry={nodes.dragon.geometry}
         position={[0, 0, 0]}
         rotateY={Math.PI / 2}
       >
         {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
-        <sphereGeometry args={[3, 32, 32]} />
-        {/* <torusGeometry args={[10, 3, 200, 100]} /> */}
+        {/* <sphereGeometry args={[3, 32, 32]} /> */}
+        <torusGeometry args={[10, 3, 200, 100]} ref={shader} />
         {/* <planeGeometry args={[50, 50]} /> */}
         <shaderMaterial
           args={[
@@ -122,10 +119,10 @@ const Icosahedron = () => {
                   value: new THREE.Color(0xffffff)
                 },
                 metallic: {
-                  value: .5
+                  value: 0.5
                 },
                 roughness: {
-                  value: .5
+                  value: 0.5
                 },
                 ao: {
                   value: 1
