@@ -38,9 +38,9 @@ void main() {
 	// vec3 cube = textureCube(uCubeMap);
 
 	// 颜色题图
-	vec3 color = uColor;
+	vec4 color = vec4(uColor, 1.0);
 	// 高光颜色
-	vec3 specularColor = vec3(1.0);
+	vec4 specularColor = vec4(1.0);
 	// 环境题图
 	vec3 envMap = texture2D(uEnv, vUv).rgb;
 
@@ -58,25 +58,21 @@ void main() {
 	// 光线到物体的半径
 	float distance = length(lightPosition - vPosition);
 
-	color = blinnPhoneLight(color, specularColor, lightColor, normal, lightDir, viewDir, uCameraPosition, uCubeMap, roughness, metallic);
+	// 计算漫反射
+	vec4 diffuseCol = diffuse(color, vec4(lightColor, 1.0), normal, lightDir, roughness);
 
-	// 计算折射
-	// refract();
+	// 反射颜色
+	vec4 specularCol = specular(specularColor, lightDir, normal, viewDir, metallic);
 
-	// 折射方向向量
-	// float ior = 1.52; // 折射率
-	// vec3 refractedDirection = refract(uCameraPosition, normal, ior);
-	// // 折射后看到的颜色
-	// vec4 color2 = texture(uCubeMap, refractedDirection);
+	// 折射颜色
+	vec4 refractCol = refractColor(normal, uCameraPosition, uCubeMap);
 
-	// // 控制折射的透明度
-	// color2.a *= 0.1;
+	// 菲尼尔
+	float fresnelNum = fresnel(normal, viewDir);
 
-	// float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 5.0);
-
-	// vec4 finallyColor = mix(color2, vec4(color, 1.0), fresnel);
+	vec4 finallyColor = diffuseCol + specularCol * (1.0 - fresnelNum) + refractCol;
 
 	// gl_FragColor屏幕上的每一个像素
-	gl_FragColor = vec4(color, 1.0);
+	gl_FragColor = finallyColor;
 
 }
