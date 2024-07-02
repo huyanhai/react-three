@@ -9,7 +9,7 @@ import {
 
 const Icosahedron = () => {
   return (
-    <Canvas camera={{ position: [0, 0, 30] }}>
+    <Canvas camera={{ position: [0, 0, -30] }}>
       <color args={['#000']} attach="background" />
       <Environment files={'studio_small_09_4k.exr'} />
       <Render />

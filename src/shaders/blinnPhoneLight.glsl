@@ -36,6 +36,23 @@ vec3 ambient(vec3 color) {
 	return color * ambientStrength;
 }
 
+// 折射颜色
+vec4 refractColor(vec3 normal, vec3 uCameraPosition, samplerCube uCubeMap) {
+	float ior = 1.52; // 折射率
+	// 折射方向向量
+	vec3 refractedDirection = refract(uCameraPosition, normal, ior);
+
+	// 折射后看到的颜色
+	vec4 refractedColor = texture(uCubeMap, refractedDirection);
+
+	return refractedColor;
+}
+
+// fresnel
+float fresnel(vec3 normal, vec3 viewDir) {
+	return pow(1.0 - max(dot(normal, viewDir), 0.0), 5.0);
+}
+
 /*
 	Phong光照模型
 	color: 物体颜色
@@ -47,12 +64,16 @@ vec3 ambient(vec3 color) {
 	roughness: 粗糙度
 	shininess: 光泽度 - 值越大，光点越强
 */
-vec3 blinnPhoneLight(vec3 color, vec3 specularColor, vec3 lightColor, vec3 normal, vec3 lightDir, vec3 viewDir, float roughness, float shininess) {
-	vec3 diff = diffuse(color, lightColors[0], normal, lightDir, roughness);
+vec3 blinnPhoneLight(vec3 color, vec3 specularColor, vec3 lightColor, vec3 normal, vec3 lightDir, vec3 viewDir, vec3 uCameraPosition, samplerCube uCubeMap, float roughness, float shininess) {
+	vec3 diff = diffuse(color, lightColor, normal, lightDir, roughness);
 
 	vec3 spec = specular(specularColor, lightDir, normal, viewDir, shininess);
-	
+
 	vec3 amb = ambient(color);
 
-	return diff + spec + amb;
+	vec4 refract = refractColor(normal, uCameraPosition, uCubeMap);
+
+	float fresnelNum = fresnel(normal, viewDir);
+
+	return diff + amb * mix(refract.rgb, spec, fresnelNum);
 }

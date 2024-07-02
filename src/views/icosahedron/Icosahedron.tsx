@@ -9,23 +9,23 @@ import vertexShader from '@/shaders/sphere/glsl/vertexShader.vert';
 import fragmentShader from '@/shaders/sphere/glsl/fragmentShader.frag';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useGLTF, useTexture } from '@react-three/drei';
+import { useCubeTexture, useGLTF, useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 
 const Icosahedron = () => {
+  const cubeMap = useCubeTexture(
+    ['px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'],
+    {
+      path: 'cube/'
+    }
+  );
   const [matcap, env] = useTexture(['matcap.png', 'hdr.png']);
   const { nodes } = useGLTF('test.glb');
-  const i = new THREE.IcosahedronGeometry(1, 0);
-  const shader = useRef<THREE.Mesh>();
 
-  const {
-    lightPosition,
-    lightPosition1,
-    lightPosition2,
-    lightColor,
-    lightColor1,
-    lightColor2
-  } = useControls({
+  const sphere = useRef<THREE.Mesh>();
+  const torus = useRef<THREE.Mesh>();
+
+  const { lightPosition, lightColor, color1, color2 } = useControls({
     lightPosition: {
       value: [
         Math.sin((Math.PI / 3) * 2) * 10,
@@ -36,24 +36,10 @@ const Icosahedron = () => {
     lightColor: {
       value: 'white'
     },
-    lightPosition1: {
-      value: [
-        Math.sin((Math.PI / 3) * 4) * 5,
-        0,
-        Math.cos((Math.PI / 3) * 4) * 5
-      ]
-    },
-    lightColor1: {
+    color1: {
       value: 'blue'
     },
-    lightPosition2: {
-      value: [
-        Math.sin((Math.PI / 3) * 6) * 5,
-        0,
-        Math.cos((Math.PI / 3) * 6) * 5
-      ]
-    },
-    lightColor2: {
+    color2: {
       value: 'green'
     }
   });
@@ -68,6 +54,8 @@ const Icosahedron = () => {
     setCameraPosition(
       new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z)
     );
+    // sphere.current.rotation.y += 0.01;
+    // torus.current.rotation.y += 0.01;
   });
 
   return (
@@ -76,29 +64,24 @@ const Icosahedron = () => {
         <meshBasicMaterial color={lightColor} />
         <boxGeometry args={[0.5, 0.5, 0.5]} />
       </mesh>
-      <mesh position={lightPosition1}>
-        <meshBasicMaterial color={lightColor1} />
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
+      <mesh position={[2, 2, 2]}>
+        <meshBasicMaterial color={'red'} />
+        <boxGeometry args={[1, 1, 1]} />
       </mesh>
-      <mesh position={lightPosition2}>
-        <meshBasicMaterial color={lightColor2} />
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
-      </mesh>
-      <mesh
-        geometry={nodes.dragon.geometry}
-        position={[0, 0, 0]}
-        rotateY={Math.PI / 2}
-      >
-        {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
-        {/* <sphereGeometry args={[3, 32, 32]} /> */}
-        <torusGeometry args={[10, 3, 200, 100]} ref={shader} />
-        {/* <planeGeometry args={[50, 50]} /> */}
+      <mesh position={[10, 0, 0]} ref={torus}>
+        <torusKnotGeometry args={[3, 1, 200, 100]} />
         <shaderMaterial
           args={[
             {
               uniforms: {
                 uTime: {
                   value: time
+                },
+                uCubeMap: {
+                  value: cubeMap
+                },
+                uColor: {
+                  value: new THREE.Color(color1)
                 },
                 uEnv: {
                   value: env
@@ -127,33 +110,15 @@ const Icosahedron = () => {
                 ao: {
                   value: 1
                 },
-                lightPositions: {
-                  value: [
-                    new THREE.Vector3(
-                      lightPosition[0],
-                      lightPosition[1],
-                      lightPosition[2]
-                    ),
-                    new THREE.Vector3(
-                      lightPosition1[0],
-                      lightPosition1[1],
-                      lightPosition1[2]
-                    ),
-                    new THREE.Vector3(
-                      lightPosition2[0],
-                      lightPosition2[1],
-                      lightPosition2[2]
-                    ),
-                    new THREE.Vector3(0, 10, 10)
-                  ]
+                lightPosition: {
+                  value: new THREE.Vector3(
+                    lightPosition[0],
+                    lightPosition[1],
+                    lightPosition[2]
+                  )
                 },
-                lightColors: {
-                  value: [
-                    new THREE.Color(lightColor),
-                    new THREE.Color(lightColor1),
-                    new THREE.Color(lightColor2),
-                    new THREE.Color('white')
-                  ]
+                lightColor: {
+                  value: new THREE.Color(lightColor)
                 }
               },
               defines: {
@@ -163,6 +128,73 @@ const Icosahedron = () => {
           ]}
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
+          transparent
+        />
+      </mesh>
+      <mesh ref={sphere} geometry={nodes.dragon.geometry} position={[0, 0, 0]}>
+        {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
+        <sphereGeometry args={[3, 32, 32]} />
+        {/* <torusGeometry args={[10, 3, 10, 10]} ref={shader} /> */}
+        {/* <planeGeometry args={[50, 50]} /> */}
+        <shaderMaterial
+          args={[
+            {
+              uniforms: {
+                uTime: {
+                  value: time
+                },
+                uEnv: {
+                  value: env
+                },
+                uCubeMap: {
+                  value: cubeMap
+                },
+                uColor: {
+                  value: new THREE.Color(color2)
+                },
+                uTexture: {
+                  value: matcap
+                },
+                uCameraPosition: {
+                  value: cameraPosition
+                },
+                uLightPosition: {
+                  value: lightPosition
+                },
+                uLightColor: {
+                  value: new THREE.Color(lightColor)
+                },
+                albedo: {
+                  value: new THREE.Color(0xffffff)
+                },
+                metallic: {
+                  value: 0.5
+                },
+                roughness: {
+                  value: 0.5
+                },
+                ao: {
+                  value: 1
+                },
+                lightPosition: {
+                  value: new THREE.Vector3(
+                    lightPosition[0],
+                    lightPosition[1],
+                    lightPosition[2]
+                  )
+                },
+                lightColor: {
+                  value: new THREE.Color(lightColor)
+                }
+              },
+              defines: {
+                COUNT: 0.25
+              }
+            }
+          ]}
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          transparent
         />
         {/* <meshMatcapMaterial
           matcap={matcap}
