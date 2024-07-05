@@ -9,12 +9,27 @@ import {
 
 const Icosahedron = () => {
   return (
-    <Canvas camera={{ position: [0, 0, -30] }}>
-      <color args={['#000']} attach="background" />
-      <Environment files={'studio_small_09_4k.exr'} />
+    <Canvas>
+      {/* <color args={['blue']} attach="background" /> */}
+      <Environment
+        files={[
+          'cube/px.jpg',
+          'cube/nx.jpg',
+          'cube/py.jpg',
+          'cube/ny.jpg',
+          'cube/pz.jpg',
+          'cube/nz.jpg'
+        ]}
+        background // 将环境作为背景显示
+      />
       <Render />
       {/* 正交相机 */}
-      <OrbitControls />
+      <OrbitControls
+        // autoRotateSpeed={0.85}
+        // zoomSpeed={0.75}
+        // minPolarAngle={Math.PI / 2.5}
+        // maxPolarAngle={Math.PI / 2.55}
+      />
 
       {/* 透视相机-近大远小 */}
       {/* <PerspectiveCamera /> */}

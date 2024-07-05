@@ -19,7 +19,12 @@ const Icosahedron = () => {
       path: 'cube/'
     }
   );
-  const [matcap, env] = useTexture(['matcap.png', 'hdr.png']);
+  const [matcap, env, wl, nrm] = useTexture([
+    'matcap.png',
+    'hdr.png',
+    'wl.png',
+    'MetalGoldPaint002_NRM_2K_METALNESS.png'
+  ]);
   const { nodes } = useGLTF('test.glb');
 
   const sphere = useRef<THREE.Mesh>();
@@ -89,6 +94,12 @@ const Icosahedron = () => {
                 uTexture: {
                   value: matcap
                 },
+                uWl: {
+                  value: wl
+                },
+                uNrm: {
+                  value: nrm
+                },
                 uCameraPosition: {
                   value: cameraPosition
                 },
@@ -133,9 +144,10 @@ const Icosahedron = () => {
       </mesh>
       <mesh ref={sphere} geometry={nodes.dragon.geometry} position={[0, 0, 0]}>
         {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
-        <sphereGeometry args={[3, 32, 32]} />
+        {/* <sphereGeometry args={[3, 32, 32]} /> */}
         {/* <torusGeometry args={[10, 3, 10, 10]} ref={shader} /> */}
         {/* <planeGeometry args={[50, 50]} /> */}
+        <boxGeometry args={[1, 1, 1]} />
         <shaderMaterial
           args={[
             {
@@ -154,6 +166,12 @@ const Icosahedron = () => {
                 },
                 uTexture: {
                   value: matcap
+                },
+                uWl: {
+                  value: wl
+                },
+                uNrm: {
+                  value: nrm
                 },
                 uCameraPosition: {
                   value: cameraPosition
