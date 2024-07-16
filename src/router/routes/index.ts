@@ -11,78 +11,78 @@ export const routes: ISyncRoute[] = [
       auth: true
     },
     children: [
-      {
-        path: 'login',
-        component: lazy(() => import('@/views/Login')),
-        meta: {
-          title: '登录',
-          auth: false
-        }
-      },
+      // {
+      //   path: 'login',
+      //   component: lazy(() => import('@/views/Login')),
+      //   meta: {
+      //     title: '登录',
+      //     auth: false
+      //   }
+      // },
       {
         path: 'home',
-        component: lazy(() => import('@/views/Home')),
+        component: lazy(() => import('@/views/icosahedron/index')),
         meta: {
           title: '首页',
           auth: true
         }
       },
-      {
-        path: 'about',
-        component: lazy(() => import('@/views/About')),
-        meta: {
-          title: '关于',
-          auth: true
-        }
-      },
-      {
-        path: 'shader',
-        component: lazy(() => import('@/views/shader/index')),
-        meta: {
-          title: 'shader',
-          auth: false
-        }
-      },
-      {
-        path: 'shader1',
-        component: lazy(() => import('@/views/shader1/index')),
-        meta: {
-          title: 'shader1',
-          auth: false
-        }
-      },
-      {
-        path: 'ship',
-        component: lazy(() => import('@/views/ship/index')),
-        meta: {
-          title: 'ship',
-          auth: false
-        }
-      },
-      {
-        path: 'screen',
-        component: lazy(() => import('@/views/screen/index')),
-        meta: {
-          title: 'screen',
-          auth: false
-        }
-      },
-      {
-        path: 'human',
-        component: lazy(() => import('@/views/human/index')),
-        meta: {
-          title: 'human',
-          auth: false
-        }
-      },
-      {
-        path: 'icosahedron',
-        component: lazy(() => import('@/views/icosahedron/index')),
-        meta: {
-          title: 'icosahedron',
-          auth: false
-        }
-      }
+      // {
+      //   path: 'about',
+      //   component: lazy(() => import('@/views/About')),
+      //   meta: {
+      //     title: '关于',
+      //     auth: true
+      //   }
+      // },
+      // {
+      //   path: 'shader',
+      //   component: lazy(() => import('@/views/shader/index')),
+      //   meta: {
+      //     title: 'shader',
+      //     auth: false
+      //   }
+      // },
+      // {
+      //   path: 'shader1',
+      //   component: lazy(() => import('@/views/shader1/index')),
+      //   meta: {
+      //     title: 'shader1',
+      //     auth: false
+      //   }
+      // },
+      // {
+      //   path: 'ship',
+      //   component: lazy(() => import('@/views/ship/index')),
+      //   meta: {
+      //     title: 'ship',
+      //     auth: false
+      //   }
+      // },
+      // {
+      //   path: 'screen',
+      //   component: lazy(() => import('@/views/screen/index')),
+      //   meta: {
+      //     title: 'screen',
+      //     auth: false
+      //   }
+      // },
+      // {
+      //   path: 'human',
+      //   component: lazy(() => import('@/views/human/index')),
+      //   meta: {
+      //     title: 'human',
+      //     auth: false
+      //   }
+      // },
+      // {
+      //   path: 'icosahedron',
+      //   component: lazy(() => import('@/views/icosahedron/index')),
+      //   meta: {
+      //     title: 'icosahedron',
+      //     auth: false
+      //   }
+      // }
     ]
   },
   {

@@ -6,7 +6,8 @@ import {
   Environment,
   Lightformer,
   OrbitControls,
-  PerspectiveCamera
+  PerspectiveCamera,
+  PresentationControls
 } from '@react-three/drei';
 import {
   EffectComposer,
@@ -26,7 +27,7 @@ extend({ WaterPass, UnrealBloomPass, FilmPass, LUTPass });
 
 const Icosahedron = () => {
   return (
-    <Canvas camera={{ far: 100, position: [0, 0, 14] }}>
+    <Canvas camera={{ far: 200, position: [0, 0, 10] }}>
       <color args={['#111']} attach="background" />
       {/* <Environment
         files={[
@@ -39,14 +40,23 @@ const Icosahedron = () => {
         ]}
         // background // 将环境作为背景显示
       /> */}
-      <Render />
+      <PresentationControls
+        snap
+        global
+        zoom={0.8}
+        rotation={[0, 0, 0]}
+        polar={[0, Math.PI / 4]}
+        azimuth={[-Math.PI / 4, Math.PI / 4]}
+      >
+        <Render />
+      </PresentationControls>
       {/* 正交相机 */}
-      <OrbitControls
+      {/* <OrbitControls
         autoRotateSpeed={0.85}
         zoomSpeed={0.75}
         minPolarAngle={Math.PI / 2.5}
         maxPolarAngle={Math.PI / 2.55}
-      />
+      /> */}
 
       {/* 透视相机-近大远小 */}
       {/* <PerspectiveCamera /> */}
