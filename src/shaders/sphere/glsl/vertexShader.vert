@@ -6,6 +6,8 @@ varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec2 vPoint;
 
+const float PI = 3.1415926;
+
 #include "lygia/generative/fbm.glsl";
 #include "lygia/generative/cnoise.glsl";
 
@@ -14,8 +16,9 @@ void main() {
     vNormal = normal;
     vPosition = position;
 
-
     vec3 myPosition = position;
+
+    myPosition += cnoise(myPosition * uTime * 0.01) * normal;
 
     // myPosition += fbm(vPosition + uTime * 0.5) ;
     // modelViewMatrix 模型视图矩阵 模型和相机

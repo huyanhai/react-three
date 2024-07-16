@@ -73,7 +73,7 @@ const Icosahedron = () => {
         <meshBasicMaterial color={'red'} />
         <boxGeometry args={[1, 1, 1]} />
       </mesh>
-      <mesh position={[10, 0, 0]} ref={torus}>
+      {/* <mesh position={[10, 0, 0]} ref={torus}>
         <torusKnotGeometry args={[3, 1, 200, 100]} />
         <shaderMaterial
           args={[
@@ -141,13 +141,13 @@ const Icosahedron = () => {
           fragmentShader={fragmentShader}
           transparent
         />
-      </mesh>
+      </mesh> */}
       <mesh ref={sphere} geometry={nodes.dragon.geometry} position={[0, 0, 0]}>
         {/* <torusKnotGeometry args={[10, 3, 200, 100]} /> */}
-        {/* <sphereGeometry args={[3, 32, 32]} /> */}
+        <sphereGeometry args={[3, 320, 320]} />
         {/* <torusGeometry args={[10, 3, 10, 10]} ref={shader} /> */}
         {/* <planeGeometry args={[50, 50]} /> */}
-        <boxGeometry args={[1, 1, 1]} />
+        {/* <boxGeometry args={[10, 10, 10]} /> */}
         <shaderMaterial
           args={[
             {

@@ -27,27 +27,37 @@ varying vec3 vPosition;
 const float PI = 3.14159265359;
 
 vec3 envmap_func(const in vec3 _normal, const in float _roughness, const in float _metallic) {
-	return texture(uCubeMap, _normal).rgb * _roughness;
+	return texture(uCubeMap, _normal).rgb;
 }
 
 #define SURFACE_POSITION vPosition
 #define IBL_LUMINANCE 0.1
 #define LIGHT_COLOR lightColor
 #define SHADING_MODEL_CLOTH uColor
+
 #define ENVMAP_FNC(_normal, _roughness, _metallic) envmap_func(_normal, _roughness, _metallic)
 
+#define SPECULAR_FNC
+#define 
+
+#define PLATFORM_RPI 1.42
 #define FNC_SAMPLE(TEX, UV) texture(TEX, UV)
 #define LIGHT_POSITION lightPosition
 #define CAMERA_POSITION uCameraPosition
 #define ATMOSPHERE_LIGHT_SAMPLES 8
 #define TONEMAP_FNC tonemapACES
 
+#define LIGHT_DIRECTION lightPosition
+
 #define position vPosition
 
-#include "../../../blinnPhoneLight.glsl";
+// #include "../../../blinnPhoneLight.glsl";
 #include "lygia/lighting/fresnel.glsl"
-#include "lygia/lighting/pbrGlass.glsl"
+#include "lygia/color/space.glsl"
+
 #include "lygia/lighting/material/new.glsl"
+#include "lygia/lighting/pbrGlass.glsl"
+#include "lygia/lighting/pbrClearCoat.glsl"
 
 void main() {
 	vec3 newLightPosition = lightPosition;
@@ -64,7 +74,7 @@ void main() {
 	// 物体表面粗糙度
 	float roughness = 1.0;
 	// 金属度
-	float metallic = 100.0;
+	float metallic = 1000.0;
 
 	// 法线单位向量
 	vec3 normal = normalize(vNormal);
@@ -75,23 +85,26 @@ void main() {
 	// 光线到物体的半径
 	float distance = length(lightPosition - vPosition);
 
-	vec4 ambientColor = ambient(color);
+	// vec4 ambientColor = ambient(color);
 
-	// 计算漫反射
-	vec4 diffuseCol = diffuse(color, vec4(lightColor, 1.0), normal, lightDir, roughness);
+	// // 计算漫反射
+	// vec4 diffuseCol = diffuse(color, vec4(lightColor, 1.0), normal, lightDir, roughness);
 
-	// 反射颜色
-	vec4 specularCol = specular(specularColor, lightDir, normal, viewDir, metallic);
+	// // 反射颜色
+	// vec4 specularCol = specular(specularColor, lightDir, normal, viewDir, metallic);
 
-	// 折射颜色
-	vec4 refractCol = refractColor(normal, uCameraPosition, uCubeMap);
+	// // 折射颜色
+	// vec4 refractCol = refractColor(normal, uCameraPosition, uCubeMap);
 
-	// 菲尼尔
-	float fresnelNum = fresnel(normal, viewDir);
+	// // 菲尼尔
+	// float fresnelNum = fresnel(normal, viewDir);
 
 	// vec4 finallyColor = diffuseCol + specularCol * (1.0 - fresnelNum) + refractCol;
 	// 磨损效果
-	vec4 finallyColor = (ambientColor + diffuseCol + specularCol) + (wl.r * color);
+	// vec4 finallyColor = (ambientColor + diffuseCol + specularCol) + (wl.r * color);
+
+	// vec4 finallyColor = ambientColor + specularCol;
+	// finallyColor += fresnelNum * 0.1;
 
 	// 光滑的金属
 	// vec3 reflectDir = -reflect(vPosition, normal);
@@ -100,14 +113,21 @@ void main() {
 	// finallyColor = pow(cube, vec4(1.0)); 
 
 	Material m = materialNew();
-	m.ior = vec3(1.42);
+	// // 镜子
 	m.normal = vNormal;
+	m.albedo = vec4(uColor, 1.0);
 	m.roughness = 0.9;
-	m.metallic = 0.1;
+	m.metallic = 0.9;
 
-	finallyColor = pbrGlass(m);
+	// finallyColor = pbrGlass(m);
+
+	// finallyColor += fresnelNum * vec4(0.0, 0.82, 1.0, 1.0);
+
+	// vec3 fresnelVec = fresnel(vec3(0.1), normal, viewDir);
+
+	color = pbrClearCoat(m);
 
 	// gl_FragColor屏幕上的每一个像素
-	gl_FragColor = finallyColor;
+	gl_FragColor = color;
 
 }
