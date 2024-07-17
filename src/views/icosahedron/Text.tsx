@@ -1,7 +1,7 @@
 import { Text, useTexture } from '@react-three/drei';
 
 const TextCom = () => {
-  const [gold] = useTexture(['matcap/gold.png']);
+  const [gold] = useTexture(['matcap/5.png']);
 
   return (
     <Text

@@ -79,6 +79,14 @@ const Icosahedron = () => {
           onUpdate={(self) => self.lookAt(0, 0, 0)}
           form={'circle'}
         />
+        <Lightformer
+          color={'white'}
+          intensity={1}
+          position={[0, 0, 10]}
+          scale={[10, 50, 1]}
+          onUpdate={(self) => self.lookAt(0, 0, 0)}
+          form={'circle'}
+        />
       </Environment>
 
       <Effects disableGamma>
