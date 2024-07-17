@@ -15,13 +15,14 @@ import Octahed from './Octahed';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
 import TextCom from './Text';
-
+import { DoubleSide,BackSide } from 'three';
 const Render = () => {
   const { camera } = useThree();
   useFrame(({ pointer, camera }, delta) => {
     easing.damp3(camera.position, [-pointer.x, -pointer.y, 10], 0.2, delta);
     camera.lookAt(0, 0, 0);
   });
+  const matcap = useTexture('/matcap/1.png');
 
   return (
     <>
@@ -44,6 +45,11 @@ const Render = () => {
         <Tetra />
       </Float>
       <TextCom />
+
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[100, 1, 1]} />
+        <meshMatcapMaterial matcap={matcap} side={BackSide} />
+      </mesh>
     </>
   );
 };

@@ -10,6 +10,7 @@ const TextCom = () => {
       anchorX="center"
       anchorY="middle"
       position={[0, 0, 6]}
+      fontWeight={700}
     >
       hello world!
       <meshMatcapMaterial matcap={gold} />

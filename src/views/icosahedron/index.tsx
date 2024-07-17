@@ -81,7 +81,7 @@ const Icosahedron = () => {
         />
         <Lightformer
           color={'white'}
-          intensity={1}
+          intensity={2}
           position={[0, 0, 10]}
           scale={[10, 50, 1]}
           onUpdate={(self) => self.lookAt(0, 0, 0)}
@@ -93,8 +93,8 @@ const Icosahedron = () => {
         <waterPass factor={0.1} />
         <unrealBloomPass args={[undefined, 0.5, 1, 0]} />
         <filmPass args={[10, 0.1, 1500, false]} />
+        {/* <lUTPass lut={data.texture} intensity={0.75} /> */}
       </Effects>
-      {/* <lUTPass lut={data.texture} intensity={0.75} /> */}
     </Canvas>
   );
 };
