@@ -115,7 +115,7 @@ const Human = () => {
       <group>
         <mesh
           ref={humanRef}
-          geometry={nodes.human.geometry}
+          geometry={(nodes.human as any).geometry}
           position={[0, -16, 0]}
         >
           <meshStandardMaterial

@@ -7,7 +7,7 @@ import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 
 const Box = () => {
-  const shaderRef = useRef<THREE.Material>();
+  const shaderRef = useRef<THREE.MeshPhysicalMaterial>(null);
   const cubeMap = useCubeTexture(
     ['px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'],
     {

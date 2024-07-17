@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 
-const Screen1 = (props, ref) => {
+const Screen1 = (props: any, ref: any) => {
   return (
     <>
       <mesh ref={ref}>

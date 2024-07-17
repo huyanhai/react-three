@@ -7,7 +7,7 @@ const Dode = (props: {
   args?: [radius?: number | undefined, detail?: number | undefined];
 }) => {
   const [gold] = useTexture(['matcap/matcap.png']);
-  const crossRef = useRef(Mesh);
+  const crossRef = useRef<Mesh>(new Mesh());
 
   useFrame(() => {
     crossRef.current.rotation.y += 0.05;

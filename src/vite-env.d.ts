@@ -7,5 +7,8 @@ declare namespace JSX {
   interface IntrinsicElements {
     screenShader: any;
     humanShader: any;
+    waterPass: any;
+    unrealBloomPass: any;
+    filmPass: any;
   }
 }

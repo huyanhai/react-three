@@ -4,8 +4,8 @@ import React, { useEffect, useRef } from 'react';
 import { Texture, WebGLRenderTarget } from 'three';
 
 const Render = (props: { renderTarget: WebGLRenderTarget<Texture> }) => {
-  const renderCamera = useRef();
-  const controls = useRef();
+  const renderCamera = useRef<any>();
+  const controls = useRef<any>();
 
   useFrame(({ gl, scene }) => {
     gl.setRenderTarget(props.renderTarget);
@@ -21,7 +21,7 @@ const Render = (props: { renderTarget: WebGLRenderTarget<Texture> }) => {
   return (
     <>
       <PerspectiveCamera near={0.5} ref={renderCamera} />
-      <CameraControls enablePan={false} ref={controls} />
+      <CameraControls ref={controls} />
     </>
   );
 };
