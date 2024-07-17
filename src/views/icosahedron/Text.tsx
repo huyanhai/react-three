@@ -1,9 +1,18 @@
-import { Text } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
 
 const TextCom = () => {
+  const [gold] = useTexture(['matcap/gold.png']);
+
   return (
-    <Text fontSize={0.6} color="white" anchorX="center" anchorY="middle" position={[0, 0, 6]}>
+    <Text
+      strokeColor={'yellow'}
+      fontSize={0.6}
+      anchorX="center"
+      anchorY="middle"
+      position={[0, 0, 6]}
+    >
       hello world!
+      <meshMatcapMaterial matcap={gold} />
     </Text>
   );
 };
