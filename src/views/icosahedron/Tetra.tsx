@@ -6,7 +6,7 @@ import { Mesh } from 'three';
 const Dode = (props: {
   args?: [radius?: number | undefined, detail?: number | undefined];
 }) => {
-  const [gold] = useTexture(['matcap/gold.png']);
+  const [gold] = useTexture(['matcap/matcap.png']);
   const crossRef = useRef(Mesh);
 
   useFrame(() => {

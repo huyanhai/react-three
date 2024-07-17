@@ -5,7 +5,7 @@ import React, { useRef } from 'react';
 import { Mesh } from 'three';
 
 const Cross = () => {
-  const [matcap] = useTexture(['matcap.png']);
+  const [matcap] = useTexture(['matcap/matcap.png']);
   const crossRef = useRef(Mesh);
 
   useFrame(() => {

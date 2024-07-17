@@ -6,14 +6,23 @@ import {
   useFBX,
   useTexture
 } from '@react-three/drei';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Box from './Box';
 import Cross from './Cross';
 import Tetra from './Tetra';
 import Torus from './Torus';
 import Octahed from './Octahed';
+import { useFrame, useThree } from '@react-three/fiber';
+import { easing } from 'maath';
+import TextCom from './Text';
 
 const Render = () => {
+  const { camera } = useThree();
+  useFrame(({ pointer, camera }, delta) => {
+    easing.damp3(camera.position, [-pointer.x, -pointer.y, 10], 0.2, delta);
+    camera.lookAt(0, 0, 0);
+  });
+
   return (
     <>
       {/* <pointLight
@@ -34,6 +43,7 @@ const Render = () => {
       >
         <Tetra />
       </Float>
+      <TextCom />
     </>
   );
 };

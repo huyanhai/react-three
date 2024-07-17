@@ -40,6 +40,7 @@ const Icosahedron = () => {
         ]}
         // background // 将环境作为背景显示
       /> */}
+      {/* 透视相机-近大远小 */}
       <PresentationControls
         snap
         global
@@ -57,9 +58,6 @@ const Icosahedron = () => {
         minPolarAngle={Math.PI / 2.5}
         maxPolarAngle={Math.PI / 2.55}
       /> */}
-
-      {/* 透视相机-近大远小 */}
-      {/* <PerspectiveCamera /> */}
 
       {/* <EffectComposer>
         <Bloom
