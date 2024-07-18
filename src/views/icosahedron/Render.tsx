@@ -6,7 +6,7 @@ import {
   useFBX,
   useTexture
 } from '@react-three/drei';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import Box from './Box';
 import Cross from './Cross';
 import Tetra from './Tetra';
@@ -15,14 +15,19 @@ import Octahed from './Octahed';
 import { useFrame, useThree } from '@react-three/fiber';
 import { easing } from 'maath';
 import TextCom from './Text';
-import { DoubleSide,BackSide } from 'three';
+import { DoubleSide, BackSide, Mesh } from 'three';
+import Cap from './Cap';
 const Render = () => {
-  const { camera } = useThree();
-  useFrame(({ pointer, camera }, delta) => {
+  const sphereRef = useRef<Mesh>(new Mesh());
+  useFrame(({ pointer, camera, gl, scene }, delta) => {
     easing.damp3(camera.position, [-pointer.x, -pointer.y, 10], 0.2, delta);
     camera.lookAt(0, 0, 0);
+
+    sphereRef.current.rotation.y = +0.1;
+    sphereRef.current.rotation.x = +0.1;
+    sphereRef.current.rotation.z = +0.1;
   });
-  const matcap = useTexture('/matcap/1.png');
+  const matcap = useTexture('/matcap/2.png');
 
   return (
     <>
@@ -33,21 +38,15 @@ const Render = () => {
         color={'white'}
       /> */}
       <Box />
-      <Float speed={5}>
+      {/* <Float speed={5}>
         <Cross />
       </Float>
-      <Float
-        speed={5}
-        position={[-10, 0, 0]}
-        scale={2.4}
-        rotation={[0, 0, Math.PI / 4]}
-      >
+      <Float speed={5}>
         <Tetra />
-      </Float>
+      </Float> */}
       <TextCom />
-
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[100, 1, 1]} />
+      <mesh position={[0, 0, 0]} ref={sphereRef}>
+        <sphereGeometry args={[14, 32, 32]} />
         <meshMatcapMaterial matcap={matcap} side={BackSide} />
       </mesh>
     </>

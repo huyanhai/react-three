@@ -14,7 +14,12 @@ const Dode = (props: {
   });
 
   return (
-    <mesh ref={crossRef}>
+    <mesh
+      ref={crossRef}
+      position={[-6, 4, 0]}
+      scale={1.5}
+      rotation={[0, 0, Math.PI / 4]}
+    >
       <tetrahedronGeometry args={props.args} />
       <meshMatcapMaterial matcap={gold} />
     </mesh>

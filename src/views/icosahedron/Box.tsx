@@ -57,8 +57,8 @@ const Box = () => {
 
   return (
     <group>
-      <mesh rotation={[0, 0, 0]}>
-        <sphereGeometry args={[5, 320, 320]} />
+      <mesh rotation={[0, 0, 0]} scale={1.2}>
+        <sphereGeometry args={[4, 320, 320]} />
         <meshPhysicalMaterial
           ref={shaderRef}
           color={'black'}

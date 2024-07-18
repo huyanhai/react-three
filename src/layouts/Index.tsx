@@ -7,7 +7,7 @@ const Index = () => {
     <>
       <Head />
       <Outlet />
-      {/* <Foot /> */}
+      <Foot />
     </>
   );
 };

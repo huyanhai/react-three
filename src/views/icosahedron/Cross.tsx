@@ -15,8 +15,7 @@ const Cross = () => {
 
   return (
     <mesh
-      scale={2}
-      position={[10, 0, 0]}
+      position={[8, -3, 0]}
       rotation={[0, 0, Math.PI / 4]}
       ref={crossRef}
     >

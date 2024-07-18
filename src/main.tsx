@@ -6,7 +6,7 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from '@/locales';
 import AuthRouter from './router/Auth';
 import 'tailwindcss/tailwind.css';
-import './assets/reset.scss';
+import './assets/scss/index.scss';
 
 import App from './App';
 // import { registerShader } from './shaders';
