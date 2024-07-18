@@ -1,4 +1,5 @@
 import { Html, Text, useTexture } from '@react-three/drei';
+import { tslFn } from 'three/nodes';
 
 const TextCom = () => {
   const [gold] = useTexture(['matcap/5.png']);

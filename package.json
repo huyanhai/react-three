@@ -38,7 +38,7 @@
         "@types/node": "^18.11.9",
         "@types/react": "^18.0.22",
         "@types/react-dom": "^18.0.7",
-        "@types/three": "0.156.0",
+        "@types/three": "^0.166.0",
         "@vitejs/plugin-react": "^2.2.0",
         "ahooks": "^3.7.11",
         "autoprefixer": "^10.4.19",
