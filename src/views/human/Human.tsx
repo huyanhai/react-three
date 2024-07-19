@@ -9,7 +9,7 @@ import {
   PMREMGenerator,
   WebGLRenderer,
   Texture,
-  Shader,
+  WebGLProgramParametersWithUniforms,
   ACESFilmicToneMapping
 } from 'three';
 import {
@@ -86,7 +86,7 @@ const Human = () => {
     setIntensity(500);
   }, [renderer]);
 
-  const onBeforeCompile = (shader: Shader) => {
+  const onBeforeCompile = (shader: WebGLProgramParametersWithUniforms) => {
     // 给shader添加uniform
     shader.uniforms.uTime = {
       value: time
