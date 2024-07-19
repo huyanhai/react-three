@@ -1,5 +1,5 @@
 import { MeshTransmissionMaterial, useCubeTexture } from '@react-three/drei';
-import { Shader, WebGLRenderer, Vector2 } from 'three';
+import { WebGLProgramParametersWithUniforms, WebGLRenderer, Vector2, MeshPhysicalMaterial } from 'three';
 import vertexHead from './glsl/vertexHead.vert';
 import vertexBody from './glsl/vertexBody.vert';
 import fragmentHead from './glsl/fragmentHead.frag';
@@ -9,14 +9,9 @@ import { useFrame } from '@react-three/fiber';
 import { useRef, useState } from 'react';
 
 const Box = () => {
-  const shaderRef = useRef<THREE.MeshPhysicalMaterial>(null);
+  const shaderRef = useRef<MeshPhysicalMaterial>(null);
   const [mouse, setMouse] = useState<Vector2>(new Vector2());
-  const cubeMap = useCubeTexture(
-    ['px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'],
-    {
-      path: 'cube/'
-    }
-  );
+
 
   useFrame(({ clock, gl, camera, scene, pointer }) => {
     setMouse(new Vector2(pointer.x, pointer.y));
@@ -31,7 +26,7 @@ const Box = () => {
     }
   });
 
-  const onBeforeCompile = (shader: Shader, renderer: WebGLRenderer) => {
+  const onBeforeCompile = (shader: WebGLProgramParametersWithUniforms, renderer: WebGLRenderer) => {
     shader.uniforms = {
       ...shader.uniforms,
       uTime: { value: 0 },

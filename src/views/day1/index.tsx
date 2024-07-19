@@ -1,5 +1,4 @@
-import { Canvas, extend } from '@react-three/fiber';
-import React from 'react';
+import { extend } from '@react-three/fiber';
 import Render from './Render';
 import {
   Effects,
@@ -22,13 +21,14 @@ import {
   LUTPass,
   LUTCubeLoader
 } from 'three-stdlib';
+import CanvasLayout from '@/layouts/CanvasLayout';
 
 extend({ WaterPass, UnrealBloomPass, FilmPass, LUTPass });
 
-const Icosahedron = () => {
+const Day1 = () => {
   return (
-    <Canvas camera={{ far: 200, position: [0, 0, 10] }}>
-      <color args={['#000']} attach="background" />
+    <CanvasLayout>
+      {/* <color args={['#000']} attach="background" /> */}
       {/* <Environment
         files={[
           'cube/px.jpg',
@@ -95,8 +95,8 @@ const Icosahedron = () => {
         <filmPass args={[1, 0.1, 1500, false]} />
         <lUTPass lut={data.texture} intensity={0.75} />
       </Effects> */}
-    </Canvas>
+    </CanvasLayout>
   );
 };
 
-export default Icosahedron;
+export default Day1;

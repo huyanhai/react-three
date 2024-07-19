@@ -10,5 +10,5 @@ const Octahed = () => {
     </mesh>
   );
 };
-
+useTexture.preload(['matcap/2.png'])
 export default Octahed;

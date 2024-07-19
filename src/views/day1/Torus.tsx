@@ -10,5 +10,5 @@ const Torus = () => {
     </mesh>
   );
 };
-
+useTexture.preload(['matcap/4.png']);
 export default Torus;

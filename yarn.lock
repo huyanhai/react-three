@@ -1312,6 +1312,11 @@
   resolved "https://registry.yarnpkg.com/@tweenjs/tween.js/-/tween.js-23.1.2.tgz#4e5357fd6742f5aa50447d3fa808aed4cda93ed7"
   integrity sha512-kMCNaZCJugWI86xiEHaY338CU5JpD0B97p1j1IKNn/Zto8PgACjQx0UxbHjmOcLl/dDOBnItwD07KmCs75pxtQ==
 
+"@types/animejs@^3.1.12":
+  version "3.1.12"
+  resolved "https://registry.yarnpkg.com/@types/animejs/-/animejs-3.1.12.tgz#78fcc3df03ac07cbaef50fd37512e5031826dc42"
+  integrity sha512-fpdH+ZtlO0kqjTOqRaBdsEmvpRNOayI8k4EVkEtitL5l6wducDOXk0rgQgfZqWf/ZX9DzXrHf257S5i9xTcISQ==
+
 "@types/conventional-commits-parser@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@types/conventional-commits-parser/-/conventional-commits-parser-5.0.0.tgz#8c9d23e0b415b24b91626d07017303755d542dc8"
@@ -1506,6 +1511,11 @@ ajv@^8.11.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
+
+animejs@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/animejs/-/animejs-3.2.2.tgz#59be98c58834339d5847f4a70ddba74ac75b6afc"
+  integrity sha512-Ao95qWLpDPXXM+WrmwcKbl6uNlC5tjnowlaRYtuVDHHoygjtIPfDUoK9NthrlZsQSKjZXlmji2TrBUAVbiH0LQ==
 
 ansi-escapes@^6.2.0:
   version "6.2.1"

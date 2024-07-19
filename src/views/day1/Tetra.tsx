@@ -25,5 +25,5 @@ const Dode = (props: {
     </mesh>
   );
 };
-
+useTexture.preload(['matcap/matcap.png'])
 export default Dode;

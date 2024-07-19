@@ -32,4 +32,6 @@ const Cross = () => {
   );
 };
 
+useTexture.preload('matcap/matcap.png');
+
 export default Cross;
