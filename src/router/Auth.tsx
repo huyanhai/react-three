@@ -23,11 +23,11 @@ const AuthRouter = (props: { children: JSX.Element }) => {
   const { pathname } = useLocation();
 
   const route = searchRoute(pathname, routes);
-  if (route.meta.title) {
+  if (route.meta?.title) {
     document.title = route.meta.title;
   }
 
-  if (!route.meta.auth) return props.children;
+  if (!route.meta?.auth) return props.children;
 
   //   登录
   const token = '123';

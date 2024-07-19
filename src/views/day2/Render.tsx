@@ -58,7 +58,7 @@ const Sphere = () => {
   return (
     <mesh position={[6, 0, 0]} rotation={[Math.PI / 5, 0, 0]} ref={sphereRef}>
       <torusGeometry args={[2, 0.4, 32, 64]} />
-      <meshMatcapMaterial matcap={matcap}/>
+      <meshMatcapMaterial matcap={matcap} />
     </mesh>
   );
 };
@@ -108,6 +108,10 @@ const Render = () => {
         </AccumulativeShadows> */}
       </group>
       <TextCom position={[0, 0, -10]} />
+      <points rotation={[Math.PI / 6, 0, 0]} position={[0, 0, -20]}>
+        <planeGeometry args={[100, 100, 40, 40]} />
+        <pointsMaterial color={'gary'} size={0.1} opacity={0.1} alphaTest={0.1}/>
+      </points>
     </>
   );
 };

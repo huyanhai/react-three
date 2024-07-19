@@ -1,6 +1,28 @@
 import type { ISyncRoute } from '../types';
 
-import { lazy } from 'react';
+import { ComponentType, lazy } from 'react';
+
+const dynamicImport = () => {
+  const routes: ISyncRoute[] = [];
+  const paths = import.meta.glob<{ default: ComponentType }>(
+    '@/views/day*/index.tsx'
+  );
+
+  Object.keys(paths).forEach(async (key) => {
+    const keyArray = key.split('/');
+    const name = keyArray[keyArray.length - 2];
+
+    routes.push({
+      path: name,
+      component: lazy(() => paths[key]()),
+      meta: {
+        title: name,
+        auth: false
+      }
+    });
+  });
+  return routes;
+};
 
 export const routes: ISyncRoute[] = [
   {
@@ -10,24 +32,7 @@ export const routes: ISyncRoute[] = [
       title: '首页',
       auth: true
     },
-    children: [
-      {
-        path: 'day/1',
-        component: lazy(() => import('@/views/day1/index')),
-        meta: {
-          title: '首页',
-          auth: false
-        }
-      },
-      {
-        path: 'day/2',
-        component: lazy(() => import('@/views/day2/index')),
-        meta: {
-          title: '首页',
-          auth: false
-        }
-      },
-    ]
+    children: [...dynamicImport()]
   },
   {
     path: '/403',

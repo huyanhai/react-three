@@ -1,6 +1,6 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
 import Render from './Render';
-import { Environment, Lightformer, OrbitControls } from '@react-three/drei';
+import { Environment, Grid, Lightformer, OrbitControls } from '@react-three/drei';
 
 const Day2 = () => {
   //   const cubeMap = useCubeTexture(
