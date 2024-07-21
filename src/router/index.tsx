@@ -6,7 +6,7 @@ import { initRouterTable } from "./guard";
 export const routerTable: RouteObject[] = [
   {
     path: "/",
-    element: <Navigate to="/day/1" />,
+    element: <Navigate to="/day1" />,
   },
   ...initRouterTable(routes),
 ];
