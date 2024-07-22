@@ -1,16 +1,28 @@
-import { useGLTF, MeshTransmissionMaterial } from '@react-three/drei';
-import { BackSide, Mesh } from 'three';
+import {
+  useGLTF,
+  MeshTransmissionMaterial,
+  Float,
+  useTexture
+} from '@react-three/drei';
+import { BackSide, DoubleSide, Mesh } from 'three';
 import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { extend, useFrame } from '@react-three/fiber';
 import { easing } from 'maath';
+import {
+  BrightnessContrast,
+  EffectComposer,
+  GodRays
+} from '@react-three/postprocessing';
 
 const Ware = () => {
   const wareRef = useRef<Mesh>(new Mesh());
   const { nodes } = useGLTF('/modules/ware.gltf');
 
   useFrame(({ camera, pointer }, delta) => {
-    wareRef.current.rotation.z += 0.001;
-    camera.position.z += 0.02;
+    // wareRef.current.rotation.z += 0.001;
+    if (camera.position.z > 50) {
+      camera.position.z -= 0.02;
+    }
     easing.damp3(
       camera.position,
       [-pointer.x, -pointer.y, camera.position.z],
@@ -22,26 +34,62 @@ const Ware = () => {
 
   return (
     <mesh geometry={(nodes.yz as Mesh).geometry} ref={wareRef}>
-      <meshPhysicalMaterial color={'white'} side={BackSide} roughness={0.1} />
+      <meshPhysicalMaterial color={'white'} side={BackSide} roughness={0.4} />
     </mesh>
   );
 };
 
 const TextCom = () => {
-  const { nodes } = useGLTF('/modules/sp.gltf');
-  console.log('nodes', nodes);
+  const { nodes } = useGLTF('/modules/sp1.glb');
+  const envMap = useTexture('/hdr/studio_small_09_4k.exr');
+
+  const spRef = useRef<Mesh>(new Mesh());
+
+  useFrame(() => {
+    spRef.current.rotation.z += 0.001;
+  });
 
   return (
     <group>
-      <mesh geometry={(nodes.sp as Mesh).geometry}>
+      <mesh
+        geometry={(nodes.sp as Mesh).geometry}
+        position={[0, 0, 16]}
+        scale={0.8}
+        ref={spRef}
+      >
         <MeshTransmissionMaterial
           backsideThickness={5}
           thickness={2}
+          side={BackSide}
+          reflectivity={1.52}
+          envMap={envMap}
+          envMapIntensity={1}
+          ior={1.72}
+          roughness={0}
         />
       </mesh>
-      <mesh geometry={(nodes.text as Mesh).geometry} scale={0.8}>
-        <meshPhysicalMaterial color={'red'} side={BackSide} roughness={0.1} />
-      </mesh>
+      <Float speed={10} rotationIntensity={1} floatIntensity={4} scale={0.8}>
+        <mesh
+          geometry={(nodes.text as Mesh).geometry}
+          scale={1}
+          position={[0, 0, 16]}
+        >
+          <MeshTransmissionMaterial
+            backsideThickness={5}
+            thickness={2}
+            side={BackSide}
+            reflectivity={1.52}
+            roughness={0.8}
+          />
+        </mesh>
+        <mesh
+          geometry={(nodes.text as Mesh).geometry}
+          scale={0.96}
+          position={[0, 0, 16]}
+        >
+          <meshBasicMaterial color={'red'} />
+        </mesh>
+      </Float>
     </group>
   );
 };
@@ -50,22 +98,34 @@ const Light = () => {
   return (
     <>
       <pointLight
+        distance={4000}
+        intensity={50000}
+        color={'white'}
+        position={[0, 0, -250]}
+      />
+      <pointLight
+        distance={4000}
+        intensity={50000}
+        color={'white'}
+        position={[0, 0, -150]}
+      />
+      <pointLight
         distance={1000}
-        intensity={1000}
+        intensity={50000}
+        color={'orange'}
+        position={[0, 0, -100]}
+      />
+      <pointLight
+        distance={1000}
+        intensity={40000}
         color={'red'}
-        position={[-10, -10, 5]}
+        position={[0, 0, 0]}
       />
       <pointLight
         distance={1000}
-        intensity={1000}
-        color={'blue'}
-        position={[10, 10, 0]}
-      />
-      <pointLight
-        distance={1000}
-        intensity={500}
-        color={'yellow'}
-        position={[2, 2, 0]}
+        intensity={50000}
+        color={'red'}
+        position={[0, 0, 100]}
       />
     </>
   );
