@@ -4,15 +4,10 @@ import {
   Float,
   useTexture
 } from '@react-three/drei';
-import { BackSide, DoubleSide, Mesh } from 'three';
+import { BackSide, Mesh } from 'three';
 import { useRef } from 'react';
-import { extend, useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { easing } from 'maath';
-import {
-  BrightnessContrast,
-  EffectComposer,
-  GodRays
-} from '@react-three/postprocessing';
 
 const Ware = () => {
   const wareRef = useRef<Mesh>(new Mesh());

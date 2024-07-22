@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
 import { maxPage } from '@/constants/index';
-import { useEffect } from 'react';
 const Foot = () => {
   const { pathname } = useLocation();
 
@@ -21,7 +20,7 @@ const Foot = () => {
       <Link
         to={prev()}
         className={`mx-10 text-sm font-bold transition-all hover:-translate-x-1 ${
-          currentPage === 1 ? 'opacity-70' : 'hover:text-orange-500'
+          currentPage === 1 ? 'opacity-50' : 'hover:text-orange-500'
         }`}
       >
         Previous
@@ -29,7 +28,7 @@ const Foot = () => {
       <Link
         to={next()}
         className={`mx-10 text-sm font-bold transition-all  hover:translate-x-1 ${
-          currentPage < maxPage ? 'hover:text-orange-500' : 'opacity-70'
+          currentPage < maxPage ? 'hover:text-orange-500' : 'opacity-50'
         }`}
       >
         Next
