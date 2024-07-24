@@ -10,5 +10,6 @@ declare namespace JSX {
     waterPass: any;
     unrealBloomPass: any;
     filmPass: any;
+    shader: ShaderMaterial;
   }
 }

@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import glsl from 'vite-plugin-glsl';
 import lygia from 'vite-plugin-lygia';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    topLevelAwait(),
     lygia({ libraryPath: '' }),
     glsl({
       include: [

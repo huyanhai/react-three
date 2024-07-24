@@ -58,7 +58,8 @@
         "typescript": "^5.5.3",
         "vite": "^5.2.10",
         "vite-plugin-glsl": "^1.3.0",
-        "vite-plugin-lygia": "^1.0.4"
+        "vite-plugin-lygia": "^1.0.4",
+        "vite-plugin-top-level-await": "^1.4.2"
     },
     "lint-staged": {
         "*.{less,scss}": [
