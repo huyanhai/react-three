@@ -7,6 +7,14 @@ uniform vec3 u_camera;
 uniform float u_aspect;
 uniform vec3 u_lightColor;
 uniform sampler2D u_env;
+uniform samplerCube u_cube;
+uniform sampler2D u_matcap;
+
+#define MAX_STEPS 100
+#define MIN_DIST 0.001
+#define MAX_DIST 50.0
+
+#include "lygia/space/rotate.glsl"
 
 // 辅助函数：计算球体的有符号距离场
 float sdSphere(vec3 p, float radius) {
@@ -25,10 +33,12 @@ float smin(float a, float b, float k) {
 }
 
 float sdf(vec3 pos) {
-    vec3 translatedPos = pos + vec3(sin(u_time), 0.0, 0.0);
+    vec3 translatedPos = pos + vec3(sin(u_time) * 2.0, 0.0, 0.0);
 
     float sphere = sdSphere(translatedPos, 0.5);
-    float secondSphere = sdBox(pos, vec3(0.4));
+
+    vec3 r_pos = rotate(pos, u_time, vec3(1.0));
+    float secondSphere = sdBox(r_pos, vec3(0.5));
 
     return smin(secondSphere, sphere, 0.3);
 }
@@ -45,13 +55,13 @@ vec3 lighting(vec3 ro, vec3 r) {
     vec3 viewDir = normalize(ro - r);
 
     // Step 1: Ambient light
-    vec3 ambient = vec3(1.0);
+    vec3 ambient = texture2D(u_env, v_uv).rgb;
 
     // Step 2: Diffuse lighting
-    vec3 lightDir = normalize(vec3(1, 1, 1));
+    vec3 lightDir = normalize(vec3(sin(u_time), cos(u_time), sin(u_time)));
     vec3 lightColor = u_lightColor;
     float dp = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = dp * lightColor;
+    vec3 diffuse = dp * lightColor * texture2D(u_matcap, v_uv).rgb;
 
     // Step 3: Hemisphere light
     vec3 skyColor = vec3(1.0, 1.0, 1.0);
@@ -68,9 +78,13 @@ vec3 lighting(vec3 ro, vec3 r) {
     float fresnel = pow(1.0 - max(dot(viewDir, normal), 0.0), 2.0);
     specular *= fresnel;
 
+    // 折射 
+    vec3 refractedDirection = refract(ro, normal, 1.52);
+    vec3 refractedColor = texture(u_cube, refractedDirection).rgb;
+
     // Lighting is a mix of ambient, hemi, diffuse, then specular added at the end
     vec3 lighting = ambient * 0.;
-    lighting += diffuse * 0.5;
+    lighting += diffuse * 0.9;
     lighting += hemi * 0.2;
 
     vec3 finalColor = lighting;
@@ -87,9 +101,6 @@ vec3 lighting(vec3 ro, vec3 r) {
 */
 float rayMarch(vec3 ro, vec3 rd) {
     float t = 0.0;
-    int MAX_STEPS = 100;
-    float MIN_DIST = 0.001;
-    float MAX_DIST = 50.0;
     for(int i = 0; i < MAX_STEPS; i++) {
         // 物体的距离
         float dis = sdf(ro + rd * t);
@@ -114,10 +125,14 @@ void main() {
     // 相机方向
     vec3 rayDirection = normalize(vec3(_uv, 1.0));
 
-    vec3 ray = rayPosition + rayDirection * rayMarch(rayPosition, rayDirection);
+    float rayD = rayMarch(rayPosition, rayDirection);
+    vec3 color = vec3(0.0);
+    if(rayD < MAX_DIST) {
+        vec3 ray = rayPosition + rayDirection * rayD;
+        color = lighting(rayPosition, ray);
+    }
 
     // 计算光照
-    vec3 color = lighting(rayPosition, ray);
 
     gl_FragColor = vec4(color, 1.0);
 
