@@ -18,7 +18,8 @@ const Shader = shaderMaterial(
     u_matcap: null,
     u_cube: null,
     u_mouse: null,
-    u_shape: 0
+    u_shape: 0,
+    transparent: true,
   },
   vertex,
   fragment,

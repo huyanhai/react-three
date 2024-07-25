@@ -198,6 +198,6 @@ void main() {
         color = mix(color, color * 0.90, step(0.1, fract(normalLine(vec3(rayDirection + vec3(_uv, .0))) * 20.0)));
     }
 
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color, rayD);
 
 }
