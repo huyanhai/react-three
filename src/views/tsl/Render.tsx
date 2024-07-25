@@ -1,4 +1,5 @@
 // learning by https://tympanus.net/codrops/2024/07/15/how-to-create-a-liquid-raymarching-scene-using-three-js-shading-language/
+// @ts-nocheck
 import { useThree } from '@react-three/fiber';
 import {
   If,
