@@ -1,4 +1,4 @@
-import { useFrame, extend, useLoader } from '@react-three/fiber';
+import { useFrame, extend, useLoader, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
 import { useState } from 'react';
@@ -19,17 +19,17 @@ const Shader = shaderMaterial(
     u_cube: null,
     u_mouse: null,
     u_shape: 0,
-    transparent: true,
+    transparent: true
   },
   vertex,
-  fragment,
+  fragment
 );
 
 extend({ Shader });
 
 const shapes = ['box', 'octahedron', 'capped'];
 
-const Raymarch = () => {
+const Raymarch = (prop: { shape: number; lightColor: string }) => {
   // 导入hdr
   const cubeEnv = useCubeTexture(
     ['/px.jpg', '/nx.jpg', '/py.jpg', '/ny.jpg', '/pz.jpg', '/nz.jpg'],
@@ -45,20 +45,6 @@ const Raymarch = () => {
   const [viewport, setViewport] = useState(new Vector2());
   const [aspect, setAspect] = useState(-1);
   const [mouse, setMouse] = useState(new Vector2());
-  const [shape, setShape] = useState(0);
-
-  const { lightColor } = useControls({
-    lightColor: {
-      value: '#ffffff'
-    },
-    shape: {
-      value: 'box',
-      options: shapes,
-      onChange: (value) => {
-        setShape(shapes.findIndex((item) => item === value));
-      }
-    }
-  });
 
   useFrame(({ camera, viewport, pointer }, delta) => {
     setTime(time + delta);
@@ -76,22 +62,52 @@ const Raymarch = () => {
         u_time={time}
         u_camera={camera}
         u_aspect={aspect}
-        u_lightColor={lightColor}
+        u_lightColor={prop.lightColor}
         u_env={env}
-        u_matcap={matcap[shape]}
+        u_matcap={matcap[prop.shape]}
         u_cube={cubeEnv}
         u_mouse={mouse}
-        u_shape={shape}
+        u_shape={prop.shape}
       />
     </mesh>
   );
 };
 
-const Render = () => {
+const Plane = (prop: { lightColor: string }) => {
+  const { width, height } = useThree((state) => state.viewport);
+
   return (
-    <>
-      <Raymarch />
-    </>
+    <group>
+      <mesh scale={[width, height, 1]} position={[0, 0, 0]}>
+        <planeGeometry args={[1, 1]} />
+        <meshStandardMaterial color={'black'} />
+      </mesh>
+      <pointLight color={prop.lightColor} position={[0, 0, 1]} intensity={1000} />
+    </group>
+  );
+};
+
+const Render = () => {
+  const [shape, setShape] = useState(0);
+
+  const { lightColor } = useControls({
+    lightColor: {
+      value: '#ffffff'
+    },
+    shape: {
+      value: 'box',
+      options: shapes,
+      onChange: (value) => {
+        setShape(shapes.findIndex((item) => item === value));
+      }
+    }
+  });
+
+  return (
+    <group>
+      <Raymarch shape={shape} lightColor={lightColor} />
+      <Plane lightColor={lightColor} />
+    </group>
   );
 };
 

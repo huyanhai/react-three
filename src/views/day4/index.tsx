@@ -6,7 +6,7 @@ const index = () => {
   return (
     <CanvasLayout>
       <Render />
-      <color attach={'background'} args={['red']} />
+      {/* <color attach={'background'} args={['#111']} /> */}
     </CanvasLayout>
   );
 };

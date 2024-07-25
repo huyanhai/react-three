@@ -27,7 +27,7 @@ const Render = () => {
     sphereRef.current.rotation.x = +0.1;
     sphereRef.current.rotation.z = +0.1;
   });
-  const matcap = useTexture('/matcap/2.png');
+  const matcap = useTexture('/matcap/10.png');
 
   return (
     <>

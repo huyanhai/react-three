@@ -192,12 +192,15 @@ void main() {
 
     float rayD = rayMarch(rayPosition, rayDirection);
     vec3 color = vec3(0.0);
+
+    float alpha = 0.0;
     if(rayD < MAX_DIST) {
         vec3 ray = rayPosition + rayDirection * rayD;
         color = lighting(rayPosition, ray);
-        color = mix(color, color * 0.90, step(0.1, fract(normalLine(vec3(rayDirection + vec3(_uv, .0))) * 20.0)));
+        color = mix(color, color * 0.90, step(0.1, fract(normalLine(ray) * 20.0)));
+        alpha = 1.0;
     }
 
-    gl_FragColor = vec4(color, rayD);
+    gl_FragColor = vec4(color, alpha);
 
 }
