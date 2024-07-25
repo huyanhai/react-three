@@ -16,13 +16,17 @@ const Shader = shaderMaterial(
     u_lightColor: new Color(),
     u_env: null,
     u_matcap: null,
-    u_cube: null
+    u_cube: null,
+    u_mouse: null,
+    u_shape: 0
   },
   vertex,
-  fragment
+  fragment,
 );
 
 extend({ Shader });
+
+const shapes = ['box', 'octahedron', 'capped'];
 
 const Raymarch = () => {
   // 导入hdr
@@ -31,24 +35,36 @@ const Raymarch = () => {
     { path: '/cube' }
   );
   const env = useLoader(RGBELoader, '/hdr/cobblestone_street_night_2k.hdr');
-  const matcap = useTexture('/matcap/7.png');
+  const matcap = useTexture(
+    shapes.map((_, index) => `/matcap/${index + 10}.png`)
+  );
 
   const [time, setTime] = useState(0);
   const [camera, setCamera] = useState(new Vector3());
   const [viewport, setViewport] = useState(new Vector2());
   const [aspect, setAspect] = useState(-1);
+  const [mouse, setMouse] = useState(new Vector2());
+  const [shape, setShape] = useState(0);
 
   const { lightColor } = useControls({
     lightColor: {
       value: '#ffffff'
+    },
+    shape: {
+      value: 'box',
+      options: shapes,
+      onChange: (value) => {
+        setShape(shapes.findIndex((item) => item === value));
+      }
     }
   });
 
-  useFrame(({ camera, viewport }, delta) => {
+  useFrame(({ camera, viewport, pointer }, delta) => {
     setTime(time + delta);
     setCamera(new Vector3().copy(camera.position));
     setViewport(new Vector2(viewport.width, viewport.height));
     setAspect(viewport.aspect);
+    setMouse(new Vector2(pointer.x, pointer.y));
   });
 
   return (
@@ -61,8 +77,10 @@ const Raymarch = () => {
         u_aspect={aspect}
         u_lightColor={lightColor}
         u_env={env}
-        u_matcap={matcap}
+        u_matcap={matcap[shape]}
         u_cube={cubeEnv}
+        u_mouse={mouse}
+        u_shape={shape}
       />
     </mesh>
   );
@@ -76,10 +94,10 @@ const Render = () => {
   );
 };
 
-useTexture.preload('/matcap/7.png');
+useTexture.preload(shapes.map((_, index) => `/matcap/${index + 10}.png`));
 useCubeTexture.preload(
   ['/px.jpg', '/nx.jpg', '/py.jpg', '/ny.jpg', '/pz.jpg', '/nz.jpg'],
   { path: '/cube' }
-)
-useLoader.preload(RGBELoader, '/hdr/cobblestone_street_night_2k.hdr')
+);
+useLoader.preload(RGBELoader, '/hdr/cobblestone_street_night_2k.hdr');
 export default Render;

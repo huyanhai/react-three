@@ -9,12 +9,23 @@ uniform vec3 u_lightColor;
 uniform sampler2D u_env;
 uniform samplerCube u_cube;
 uniform sampler2D u_matcap;
+uniform vec2 u_mouse;
+uniform float u_shape;
 
 #define MAX_STEPS 100
 #define MIN_DIST 0.001
 #define MAX_DIST 50.0
 
 #include "lygia/space/rotate.glsl"
+#include "lygia/space/scale.glsl"
+#include "lygia/generative/cnoise.glsl"
+
+float dot2(in vec2 v) {
+    return dot(v, v);
+}
+float dot2(in vec3 v) {
+    return dot(v, v);
+}
 
 // 辅助函数：计算球体的有符号距离场
 float sdSphere(vec3 p, float radius) {
@@ -26,6 +37,21 @@ float sdBox(vec3 p, vec3 b) {
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
+float sdOctahedron(vec3 p, float s) {
+    p = abs(p);
+    return (p.x + p.y + p.z - s) * 0.57735027;
+}
+
+float sdCappedCone(vec3 p, float h, float r1, float r2) {
+    vec2 q = vec2(length(p.xz), p.y);
+    vec2 k1 = vec2(r2, h);
+    vec2 k2 = vec2(r2 - r1, 2.0 * h);
+    vec2 ca = vec2(q.x - min(q.x, (q.y < 0.0) ? r1 : r2), abs(q.y) - h);
+    vec2 cb = q - k1 + k2 * clamp(dot(k1 - q, k2) / dot2(k2), 0.0, 1.0);
+    float s = (cb.x < 0.0 && ca.y < 0.0) ? -1.0 : 1.0;
+    return s * sqrt(min(dot2(ca), dot2(cb)));
+}
+
 // 辅助函数：最小化两个距离场
 float smin(float a, float b, float k) {
     float h = max(k - abs(a - b), 0.0) / k;
@@ -33,20 +59,58 @@ float smin(float a, float b, float k) {
 }
 
 float sdf(vec3 pos) {
-    vec3 translatedPos = pos + vec3(sin(u_time) * 2.0, 0.0, 0.0);
 
+    vec3 translatedPos = pos;
+
+    translatedPos.x -= u_mouse.x * 2.5;
+    translatedPos.y -= u_mouse.y * 2.5;
+
+    translatedPos += scale(translatedPos, sin(u_time) * 0.5 + 1.0);
+
+    float noice = cnoise(translatedPos);
     float sphere = sdSphere(translatedPos, 0.5);
 
-    vec3 r_pos = rotate(pos, u_time, vec3(1.0));
-    float secondSphere = sdBox(r_pos, vec3(0.5));
+    vec3 r_pos = rotate(pos, u_time, vec3(1.0, 0.0, 1.0));
+    r_pos = rotate(pos, u_time * 0.5, vec3(0.0, 1.0, 1.0));
+    r_pos = rotate(pos, u_time * 0.5, vec3(1.0, 1.0, 0.0));
 
-    return smin(secondSphere, sphere, 0.3);
+    float boxSphere = sdBox(r_pos, vec3(0.7));
+    float octahedronSphere = sdOctahedron(r_pos, 1.2);
+    float sdCappedSphere = sdCappedCone(r_pos, 0.6, 1.0, 0.5);
+
+    float shape = boxSphere;
+
+    if(u_shape == 0.0) {
+        shape = boxSphere;
+    }
+
+    if(u_shape == 1.0) {
+        shape = octahedronSphere;
+    }
+
+    if(u_shape == 2.0) {
+        shape = sdCappedSphere;
+    }
+
+    return smin(shape, sphere, 0.3);
 }
 
 // 辅助函数：计算表面法线
 vec3 calcNormal(vec3 p) {
     vec2 eps = vec2(0.0001, 0.0);
     return normalize(vec3(sdf(p + eps.xyy) - sdf(p - eps.xyy), sdf(p + eps.yxy) - sdf(p - eps.yxy), sdf(p + eps.yyx) - sdf(p - eps.yyx)));
+}
+
+// 返回vu
+vec2 getMatcap(vec3 eye, vec3 normal) {
+    vec3 reflected = reflect(eye, normal);
+    float m = 2.8284271247461903 * sqrt(reflected.z + 1.0);
+    return reflected.xy / m + 0.5;
+}
+
+float normalLine(vec3 normal) {
+    normal = scale(normal, 2.0);
+    return (normal.x + normal.y + normal.z);
 }
 
 // 辅助函数：计算光照
@@ -58,10 +122,10 @@ vec3 lighting(vec3 ro, vec3 r) {
     vec3 ambient = texture2D(u_env, v_uv).rgb;
 
     // Step 2: Diffuse lighting
-    vec3 lightDir = normalize(vec3(sin(u_time), cos(u_time), sin(u_time)));
+    vec3 lightDir = normalize(ro);
     vec3 lightColor = u_lightColor;
-    float dp = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = dp * lightColor * texture2D(u_matcap, v_uv).rgb;
+    float dp = max(dot(lightDir, normal), 0.9);
+    vec3 diffuse = dp * lightColor * texture2D(u_matcap, getMatcap(viewDir, normal)).rgb;
 
     // Step 3: Hemisphere light
     vec3 skyColor = vec3(1.0, 1.0, 1.0);
@@ -102,7 +166,8 @@ vec3 lighting(vec3 ro, vec3 r) {
 float rayMarch(vec3 ro, vec3 rd) {
     float t = 0.0;
     for(int i = 0; i < MAX_STEPS; i++) {
-        // 物体的距离
+        // 当前点到物体表面的距离，大于0则在物体外部，小于0在内部，等于0在表面
+
         float dis = sdf(ro + rd * t);
         if(dis < MIN_DIST || dis > MAX_DIST) {
             break;
@@ -130,9 +195,8 @@ void main() {
     if(rayD < MAX_DIST) {
         vec3 ray = rayPosition + rayDirection * rayD;
         color = lighting(rayPosition, ray);
+        color = mix(color, color * 0.90, step(0.1, fract(normalLine(vec3(rayDirection + vec3(_uv, .0))) * 20.0)));
     }
-
-    // 计算光照
 
     gl_FragColor = vec4(color, 1.0);
 
