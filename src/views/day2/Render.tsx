@@ -108,8 +108,8 @@ const Render = () => {
         </AccumulativeShadows> */}
       </group>
       <TextCom position={[0, 0, -10]} />
-      <points rotation={[Math.PI / 6, 0, 0]} position={[0, 0, -20]}>
-        <planeGeometry args={[100, 100, 40, 40]} />
+      <points rotation={[0, 0, 0]} position={[0, 0, -20]}>
+        <planeGeometry args={[200, 200, 40, 40]} />
         <pointsMaterial color={'gary'} size={0.1} opacity={0.1} alphaTest={0.1}/>
       </points>
     </>

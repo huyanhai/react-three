@@ -18,7 +18,6 @@ uniform float u_shape;
 
 #include "lygia/space/rotate.glsl"
 #include "lygia/space/scale.glsl"
-#include "lygia/generative/cnoise.glsl"
 
 float dot2(in vec2 v) {
     return dot(v, v);
@@ -65,14 +64,12 @@ float sdf(vec3 pos) {
     translatedPos.x -= u_mouse.x * 2.5;
     translatedPos.y -= u_mouse.y * 2.5;
 
+
     translatedPos += scale(translatedPos, sin(u_time) * 0.5 + 1.0);
 
-    float noice = cnoise(translatedPos);
     float sphere = sdSphere(translatedPos, 0.5);
 
-    vec3 r_pos = rotate(pos, u_time, vec3(1.0, 0.0, 1.0));
-    r_pos = rotate(pos, u_time * 0.5, vec3(0.0, 1.0, 1.0));
-    r_pos = rotate(pos, u_time * 0.5, vec3(1.0, 1.0, 0.0));
+    vec3 r_pos = rotate(pos, u_time * 0.2, vec3(.0, 1.0, 1.0));
 
     float boxSphere = sdBox(r_pos, vec3(0.7));
     float octahedronSphere = sdOctahedron(r_pos, 1.2);
@@ -80,16 +77,12 @@ float sdf(vec3 pos) {
 
     float shape = boxSphere;
 
-    if(u_shape == 0.0) {
-        shape = boxSphere;
-    }
-
     if(u_shape == 1.0) {
         shape = octahedronSphere;
-    }
-
-    if(u_shape == 2.0) {
+    } else if(u_shape == 2.0) {
         shape = sdCappedSphere;
+    } else {
+        shape = boxSphere;
     }
 
     return smin(shape, sphere, 0.3);
