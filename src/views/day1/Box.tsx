@@ -1,5 +1,10 @@
 import { MeshTransmissionMaterial, useCubeTexture } from '@react-three/drei';
-import { WebGLProgramParametersWithUniforms, WebGLRenderer, Vector2, MeshPhysicalMaterial } from 'three';
+import {
+  WebGLProgramParametersWithUniforms,
+  WebGLRenderer,
+  Vector2,
+  MeshPhysicalMaterial
+} from 'three';
 import vertexHead from './glsl/vertexHead.vert';
 import vertexBody from './glsl/vertexBody.vert';
 import fragmentHead from './glsl/fragmentHead.frag';
@@ -11,7 +16,6 @@ import { useRef, useState } from 'react';
 const Box = () => {
   const shaderRef = useRef<MeshPhysicalMaterial>(null);
   const [mouse, setMouse] = useState<Vector2>(new Vector2());
-
 
   useFrame(({ clock, gl, camera, scene, pointer }) => {
     setMouse(new Vector2(pointer.x, pointer.y));
@@ -26,7 +30,10 @@ const Box = () => {
     }
   });
 
-  const onBeforeCompile = (shader: WebGLProgramParametersWithUniforms, renderer: WebGLRenderer) => {
+  const onBeforeCompile = (
+    shader: WebGLProgramParametersWithUniforms,
+    renderer: WebGLRenderer
+  ) => {
     shader.uniforms = {
       ...shader.uniforms,
       uTime: { value: 0 },
