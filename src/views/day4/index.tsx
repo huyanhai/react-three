@@ -8,9 +8,8 @@ const index = () => {
   return (
     <CanvasLayout>
       <Render />
-      {/* <color attach={'background'} args={['#111']} /> */}
-      <Html center>
-        <div className=" text-white whitespace-nowrap text-center text-9xl montserrat-alternates-bold">
+      <Html center className="touch-none">
+        <div className=" text-white whitespace-nowrap text-center text-9xl montserrat-alternates-bold touch-none">
           {tips}
         </div>
       </Html>

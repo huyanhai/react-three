@@ -1,11 +1,12 @@
 import { useFrame, extend, useLoader, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Color, TextureLoader, Vector2, Vector3 } from 'three';
 import { shaderMaterial, useCubeTexture, useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { useMouse } from '@/hooks/useMouse';
 
 const Shader = shaderMaterial(
   {
@@ -44,15 +45,17 @@ const Raymarch = (prop: { shape: number; lightColor: string }) => {
   const [camera, setCamera] = useState(new Vector3());
   const [viewport, setViewport] = useState(new Vector2());
   const [aspect, setAspect] = useState(-1);
-  const [mouse, setMouse] = useState(new Vector2());
+  const mouse = useMouse()
 
   useFrame(({ camera, viewport, pointer }, delta) => {
     setTime(time + delta);
     setCamera(new Vector3().copy(camera.position));
     setViewport(new Vector2(viewport.width, viewport.height));
     setAspect(viewport.aspect);
-    setMouse(new Vector2(pointer.x, pointer.y));
   });
+
+
+
 
   return (
     <mesh scale={[viewport.x, viewport.y, 1]}>
@@ -78,11 +81,15 @@ const Plane = (prop: { lightColor: string }) => {
 
   return (
     <group>
-      <mesh scale={[width, height, 1]} position={[0, 0, 0]}>
-        <planeGeometry args={[1, 1]} />
+      <mesh position={[0, 0, 0]}>
+        <planeGeometry args={[width, height, 1]} />
         <meshStandardMaterial color={'black'} />
       </mesh>
-      <pointLight color={prop.lightColor} position={[0, 0, 1]} intensity={1000} />
+      <pointLight
+        color={prop.lightColor}
+        position={[0, 0, 1]}
+        intensity={1000}
+      />
     </group>
   );
 };
@@ -92,7 +99,7 @@ const Render = () => {
 
   const { lightColor } = useControls({
     lightColor: {
-      value: '#ffffff'
+      value: '#00ecff'
     },
     shape: {
       value: 'box',
