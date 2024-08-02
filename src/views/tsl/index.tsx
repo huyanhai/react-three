@@ -1,28 +1,28 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
 import { Environment } from '@react-three/drei';
 import Render from './Render';
-import WebGPURenderer from 'three/examples/jsm/renderers/webgpu/WebGPURenderer.js';
+// import WebGPURenderer from 'three/examples/jsm/renderers/webgpu/WebGPURenderer.js';
 import WebGPUCapabilities from 'three/examples/jsm/capabilities/WebGPU.js';
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three';
 const Day4 = () => {
   const webGPUAvailable = WebGPUCapabilities.isAvailable();
   return (
     <CanvasLayout
-      gl={(canvas) => {
-        const renderer = new WebGPURenderer({
-          canvas: canvas as HTMLCanvasElement,
-          antialias: true,
-          alpha: true,
-          forceWebGL: !webGPUAvailable
-        });
-        renderer.toneMapping = ACESFilmicToneMapping;
-        renderer.outputColorSpace = SRGBColorSpace;
-        // renderer.init().then(() => {
-        //   setInitialising(false);
-        // });
+      // gl={(canvas) => {
+      //   const renderer = new WebGPURenderer({
+      //     canvas: canvas as HTMLCanvasElement,
+      //     antialias: true,
+      //     alpha: true,
+      //     forceWebGL: !webGPUAvailable
+      //   });
+      //   renderer.toneMapping = ACESFilmicToneMapping;
+      //   renderer.outputColorSpace = SRGBColorSpace;
+      //   // renderer.init().then(() => {
+      //   //   setInitialising(false);
+      //   // });
 
-        return renderer;
-      }}
+      //   return renderer;
+      // }}
     >
       <Render />
       <Environment
