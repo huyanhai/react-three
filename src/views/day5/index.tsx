@@ -1,11 +1,18 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
-import React from 'react';
 import Render from './Render';
+import { PerspectiveCamera, ScrollControls } from '@react-three/drei';
 
 const index = () => {
+  const { width, height } = window.screen;
+
+  const aspect = width / height;
   return (
     <CanvasLayout>
-      <Render />
+      <color attach="background" args={['black']} />
+      <ScrollControls pages={5}>
+        <Render />
+      </ScrollControls>
+      <PerspectiveCamera aspect={aspect} makeDefault position={[0, 0, 100]} />
     </CanvasLayout>
   );
 };
