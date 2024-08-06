@@ -1,8 +1,8 @@
 import { useFrame, extend, useLoader, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
-import { useEffect, useState } from 'react';
-import { Color, TextureLoader, Vector2, Vector3 } from 'three';
+import { useState } from 'react';
+import { Color, Vector2, Vector3 } from 'three';
 import { shaderMaterial, useCubeTexture, useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
@@ -45,7 +45,7 @@ const Raymarch = (prop: { shape: number; lightColor: string }) => {
   const [camera, setCamera] = useState(new Vector3());
   const [viewport, setViewport] = useState(new Vector2());
   const [aspect, setAspect] = useState(-1);
-  const mouse = useMouse()
+  const mouse = useMouse();
 
   useFrame(({ camera, viewport, pointer }, delta) => {
     setTime(time + delta);
@@ -53,9 +53,6 @@ const Raymarch = (prop: { shape: number; lightColor: string }) => {
     setViewport(new Vector2(viewport.width, viewport.height));
     setAspect(viewport.aspect);
   });
-
-
-
 
   return (
     <mesh scale={[viewport.x, viewport.y, 1]}>

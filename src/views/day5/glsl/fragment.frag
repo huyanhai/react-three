@@ -8,19 +8,29 @@ uniform float u_aspect;
 uniform float u_delta;
 uniform vec2 u_mouse;
 
+uniform vec2 u_uv;
+uniform vec2 u_move;
+uniform float u_time;
+
 #define UNIT 4.0
 
-#include 'lygia/generative/cnoise.glsl'
+#include 'lygia/generative/random.glsl'
 
 vec3 rgbShift(sampler2D img, float delta) {
+
+    vec2 uv = v_uv;
+
     delta *= UNIT;
-    float r = texture2D(img, vec2(v_uv.x, v_uv.y - delta)).r;
-    vec2 gb = texture2D(img, v_uv).gb;
+    float r = texture2D(img, vec2(uv.x, uv.y - delta)).r;
+    vec2 gb = texture2D(img, uv).gb;
     return vec3(r, gb);
 }
+
 
 void main() {
     vec2 _uv = v_uv;
 
-    gl_FragColor = vec4(rgbShift(u_texture, u_delta), 1.0);
+    vec3 color = rgbShift(u_texture, u_delta);
+
+    gl_FragColor = vec4(color, 1.0);
 }

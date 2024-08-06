@@ -1,5 +1,5 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Render from './Render';
 import { Html } from '@react-three/drei';
 import { tips } from '@/constants';

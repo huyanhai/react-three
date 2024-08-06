@@ -1,10 +1,19 @@
-import { Text, shaderMaterial, useScroll, useTexture } from '@react-three/drei';
-import { extend, useFrame, useThree } from '@react-three/fiber';
+import {
+  Html,
+  Scroll,
+  Text,
+  shaderMaterial,
+  useScroll,
+  useTexture
+} from '@react-three/drei';
+import { ThreeEvent, extend, useFrame, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
 import { useState } from 'react';
 import { Vector2 } from 'three';
+import { easing } from 'maath';
 import { tips } from '@/constants/index';
+import anime from 'animejs';
 
 type TPosition = [number, number, number];
 
@@ -33,7 +42,10 @@ const Shader = shaderMaterial(
     u_delta: 0,
     transparent: true,
     wireframe: false,
-    u_mouse: null
+    u_mouse: null,
+    u_uv: null,
+    u_move: null,
+    u_time: 0
   },
   vertex,
   fragment
@@ -46,25 +58,44 @@ const Plane = (props: TProps) => {
 
   const { viewport, pointer } = useThree();
   const texture = useTexture(img);
+  const [newVU, setNewVU] = useState(new Vector2(0, 0));
+  const [movePoint, setMovePoint] = useState(new Vector2(0, 0));
+  const [clock, setClock] = useState(0);
+  const [duration, setDuration] = useState(new Vector2(0, 0));
+  const [timestamp, setTimestamp] = useState(0);
 
   const { width, height } = texture.image;
+
+  const deltaOffset = delta * 1000;
 
   const renderSize = new Vector2(
     (width / 25) * viewport.aspect,
     (height / 25) * viewport.aspect
   );
 
-  const deltaOffset = delta * 1000;
+  const move = (e: ThreeEvent<PointerEvent>) => {
+    setNewVU(new Vector2(e.uv?.x, e.uv?.y));
+    setMovePoint(new Vector2(e.pointer.x, e.pointer.y));
+    setDuration(new Vector2(1, 1));
+    setTimestamp(e.timeStamp);
+  };
+
+  useFrame(({ clock }) => {
+    setClock(clock.getElapsedTime());
+  });
 
   return (
     <group>
-      <mesh position={position}>
+      <mesh position={position} onPointerMove={move}>
         <planeGeometry args={[renderSize.x, renderSize.y, 50]} />
         <shader
           u_texture={texture}
           u_aspect={viewport.aspect}
           u_delta={delta}
           u_mouse={pointer}
+          u_uv={newVU}
+          u_move={movePoint}
+          u_time={clock}
         />
       </mesh>
       <Text
@@ -104,23 +135,26 @@ const Render = () => {
     setOffset(scroll.offset * unit);
     setDelta(scroll.delta);
   });
+
   return (
     <>
       <fog attach="fog" args={['white', 1, 20]} />
-      {imgConfig.map((item, index) => (
-        <Plane
-          key={index}
-          img={item.src}
-          delta={delta}
-          offset={offset}
-          text={item.text}
-          position={[
-            item.position[0],
-            -(100 * index) + offset,
-            item.position[2]
-          ]}
-        />
-      ))}
+      <Scroll>
+        {imgConfig.map((item, index) => (
+          <Plane
+            key={index}
+            img={item.src}
+            delta={delta}
+            offset={offset}
+            text={item.text}
+            position={[
+              item.position[0],
+              -(100 * index) + offset,
+              item.position[2]
+            ]}
+          />
+        ))}
+      </Scroll>
     </>
   );
 };
