@@ -1,5 +1,6 @@
 import {
   Html,
+  MeshTransmissionMaterial,
   Scroll,
   Text,
   shaderMaterial,
@@ -9,11 +10,10 @@ import {
 import { ThreeEvent, extend, useFrame, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
-import { useState } from 'react';
-import { Vector2 } from 'three';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CylinderGeometry, InstancedMesh, Object3D, Vector2 } from 'three';
 import { easing } from 'maath';
 import { tips } from '@/constants/index';
-import anime from 'animejs';
 
 type TPosition = [number, number, number];
 
@@ -45,14 +45,15 @@ const Shader = shaderMaterial(
     u_mouse: null,
     u_uv: null,
     u_move: null,
-    u_time: 0
+    u_time: 0,
+    u_duration: null
   },
   vertex,
   fragment
 );
 
 extend({ Shader });
-
+const obj = new Object3D();
 const Plane = (props: TProps) => {
   const { img, position, delta, text } = props;
 
@@ -61,8 +62,13 @@ const Plane = (props: TProps) => {
   const [newVU, setNewVU] = useState(new Vector2(0, 0));
   const [movePoint, setMovePoint] = useState(new Vector2(0, 0));
   const [clock, setClock] = useState(0);
-  const [duration, setDuration] = useState(new Vector2(0, 0));
-  const [timestamp, setTimestamp] = useState(0);
+  const [duration] = useState(new Vector2(0, 0));
+  const [isOver, setIsOver] = useState(false);
+  const instancedRef = useRef<InstancedMesh>(null);
+
+  const cylinder = useMemo(() => {
+    return new CylinderGeometry(0.5, 0.5, 0.5, 32, 32);
+  }, []);
 
   const { width, height } = texture.image;
 
@@ -73,20 +79,62 @@ const Plane = (props: TProps) => {
     (height / 25) * viewport.aspect
   );
 
+  const size = useMemo(() => {
+    return Math.ceil(width / 50);
+  }, [width]);
+
   const move = (e: ThreeEvent<PointerEvent>) => {
     setNewVU(new Vector2(e.uv?.x, e.uv?.y));
     setMovePoint(new Vector2(e.pointer.x, e.pointer.y));
-    setDuration(new Vector2(1, 1));
-    setTimestamp(e.timeStamp);
   };
 
-  useFrame(({ clock }) => {
+  const over = () => {
+    setIsOver(true);
+  };
+
+  const out = () => {
+    setIsOver(false);
+  };
+
+  useFrame(({ clock }, delate) => {
     setClock(clock.getElapsedTime());
+    if (isOver) {
+      easing.damp(duration, 'x', 1, 0.5, delate);
+    } else {
+      easing.damp(duration, 'x', 0, 0.5, delate);
+    }
   });
+
+  useEffect(() => {
+    for (let index = 0; index < size; index++) {
+      obj.position.set(
+        -renderSize.x / 2 + index,
+        position[1] - renderSize.y / 2,
+        position[2]
+      );
+      obj.updateMatrix();
+      instancedRef.current?.setMatrixAt(index, obj.matrix);
+    }
+    (instancedRef.current as InstancedMesh).instanceMatrix.needsUpdate = true;
+  }, []);
 
   return (
     <group>
-      <mesh position={position} onPointerMove={move}>
+      <instancedMesh ref={instancedRef} args={[null as any, null as any, size]}>
+        <boxGeometry args={[0.1, renderSize.y, 0.1]} />
+        <meshBasicMaterial color={'red'} />
+        {/* <MeshTransmissionMaterial
+          backside
+          backsideThickness={5}
+          thickness={2}
+        /> */}
+      </instancedMesh>
+      <mesh
+        position={position}
+        onPointerMove={move}
+        onPointerOver={over}
+        onPointerOut={out}
+      >
         <planeGeometry args={[renderSize.x, renderSize.y, 50]} />
         <shader
           u_texture={texture}
@@ -96,6 +144,7 @@ const Plane = (props: TProps) => {
           u_uv={newVU}
           u_move={movePoint}
           u_time={clock}
+          u_duration={duration}
         />
       </mesh>
       <Text
@@ -128,7 +177,7 @@ const Plane = (props: TProps) => {
 
 const Render = () => {
   const scroll = useScroll();
-  const unit = 500;
+  const unit = 35;
   const [offset, setOffset] = useState(scroll.offset * unit);
   const [delta, setDelta] = useState(scroll.delta);
   useFrame(() => {
@@ -138,7 +187,7 @@ const Render = () => {
 
   return (
     <>
-      <fog attach="fog" args={['white', 1, 20]} />
+      {/* <fog attach="fog" args={['white', 1, 20]} /> */}
       <Scroll>
         {imgConfig.map((item, index) => (
           <Plane

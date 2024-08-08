@@ -9,7 +9,7 @@ const index = () => {
   return (
     <CanvasLayout>
       <color attach="background" args={['black']} />
-      <ScrollControls pages={5}>
+      <ScrollControls pages={6}>
         <Render />
       </ScrollControls>
       <PerspectiveCamera aspect={aspect} makeDefault position={[0, 0, 100]} />
