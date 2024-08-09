@@ -1,39 +1,19 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
 import Render from './Render';
-import { Environment, Grid, Lightformer, OrbitControls } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 
-const Day2 = () => {
-  //   const cubeMap = useCubeTexture(
-  //     ['px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'],
-  //     {
-  //       path: '/cube/'
-  //     }
-  //   );
-
+const Day3 = () => {
   return (
-    <CanvasLayout camera={{ position: [0, -5, 8] }} shadows>
-      <color attach={'background'} args={['blue']} />
+    <CanvasLayout camera={{ position: [0, 0, 120] }} shadows>
+      <color attach={'background'} args={['white']} />
       <Render />
-      <Environment files={'/hdr/studio_small_09_4k.exr'}>
-        <Lightformer
-          color={'white'}
-          intensity={1}
-          position={[0, 0, -20]}
-          scale={[10, 50, 1]}
-          onUpdate={(self) => self.lookAt(0, 0, 0)}
-          form={'circle'}
-        />
-        <Lightformer
-          color={'white'}
-          intensity={10}
-          position={[0, 0, 4]}
-          scale={[10, 50, 1]}
-          onUpdate={(self) => self.lookAt(0, 0, 0)}
-          form={'circle'}
-        />
-      </Environment>
+      <Environment
+        files={'/hdr/studio_small_09_4k.exr'}
+        environmentRotation={[Math.PI / 2, 0, 0]}
+        environmentIntensity={0.12}
+      ></Environment>
     </CanvasLayout>
   );
 };
 
-export default Day2;
+export default Day3;

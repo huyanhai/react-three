@@ -1,19 +1,20 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
+import React, { useEffect, useRef } from 'react';
 import Render from './Render';
-import { Environment } from '@react-three/drei';
+import { Html } from '@react-three/drei';
+import { tips } from '@/constants';
 
-const Day3 = () => {
+const index = () => {
   return (
-    <CanvasLayout camera={{ position: [0, 0, 120] }} shadows>
-      <color attach={'background'} args={['white']} />
+    <CanvasLayout>
       <Render />
-      <Environment
-        files={'/hdr/studio_small_09_4k.exr'}
-        environmentRotation={[Math.PI / 2, 0, 0]}
-        environmentIntensity={0.12}
-      ></Environment>
+      <Html center className="touch-none">
+        <div className=" text-white whitespace-nowrap text-center text-9xl montserrat-alternates-bold touch-none">
+          {tips}
+        </div>
+      </Html>
     </CanvasLayout>
   );
 };
 
-export default Day3;
+export default index;

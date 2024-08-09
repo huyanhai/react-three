@@ -1,124 +1,217 @@
-import { useFrame, extend, useLoader, useThree } from '@react-three/fiber';
+import {
+  Html,
+  MeshTransmissionMaterial,
+  Scroll,
+  Text,
+  shaderMaterial,
+  useScroll,
+  useTexture
+} from '@react-three/drei';
+import { ThreeEvent, extend, useFrame, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
-import { useState } from 'react';
-import { Color, Vector2, Vector3 } from 'three';
-import { shaderMaterial, useCubeTexture, useTexture } from '@react-three/drei';
-import { useControls } from 'leva';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { useMouse } from '@/hooks/useMouse';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CylinderGeometry, InstancedMesh, Object3D, Vector2 } from 'three';
+import { easing } from 'maath';
+import { tips } from '@/constants/index';
+
+type TPosition = [number, number, number];
+
+type TImgItem = { src: string; position: TPosition; text: string };
+type TProps = {
+  img: string;
+  position: TPosition;
+  delta: number;
+  offset: number;
+  text: string;
+};
+
+const imgConfig: TImgItem[] = [
+  { src: '/pics/1.jpg', position: [0, 0, 0], text: 'HE' },
+  { src: '/pics/2.jpg', position: [0, 0, 0], text: 'LL' },
+  { src: '/pics/3.jpg', position: [0, 0, 0], text: 'O' },
+  { src: '/pics/4.jpg', position: [0, 0, 0], text: 'WO' },
+  { src: '/pics/5.jpg', position: [0, 0, 0], text: 'R' },
+  { src: '/pics/6.jpg', position: [0, 0, 0], text: 'LD' }
+];
 
 const Shader = shaderMaterial(
   {
-    u_resolution: new Vector2(),
-    u_time: 0,
-    u_camera: new Vector3(),
+    u_texture: null,
     u_aspect: 0,
-    u_lightColor: new Color(),
-    u_env: null,
-    u_matcap: null,
-    u_cube: null,
+    u_delta: 0,
+    transparent: true,
+    wireframe: false,
     u_mouse: null,
-    u_shape: 0,
-    transparent: true
+    u_uv: null,
+    u_move: null,
+    u_time: 0,
+    u_duration: null
   },
   vertex,
   fragment
 );
 
 extend({ Shader });
+const obj = new Object3D();
 
-const shapes = ['box', 'octahedron', 'capped'];
+const Ins = (props: {
+  position: [number, number, number];
+  renderSize: Vector2;
+  size: number;
+}) => {
+  const { position, renderSize, size } = props;
 
-const Raymarch = (prop: { shape: number; lightColor: string }) => {
-  // 导入hdr
-  const cubeEnv = useCubeTexture(
-    ['/px.jpg', '/nx.jpg', '/py.jpg', '/ny.jpg', '/pz.jpg', '/nz.jpg'],
-    { path: '/cube' }
-  );
-  const env = useLoader(RGBELoader, '/hdr/cobblestone_street_night_2k.hdr');
-  const matcap = useTexture(
-    shapes.map((_, index) => `/matcap/${index + 10}.png`)
-  );
+  const instancedRef = useRef<InstancedMesh>(null);
 
-  const [time, setTime] = useState(0);
-  const [camera, setCamera] = useState(new Vector3());
-  const [viewport, setViewport] = useState(new Vector2());
-  const [aspect, setAspect] = useState(-1);
-  const mouse = useMouse();
+  const cylinder = useMemo(() => {
+    return new CylinderGeometry(0.5, 0.5, 0.5, 32, 32);
+  }, []);
 
-  useFrame(({ camera, viewport, pointer }, delta) => {
-    setTime(time + delta);
-    setCamera(new Vector3().copy(camera.position));
-    setViewport(new Vector2(viewport.width, viewport.height));
-    setAspect(viewport.aspect);
-  });
+  useEffect(() => {
+    for (let index = 0; index < size; index++) {
+      obj.position.set(-renderSize.x / 2 + index, position[1], position[2] + 2);
+      obj.updateMatrix();
+      instancedRef.current?.setMatrixAt(index, obj.matrix);
+    }
+    (instancedRef.current as InstancedMesh).instanceMatrix.needsUpdate = true;
+  }, []);
 
   return (
-    <mesh scale={[viewport.x, viewport.y, 1]}>
-      <planeGeometry args={[1, 1]} />
-      <shader
-        u_resolution={viewport}
-        u_time={time}
-        u_camera={camera}
-        u_aspect={aspect}
-        u_lightColor={prop.lightColor}
-        u_env={env}
-        u_matcap={matcap[prop.shape]}
-        u_cube={cubeEnv}
-        u_mouse={mouse}
-        u_shape={prop.shape}
-      />
-    </mesh>
+    <instancedMesh ref={instancedRef} args={[null as any, null as any, size]}>
+      <cylinderGeometry args={[0.9, 0.9, renderSize.y, 30]} />
+      <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} />
+    </instancedMesh>
   );
 };
 
-const Plane = (prop: { lightColor: string }) => {
-  const { width, height } = useThree((state) => state.viewport);
+const Plane = (props: TProps) => {
+  const { img, position, delta, text } = props;
 
-  return (
-    <group>
-      <mesh position={[0, 0, 0]}>
-        <planeGeometry args={[width, height, 1]} />
-        <meshStandardMaterial color={'black'} />
-      </mesh>
-      <pointLight
-        color={prop.lightColor}
-        position={[0, 0, 1]}
-        intensity={1000}
-      />
-    </group>
+  const { viewport, pointer } = useThree();
+  const texture = useTexture(img);
+  const [newVU, setNewVU] = useState(new Vector2(0, 0));
+  const [movePoint, setMovePoint] = useState(new Vector2(0, 0));
+  const [clock, setClock] = useState(0);
+  const [duration] = useState(new Vector2(0, 0));
+  const [isOver, setIsOver] = useState(false);
+
+  const { width, height } = texture.image;
+
+  const deltaOffset = delta * 1000;
+
+  const renderSize = new Vector2(
+    (width / 25) * viewport.aspect,
+    (height / 25) * viewport.aspect
   );
-};
 
-const Render = () => {
-  const [shape, setShape] = useState(0);
+  const size = useMemo(() => {
+    return Math.ceil(width / 50);
+  }, [width]);
 
-  const { lightColor } = useControls({
-    lightColor: {
-      value: '#00ecff'
-    },
-    shape: {
-      value: 'box',
-      options: shapes,
-      onChange: (value) => {
-        setShape(shapes.findIndex((item) => item === value));
-      }
+  const move = (e: ThreeEvent<PointerEvent>) => {
+    setNewVU(new Vector2(e.uv?.x, e.uv?.y));
+    setMovePoint(new Vector2(e.pointer.x, e.pointer.y));
+  };
+
+  const over = () => {
+    setIsOver(true);
+  };
+
+  const out = () => {
+    setIsOver(false);
+  };
+
+  useFrame(({ clock }, delate) => {
+    setClock(clock.getElapsedTime());
+    if (isOver) {
+      easing.damp(duration, 'x', 1, 0.5, delate);
+    } else {
+      easing.damp(duration, 'x', 0, 0.5, delate);
     }
   });
 
   return (
     <group>
-      <Raymarch shape={shape} lightColor={lightColor} />
-      <Plane lightColor={lightColor} />
+      <mesh
+        position={position}
+        onPointerMove={move}
+        onPointerOver={over}
+        onPointerOut={out}
+      >
+        <planeGeometry args={[renderSize.x, renderSize.y, 50]} />
+        <shader
+          u_texture={texture}
+          u_aspect={viewport.aspect}
+          u_delta={delta}
+          u_mouse={pointer}
+          u_uv={newVU}
+          u_move={movePoint}
+          u_time={clock}
+          u_duration={duration}
+        />
+      </mesh>
+      <Text
+        color={'white'}
+        font="/font/BodoniModaSC-Italic-VariableFont_opsz,wght.ttf"
+        position={[
+          -renderSize.x / 2,
+          position[1] + renderSize.y / 2 - 10 + deltaOffset,
+          1
+        ]}
+        scale={20}
+      >
+        {text.toLocaleUpperCase()}
+      </Text>
+      <Text
+        color={'white'}
+        font="/font/BodoniModaSC-Italic-VariableFont_opsz,wght.ttf"
+        position={[
+          renderSize.x / 2,
+          position[1] - renderSize.y / 2 + 5 + deltaOffset,
+          1
+        ]}
+        scale={4}
+      >
+        {tips.toLocaleUpperCase()}
+      </Text>
     </group>
   );
 };
 
-useTexture.preload(shapes.map((_, index) => `/matcap/${index + 10}.png`));
-useCubeTexture.preload(
-  ['/px.jpg', '/nx.jpg', '/py.jpg', '/ny.jpg', '/pz.jpg', '/nz.jpg'],
-  { path: '/cube' }
-);
-useLoader.preload(RGBELoader, '/hdr/cobblestone_street_night_2k.hdr');
+const Render = () => {
+  const scroll = useScroll();
+  const unit = 35;
+  const [offset, setOffset] = useState(scroll.offset * unit);
+  const [delta, setDelta] = useState(scroll.delta);
+  useFrame(() => {
+    setOffset(scroll.offset * unit);
+    setDelta(scroll.delta);
+  });
+
+  return (
+    <>
+      <fog attach="fog" args={['white', 1, 20]} />
+      <Scroll>
+        {imgConfig.map((item, index) => (
+          <Plane
+            key={index}
+            img={item.src}
+            delta={delta}
+            offset={offset}
+            text={item.text}
+            position={[
+              item.position[0],
+              -(100 * index) + offset,
+              item.position[2]
+            ]}
+          />
+        ))}
+      </Scroll>
+    </>
+  );
+};
+
+useTexture.preload(imgConfig.map((_, index) => `/pics/${index + 1}.jpg`));
+
 export default Render;

@@ -1,18 +1,17 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
-import React, { useEffect, useRef } from 'react';
 import Render from './Render';
-import { Html } from '@react-three/drei';
-import { tips } from '@/constants';
-
+import { PerspectiveCamera, ScrollControls} from '@react-three/drei';
 const index = () => {
+  const { width, height } = window.screen;
+
+  const aspect = width / height;
   return (
     <CanvasLayout>
-      <Render />
-      <Html center className="touch-none">
-        <div className=" text-white whitespace-nowrap text-center text-9xl montserrat-alternates-bold touch-none">
-          {tips}
-        </div>
-      </Html>
+      <color attach="background" args={['black']} />
+      <ScrollControls pages={6}>
+        <Render />
+      </ScrollControls>
+      <PerspectiveCamera aspect={aspect} makeDefault position={[0, 0, 100]} />
     </CanvasLayout>
   );
 };

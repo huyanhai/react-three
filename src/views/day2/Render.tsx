@@ -1,117 +1,137 @@
-import React, { useRef } from 'react';
-import Cross from './Cross';
 import {
-  AccumulativeShadows,
+  useGLTF,
   MeshTransmissionMaterial,
-  RandomizedLight,
-  Text,
+  Float,
   useTexture
 } from '@react-three/drei';
-import font from '/font/MontserratAlternates-Bold.ttf';
-import { Mesh } from 'three';
-import { tips } from '@/constants';
+import { BackSide, Mesh } from 'three';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { easing } from 'maath';
 
-const CrossMesh = () => {
-  const crossRef = useRef<Mesh>(new Mesh());
+const Ware = () => {
+  const wareRef = useRef<Mesh>(new Mesh());
+  const { nodes } = useGLTF('/modules/ware.gltf');
 
-  useFrame(({ clock }, delta) => {
-    crossRef.current.rotation.x += 0.05;
+  useFrame(({ camera, pointer }, delta) => {
+    // wareRef.current.rotation.z += 0.001;
+    if (camera.position.z > 50) {
+      camera.position.z -= 0.02;
+    }
+    easing.damp3(
+      camera.position,
+      [-pointer.x, -pointer.y, camera.position.z],
+      0.2,
+      delta
+    );
+    camera.lookAt(0, 0, 0);
   });
 
   return (
-    <mesh rotation={[0, 0, Math.PI / 4]} scale={3} ref={crossRef}>
-      <Cross />
-      <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} />
+    <mesh geometry={(nodes.yz as Mesh).geometry} ref={wareRef}>
+      <meshPhysicalMaterial color={'white'} side={BackSide} roughness={0.4} />
     </mesh>
   );
 };
 
-const Octahedron = () => {
-  const matcap = useTexture('/matcap/8.png');
-  const octahedronRef = useRef<Mesh>(new Mesh());
-  useFrame(({ clock }, delta) => {
-    octahedronRef.current.rotation.y += 0.05;
+const TextCom = () => {
+  const { nodes } = useGLTF('/modules/sp1.glb');
+  const envMap = useTexture('/hdr/studio_small_09_4k.exr');
+
+  const spRef = useRef<Mesh>(new Mesh());
+
+  useFrame(() => {
+    spRef.current.rotation.z += 0.001;
   });
+
   return (
-    <mesh
-      ref={octahedronRef}
-      position={[-6, 0, 0]}
-      castShadow
-      receiveShadow
-      rotation={[Math.PI / 4, 0, 0]}
-    >
-      <octahedronGeometry args={[2, 0]} />
-      <meshMatcapMaterial matcap={matcap} />
-    </mesh>
+    <group>
+      <mesh
+        geometry={(nodes.sp as Mesh).geometry}
+        position={[0, 0, 16]}
+        scale={0.8}
+        ref={spRef}
+      >
+        <MeshTransmissionMaterial
+          backsideThickness={5}
+          thickness={2}
+          side={BackSide}
+          reflectivity={1.52}
+          envMap={envMap}
+          envMapIntensity={1}
+          ior={1.72}
+          roughness={0}
+        />
+      </mesh>
+      <Float speed={10} rotationIntensity={1} floatIntensity={4} scale={0.8}>
+        <mesh
+          geometry={(nodes.text as Mesh).geometry}
+          scale={1}
+          position={[0, 0, 16]}
+        >
+          <MeshTransmissionMaterial
+            backsideThickness={5}
+            thickness={2}
+            side={BackSide}
+            reflectivity={1.52}
+            roughness={0.8}
+          />
+        </mesh>
+        <mesh
+          geometry={(nodes.text as Mesh).geometry}
+          scale={0.96}
+          position={[0, 0, 16]}
+        >
+          <meshBasicMaterial color={'red'} />
+        </mesh>
+      </Float>
+    </group>
   );
 };
 
-const Sphere = () => {
-  const matcap = useTexture('/matcap/8.png');
-
-  const sphereRef = useRef<Mesh>(new Mesh());
-  useFrame(({ clock }, delta) => {
-    sphereRef.current.rotation.y += 0.05;
-  });
+const Light = () => {
   return (
-    <mesh position={[6, 0, 0]} rotation={[Math.PI / 5, 0, 0]} ref={sphereRef}>
-      <torusGeometry args={[2, 0.4, 32, 64]} />
-      <meshMatcapMaterial matcap={matcap} />
-    </mesh>
-  );
-};
-
-const TextCom = (props: {
-  position?: [number, number, number];
-  fontSize?: number;
-}) => {
-  return (
-    <Text
-      font={font}
-      position={props.position}
-      fontSize={props.fontSize || 6}
-      textAlign="center"
-      color={'white'}
-    >
-      {tips}
-      <meshStandardMaterial />
-    </Text>
+    <>
+      <pointLight
+        distance={4000}
+        intensity={50000}
+        color={'white'}
+        position={[0, 0, -250]}
+      />
+      <pointLight
+        distance={4000}
+        intensity={50000}
+        color={'white'}
+        position={[0, 0, -150]}
+      />
+      <pointLight
+        distance={1000}
+        intensity={50000}
+        color={'orange'}
+        position={[0, 0, -100]}
+      />
+      <pointLight
+        distance={1000}
+        intensity={40000}
+        color={'red'}
+        position={[0, 0, 0]}
+      />
+      <pointLight
+        distance={1000}
+        intensity={50000}
+        color={'red'}
+        position={[0, 0, 100]}
+      />
+    </>
   );
 };
 
 const Render = () => {
   return (
     <>
-      <group position={[0, 2, 0]}>
-        <CrossMesh />
-        <Octahedron />
-        <Sphere />
-        {/* 投影 */}
-        {/* <AccumulativeShadows
-          temporal
-          frames={100}
-          color="purple"
-          colorBlend={0.5}
-          opacity={1}
-          scale={1}
-          alphaTest={0.9}
-        >
-          <RandomizedLight
-            amount={8}
-            radius={5}
-            ambient={0.1}
-            position={[0, 10, -10]}
-            bias={0.001}
-          />
-        </AccumulativeShadows> */}
-      </group>
-      <TextCom position={[0, 0, -10]} />
-      <points rotation={[0, 0, 0]} position={[0, 0, -20]}>
-        <planeGeometry args={[200, 200, 40, 40]} />
-        <pointsMaterial color={'gary'} size={0.1} opacity={0.1} alphaTest={0.1}/>
-      </points>
+      <Ware />
+      <Light />
+      <TextCom />
     </>
   );
 };
