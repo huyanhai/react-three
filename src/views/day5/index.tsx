@@ -1,7 +1,6 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
 import Render from './Render';
-import { PerspectiveCamera, ScrollControls } from '@react-three/drei';
-
+import { PerspectiveCamera, ScrollControls} from '@react-three/drei';
 const index = () => {
   const { width, height } = window.screen;
 

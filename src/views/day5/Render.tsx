@@ -54,6 +54,37 @@ const Shader = shaderMaterial(
 
 extend({ Shader });
 const obj = new Object3D();
+
+const Ins = (props: {
+  position: [number, number, number];
+  renderSize: Vector2;
+  size: number;
+}) => {
+  const { position, renderSize, size } = props;
+
+  const instancedRef = useRef<InstancedMesh>(null);
+
+  const cylinder = useMemo(() => {
+    return new CylinderGeometry(0.5, 0.5, 0.5, 32, 32);
+  }, []);
+
+  useEffect(() => {
+    for (let index = 0; index < size; index++) {
+      obj.position.set(-renderSize.x / 2 + index, position[1], position[2] + 2);
+      obj.updateMatrix();
+      instancedRef.current?.setMatrixAt(index, obj.matrix);
+    }
+    (instancedRef.current as InstancedMesh).instanceMatrix.needsUpdate = true;
+  }, []);
+
+  return (
+    <instancedMesh ref={instancedRef} args={[null as any, null as any, size]}>
+      <cylinderGeometry args={[0.9, 0.9, renderSize.y, 30]} />
+      <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} />
+    </instancedMesh>
+  );
+};
+
 const Plane = (props: TProps) => {
   const { img, position, delta, text } = props;
 
@@ -64,11 +95,6 @@ const Plane = (props: TProps) => {
   const [clock, setClock] = useState(0);
   const [duration] = useState(new Vector2(0, 0));
   const [isOver, setIsOver] = useState(false);
-  const instancedRef = useRef<InstancedMesh>(null);
-
-  const cylinder = useMemo(() => {
-    return new CylinderGeometry(0.5, 0.5, 0.5, 32, 32);
-  }, []);
 
   const { width, height } = texture.image;
 
@@ -105,30 +131,8 @@ const Plane = (props: TProps) => {
     }
   });
 
-  useEffect(() => {
-    for (let index = 0; index < size; index++) {
-      obj.position.set(
-        -renderSize.x / 2 + index,
-        position[1] - renderSize.y / 2,
-        position[2]
-      );
-      obj.updateMatrix();
-      instancedRef.current?.setMatrixAt(index, obj.matrix);
-    }
-    (instancedRef.current as InstancedMesh).instanceMatrix.needsUpdate = true;
-  }, []);
-
   return (
     <group>
-      <instancedMesh ref={instancedRef} args={[null as any, null as any, size]}>
-        <boxGeometry args={[0.1, renderSize.y, 0.1]} />
-        <meshBasicMaterial color={'red'} />
-        {/* <MeshTransmissionMaterial
-          backside
-          backsideThickness={5}
-          thickness={2}
-        /> */}
-      </instancedMesh>
       <mesh
         position={position}
         onPointerMove={move}
@@ -187,7 +191,7 @@ const Render = () => {
 
   return (
     <>
-      {/* <fog attach="fog" args={['white', 1, 20]} /> */}
+      <fog attach="fog" args={['white', 1, 20]} />
       <Scroll>
         {imgConfig.map((item, index) => (
           <Plane

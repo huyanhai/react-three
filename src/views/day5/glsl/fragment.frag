@@ -11,6 +11,7 @@ uniform vec2 u_mouse;
 uniform vec2 u_uv;
 uniform vec2 u_move;
 uniform float u_time;
+uniform vec2 u_duration;
 
 #define UNIT 4.0
 
@@ -21,7 +22,7 @@ vec3 rgbShift(sampler2D img, float delta) {
     vec2 uv = v_uv;
 
     delta *= UNIT;
-    float r = texture2D(img, vec2(uv.x, uv.y - delta)).r;
+    float r = texture2D(img, vec2(uv.x, uv.y - delta - u_duration.x/80.0)).r;
     vec2 gb = texture2D(img, uv).gb;
     return vec3(r, gb);
 }
