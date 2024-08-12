@@ -1,5 +1,4 @@
 import {
-  Html,
   MeshTransmissionMaterial,
   Scroll,
   Text,
@@ -10,7 +9,7 @@ import {
 import { ThreeEvent, extend, useFrame, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CylinderGeometry, InstancedMesh, Object3D, Vector2 } from 'three';
 import { easing } from 'maath';
 import { tips } from '@/constants/index';
@@ -63,10 +62,6 @@ const Ins = (props: {
   const { position, renderSize, size } = props;
 
   const instancedRef = useRef<InstancedMesh>(null);
-
-  const cylinder = useMemo(() => {
-    return new CylinderGeometry(0.5, 0.5, 0.5, 32, 32);
-  }, []);
 
   useEffect(() => {
     for (let index = 0; index < size; index++) {
