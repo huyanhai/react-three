@@ -9,6 +9,7 @@ uniform vec2 u_mouse;
 uniform sampler2D u_texture;
 
 #include "lygia/generative/fbm.glsl"
+#include "lygia/generative/gnoise.glsl"
 #include "lygia/generative/random.glsl"
 #include "lygia/space/rotate.glsl"
 
@@ -29,15 +30,16 @@ void main() {
 
     float dist = distance(u_mouse, uv);
 
-    float strenth = smoothstep(0.0, 0.6, dist);
+    float strenth = smoothstep(0.0, 0.2, dist);
 
     float n = mix(0.01, 0.02, strenth) * random(uv);
 
     vec3 hsv1 = vec3(0.0);
 
-    float f = fbm(uv * 0.3);
-    f += fbm(vec2(f - strenth, f - strenth));
-    f += fbm(vec2(f + strenth, f + strenth));
+    float f = 0.0;
+    f += fbm(uv * 0.2);
+    f += fbm(vec2(f) / 0.1);
+    f += gnoise(vec2(f + strenth, f + strenth));
     f += n;
     f += u_time * 0.05;
 
@@ -54,5 +56,5 @@ void main() {
 
     vec3 finally = mix(hsv1, mixColor, mixer);
 
-    gl_FragColor = vec4(finally, 1.0);
+    gl_FragColor = vec4(finally, 1.0 - f);
 }

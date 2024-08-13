@@ -6,7 +6,6 @@ const index = () => {
   const aspect = width / height;
   return (
     <CanvasLayout>
-      <color attach="background" args={['black']} />
       <Render />
     </CanvasLayout>
   );

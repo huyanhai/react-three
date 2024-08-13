@@ -5,6 +5,8 @@ import vertex from './glsl/vertex.vert';
 import { useState } from 'react';
 import { useMouse } from '@/hooks/useMouse';
 import { tips } from '@/constants';
+import { useControls } from 'leva';
+import { color } from 'three/webgpu';
 
 const Shader = shaderMaterial(
   {
@@ -47,10 +49,18 @@ const Plane = () => {
   );
 };
 
+const Background = () => {
+  const { color } = useControls({
+    color: '#000000'
+  });
+  return <color attach="background" args={[color]} />;
+};
+
 const Render = () => {
   return (
     <>
       <Plane />
+      <Background />
       <Html center className="touch-none">
         <div className=" text-white whitespace-nowrap text-center text-9xl montserrat-alternates-bold touch-none">
           {tips}
