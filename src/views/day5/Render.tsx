@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useMouse } from '@/hooks/useMouse';
 import { tips } from '@/constants';
 import { useControls } from 'leva';
-import { color } from 'three/webgpu';
 
 const Shader = shaderMaterial(
   {
