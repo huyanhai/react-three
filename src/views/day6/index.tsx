@@ -2,7 +2,7 @@ import CanvasLayout from '@/layouts/CanvasLayout';
 import Render from './Render';
 import { ScrollControls, OrbitControls, Environment } from '@react-three/drei';
 import Overlay from './Overlay';
-import "./day6.scss"
+import './day6.scss';
 
 const index = () => {
   return (
