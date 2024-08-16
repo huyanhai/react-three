@@ -1,10 +1,4 @@
-import {
-  Float,
-  shaderMaterial,
-  useGLTF,
-  useScroll,
-  Text
-} from '@react-three/drei';
+import { Float, shaderMaterial, useGLTF, useScroll } from '@react-three/drei';
 import { extend, useFrame, useThree } from '@react-three/fiber';
 import fragment from './glsl/fragment.frag';
 import vertex from './glsl/vertex.vert';
@@ -12,13 +6,11 @@ import {
   BackSide,
   BoxGeometry,
   CatmullRomCurve3,
-  DoubleSide,
   Group,
   Shape,
   Vector3
 } from 'three';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { tips } from '@/constants';
 import { easing } from 'maath';
 import { useDay6 } from '@/store/day6Store';
 
@@ -102,8 +94,8 @@ const Plane = () => {
       const cameraPosition = points?.getPointAt(offset);
       const lookAt = points.getPointAt(offset + 0.1);
       const tangent = points.getTangent(offset + 0.02).normalize();
+      const air = points.getPointAt(offset + 0.02);
 
-      setAirPlanePosition(points.getPointAt(offset + 0.02));
       airPlaneRef.current.lookAt(
         airPlaneRef.current.position.clone().add(tangent)
       );
@@ -111,8 +103,27 @@ const Plane = () => {
         new Vector3(cameraPosition.x, cameraPosition.y + 0.5, cameraPosition.z)
       );
       camera.lookAt(lookAt);
+      easing.damp3(
+        airPlaneRef.current.position,
+        [air.x, air.y + 0.2, air.z],
+        0.05,
+        delta
+      );
       setStop(false);
     } else {
+      if (airPlaneRef.current.position.z > -90) {
+        easing.damp3(
+          airPlaneRef.current.position,
+          [
+            airPlaneRef.current.position.x,
+            airPlaneRef.current.position.y,
+            airPlaneRef.current.position.z - 1
+          ],
+          0.3,
+          delta
+        );
+      }
+
       setStop(true);
     }
   };
@@ -127,10 +138,7 @@ const Plane = () => {
 
   return (
     <>
-      <group
-        position={[airPos[0], airPos[1] + 0.1, airPos[2]]}
-        ref={airPlaneRef}
-      >
+      <group ref={airPlaneRef}>
         <Float floatIntensity={1} speed={1.5} rotationIntensity={0.5}>
           <AirPlane delta={deltaValue} />
         </Float>

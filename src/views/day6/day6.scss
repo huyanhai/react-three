@@ -1,0 +1,21 @@
+.stop {
+  animation: plane 0.5s ease-in forwards;
+}
+
+.play {
+  opacity: 0;
+  transform: translateY(0);
+  transition: all 0.5s ease-in;
+}
+
+@keyframes plane {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(-100px);
+    opacity: 1;
+  }
+}

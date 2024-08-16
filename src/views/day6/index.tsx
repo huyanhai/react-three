@@ -2,6 +2,8 @@ import CanvasLayout from '@/layouts/CanvasLayout';
 import Render from './Render';
 import { ScrollControls, OrbitControls, Environment } from '@react-three/drei';
 import Overlay from './Overlay';
+import "./day6.scss"
+
 const index = () => {
   return (
     <div className="bg-gradient-to-b from-blue-400 to-white h-full" id="bg">
