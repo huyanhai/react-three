@@ -7,6 +7,7 @@ import i18n from '@/locales';
 import AuthRouter from './router/Auth';
 import 'tailwindcss/tailwind.css';
 import './assets/scss/index.scss';
+import './assets/globals.css'
 
 import App from './App';
 // import { registerShader } from './shaders';
