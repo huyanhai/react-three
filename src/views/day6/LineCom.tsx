@@ -131,7 +131,16 @@ const LineCom = () => {
       </mesh>
       <group ref={roundRef}>
         <mesh>
-          <boxGeometry />
+          <extrudeGeometry
+            args={[
+              shape,
+              {
+                steps: 1000,
+                bevelEnabled: false,
+                extrudePath: points
+              }
+            ]}
+          />
           <meshBasicMaterial color={'white'} opacity={0} />
         </mesh>
       </group>
