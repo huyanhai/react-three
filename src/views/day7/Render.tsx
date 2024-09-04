@@ -1,11 +1,5 @@
-import { forwardRef, useRef } from 'react';
-import {
-  BackSide,
-  Color,
-  DoubleSide,
-  Group,
-  Mesh,
-  Vector2} from 'three';
+import { forwardRef, useRef, useState } from 'react';
+import { BackSide, Color, Group, Mesh, Vector2 } from 'three';
 import {
   RoundedBox,
   shaderMaterial,
@@ -17,8 +11,6 @@ import {
 import { extend, useFrame } from '@react-three/fiber';
 import vertex from './glsl/vertex.vert';
 import fragment from './glsl/fragment.frag';
-import { useControls } from 'leva';
-import { useState } from 'react';
 import { easing } from 'maath';
 
 const Shader = shaderMaterial(
@@ -43,21 +35,17 @@ extend({ Shader });
 
 const Background = forwardRef((props: any, ref: any) => {
   const meshRef = useRef<Mesh>(new Mesh());
+  const shaderRef = useRef<typeof Shader>();
   const [time, setTime] = useState(0);
   useFrame((state) => {
     setTime(state.clock.getElapsedTime());
-  });
-  const { color } = useControls({
-    color: {
-      value: 'blue'
-    }
   });
 
   return (
     <group scale={0.9} ref={ref}>
       <mesh {...props} ref={meshRef}>
         <boxGeometry args={[1, 1, 2]} />
-        <shader side={BackSide} u_color={color} u_time={time} />
+        <shader side={BackSide} u_time={time} ref={shaderRef} />
       </mesh>
     </group>
   );
@@ -74,11 +62,7 @@ const TextCom = () => {
         height={0.05}
       >
         hello
-        <meshLambertMaterial
-          color={'#b900ff'}
-          emissive={'white'}
-          side={DoubleSide}
-        />
+        <meshBasicMaterial color={'#b900ff'} />
       </Text3D>
       <Text3D
         font={'/font/Montserrat Alternates_Bold.json'}
@@ -88,7 +72,7 @@ const TextCom = () => {
         height={0.05}
       >
         world
-        <meshBasicMaterial color={'red'} side={DoubleSide} />
+        <meshBasicMaterial color={'red'} />
       </Text3D>
     </group>
   );
