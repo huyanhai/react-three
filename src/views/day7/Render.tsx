@@ -1,17 +1,25 @@
-import { useRef } from 'react';
-import { BackSide, Color, Group, Mesh, Vector2, Vector3 } from 'three';
+import { forwardRef, useRef } from 'react';
+import {
+  BackSide,
+  Color,
+  DoubleSide,
+  Group,
+  Mesh,
+  Vector2} from 'three';
 import {
   RoundedBox,
   shaderMaterial,
   MeshTransmissionMaterial,
   useFBO,
-  useTexture
+  useTexture,
+  Text3D
 } from '@react-three/drei';
 import { extend, useFrame } from '@react-three/fiber';
 import vertex from './glsl/vertex.vert';
 import fragment from './glsl/fragment.frag';
 import { useControls } from 'leva';
 import { useState } from 'react';
+import { easing } from 'maath';
 
 const Shader = shaderMaterial(
   {
@@ -33,7 +41,7 @@ const Shader = shaderMaterial(
 
 extend({ Shader });
 
-const Background = (props: any) => {
+const Background = forwardRef((props: any, ref: any) => {
   const meshRef = useRef<Mesh>(new Mesh());
   const [time, setTime] = useState(0);
   useFrame((state) => {
@@ -46,15 +54,42 @@ const Background = (props: any) => {
   });
 
   return (
-    <group scale={0.9}>
+    <group scale={0.9} ref={ref}>
       <mesh {...props} ref={meshRef}>
-        <boxGeometry args={[1, 1, 1]} />
+        <boxGeometry args={[1, 1, 2]} />
         <shader side={BackSide} u_color={color} u_time={time} />
       </mesh>
-      <mesh position={[0,0,-0.9]}>
-        <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial color={'black'} />
-      </mesh>
+    </group>
+  );
+});
+
+const TextCom = () => {
+  return (
+    <group>
+      <Text3D
+        font={'/font/Montserrat Alternates_Bold.json'}
+        size={0.2}
+        position={[-0.4, 0.1, -1]}
+        rotation={[0, Math.PI / 10, 0]}
+        height={0.05}
+      >
+        hello
+        <meshLambertMaterial
+          color={'#b900ff'}
+          emissive={'white'}
+          side={DoubleSide}
+        />
+      </Text3D>
+      <Text3D
+        font={'/font/Montserrat Alternates_Bold.json'}
+        size={0.2}
+        position={[-0.43, -0.2, -0.9]}
+        rotation={[0, -Math.PI / 10, 0]}
+        height={0.05}
+      >
+        world
+        <meshBasicMaterial color={'red'} side={DoubleSide} />
+      </Text3D>
     </group>
   );
 };
@@ -63,7 +98,6 @@ const Glass = () => {
   const buffer = useFBO();
   const normal = useTexture('/normals/dirt1.png');
   const boxRef = useRef<Mesh>(new Mesh());
-  // normal.wrapS = normal.wrapT = 100;
 
   useFrame((state) => {
     boxRef.current.visible = false;
@@ -88,10 +122,25 @@ const Glass = () => {
 
 const Render = () => {
   const groupRef = useRef<Group>(new Group());
+  const bgRef = useRef<typeof Background>();
+  useFrame(({ camera, pointer }, delta) => {
+    if (camera.position.z > 50) {
+      camera.position.z -= 0.02;
+    }
+    easing.damp3(
+      camera.position,
+      [-pointer.x / 2, -pointer.y / 2, camera.position.z],
+      0.2,
+      delta
+    );
+    camera.lookAt(0, 0, 0);
+  });
+
   return (
     <group ref={groupRef}>
-      <Background position={[0, 0, -0.5]} />
+      <Background position={[0, 0, -1]} />
       <Glass />
+      <TextCom />
     </group>
   );
 };
