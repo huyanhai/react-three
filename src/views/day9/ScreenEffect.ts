@@ -1,6 +1,5 @@
 import { Vector2 } from 'three';
 import vertexShader from './glsl/effectVertex.vert';
-
 import fragmentShader from './glsl/effectFragment.frag';
 
 /**

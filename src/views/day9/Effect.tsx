@@ -43,24 +43,24 @@ const Effect = () => {
     if (brightnessRef.current?.uniforms) {
       brightnessRef.current.uniforms.brightness = { value: 0.38 };
       brightnessRef.current.uniforms.contrast = { value: 0.8 };
-    }
+    }    
   });
 
   return (
     <Effects args={[gl]}>
-      {/* <filmPass args={[0.2, 1.5, 2000, false]} /> */}
       <renderPass args={[scene, camera]} />
+      {/* <filmPass args={[0.2, 1.5, 2000, true]} /> */}
+      <shaderPass args={[BrightnessContrastShader]} ref={brightnessRef} />
+      <shaderPass args={[HueSaturationShader]} ref={heRef} />
       <unrealBloomPass
         args={[
           new Vector2(window.innerWidth, window.innerHeight),
-          0.4,
-          0.54,
+          1,
+          0.6,
           0.1
         ]}
       />
-      <shaderPass args={[HueSaturationShader]} ref={heRef} />
-      <shaderPass args={[BrightnessContrastShader]} ref={brightnessRef} />
-      {/* <shaderPass args={[ScreenEffect]} ref={shaderPassRef} /> */}
+      <shaderPass args={[ScreenEffect]} ref={shaderPassRef} />
     </Effects>
   );
 };

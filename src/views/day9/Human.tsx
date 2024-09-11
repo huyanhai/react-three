@@ -1,6 +1,5 @@
 import { useGLTF, useTexture } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useControls } from 'leva';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import headShader from './glsl/head.frag';
 import bodyShader from './glsl/body.frag';
@@ -13,6 +12,7 @@ import {
   ACESFilmicToneMapping
 } from 'three';
 import { easing } from 'maath';
+import { useDay9 } from '@/store/day9Store';
 
 const genPmrTexture = (renderer: WebGLRenderer, texture: Texture) => {
   const pmremGenerator = new PMREMGenerator(renderer!);
@@ -25,9 +25,14 @@ const genPmrTexture = (renderer: WebGLRenderer, texture: Texture) => {
 const Human = () => {
   const env = useTexture('env.jpg');
   const { nodes } = useGLTF('human.glb');
+  const { isTouch, scrollProgress } = useDay9();
 
   const [renderer, setRenderer] = useState<WebGLRenderer>();
   const [time, setTime] = useState(0);
+  // 强度
+  const [strength] = useState({
+    value: 0.1
+  });
 
   const humanRef = useRef<any>();
   const shaderRef = useRef<any>();
@@ -38,12 +43,6 @@ const Human = () => {
     }
   }, [renderer]);
 
-  const { camera } = useThree();
-
-  const oldCamera = useMemo(() => {
-    return camera.clone().position;
-  }, []);
-
   useFrame(({ clock, gl, camera, scene, pointer }, delta) => {
     setTime(clock.getElapsedTime());
     setRenderer(gl);
@@ -52,23 +51,22 @@ const Human = () => {
       shaderRef.current.userData.shader.uniforms.uTime = {
         value: time
       };
+      shaderRef.current.userData.shader.uniforms.uStrength = {
+        value: strength.value
+      };
       humanRef.current.material = shaderRef.current;
     }
 
     scene.environment = envMap!;
     gl.toneMapping = ACESFilmicToneMapping;
     gl.toneMappingExposure = 2.0;
-    easing.damp3(
-      camera.position,
-      [
-        oldCamera.x - pointer.x * 30,
-        oldCamera.y + pointer.y * 20,
-        oldCamera.z + pointer.y * 10
-      ],
-      0.2,
-      delta
-    );
-    camera.lookAt(0, 0, 0);
+
+    if (scrollProgress < 1) return;
+    if (isTouch) {
+      strength.value < 1 && easing.damp(strength, 'value', 1, 0.5, delta);
+    } else {
+      strength.value > 0 && easing.damp(strength, 'value', 0, 0.5, delta);
+    }
   });
 
   useEffect(() => {}, []);
@@ -77,6 +75,9 @@ const Human = () => {
     // 给shader添加uniform
     shader.uniforms.uTime = {
       value: time
+    };
+    shader.uniforms.uStrength = {
+      value: 0
     };
 
     shader.fragmentShader = `${headShader}` + '\n' + shader.fragmentShader;
