@@ -1,17 +1,30 @@
 import { Canvas } from '@react-three/fiber';
-import React, { useEffect, useRef } from 'react';
+import { OrbitControls } from '@react-three/drei';
+
 import Human from './Human';
-import { Environment, OrbitControls, Sky } from '@react-three/drei';
-import Light from './Light';
+import Effect from './Effect';
+import { useControls } from 'leva';
 
 const Render = () => {
+  const onClickCapture = (e) => {
+    console.log(e);
+  };
   return (
-    <Canvas camera={{ position: [0, 30, 100], fov: 4 }} shadows>
-      <Environment files={'studio_small_09_4k.exr'} />
+    <Canvas
+      camera={{
+        position: [18.47337626175879, 27.538580746027492, 69.28164971877845],
+        fov: 5,
+        rotation: [
+          -0.378338441934772, 0.24289259065317328, 0.09531055245982788
+        ],
+        near: 0.1
+      }}
+      shadows
+      onClickCapture={onClickCapture}
+    >
       <Human />
-      <OrbitControls />
-      {/* <Light /> */}
-      <color attach="background" args={['#14141c']} />
+      <color attach="background" args={['#050505']} />
+      <Effect />
     </Canvas>
   );
 };

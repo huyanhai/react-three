@@ -10,6 +10,7 @@
         "lint": "eslint --fix ./src -ext .js,.ts,.tsx"
     },
     "dependencies": {
+        "@14islands/r3f-scroll-rig": "^8.13.2",
         "@ant-design/icons": "^5.3.6",
         "@gsap/react": "^2.1.1",
         "@nodetoy/react-nodetoy": "^0.1.24",
@@ -36,7 +37,7 @@
         "react-router-dom": "^6.4.3",
         "react-svg": "^16.1.34",
         "tailwind-merge": "^2.5.2",
-        "three": "^0.167.0",
+        "three": "^0.166.1",
         "three-stdlib": "^2.30.4",
         "zustand": "^4.5.2"
     },

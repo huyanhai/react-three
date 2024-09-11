@@ -4,9 +4,13 @@ import { ComponentType, lazy } from 'react';
 
 const dynamicImport = () => {
   const routes: ISyncRoute[] = [];
-  const paths = import.meta.glob<{ default: ComponentType }>(
+
+  let paths = import.meta.glob<{ default: ComponentType }>(
     '@/views/day*/index.tsx'
   );
+  if (import.meta.env.DEV) {
+    paths = import.meta.glob<{ default: ComponentType }>('@/views/*/index.tsx');
+  }
 
   Object.keys(paths).forEach(async (key) => {
     const keyArray = key.split('/');

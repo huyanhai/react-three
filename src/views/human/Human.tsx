@@ -1,9 +1,9 @@
 import { useGLTF, useTexture } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import headShader from '@/shaders/human/glsl/head.frag';
-import bodyShader from '@/shaders/human/glsl/body.frag';
+import headShader from './glsl/head.frag';
+import bodyShader from './glsl/body.frag';
 
 import {
   PMREMGenerator,
@@ -12,22 +12,7 @@ import {
   WebGLProgramParametersWithUniforms,
   ACESFilmicToneMapping
 } from 'three';
-import {
-  Bloom,
-  BrightnessContrast,
-  EffectComposer,
-  SMAA,
-  ToneMapping,
-  Scanline,
-  HueSaturation
-} from '@react-three/postprocessing';
-
-import {
-  BlendFunction,
-  ToneMappingMode,
-  WebGLExtension,
-  BlendMode
-} from 'postprocessing';
+import { easing } from 'maath';
 
 const genPmrTexture = (renderer: WebGLRenderer, texture: Texture) => {
   const pmremGenerator = new PMREMGenerator(renderer!);
@@ -41,26 +26,11 @@ const Human = () => {
   const env = useTexture('env.jpg');
   const { nodes } = useGLTF('human.glb');
 
-  const [exposure, setExposure] = useState(0);
-  const [intensity, setIntensity] = useState(1);
-
-  useControls({
-    exposure: {
-      value: 0.7,
-      min: 0,
-      max: 3,
-      onChange: (e) => {
-        setExposure(e);
-      }
-    }
-  });
-
   const [renderer, setRenderer] = useState<WebGLRenderer>();
   const [time, setTime] = useState(0);
 
   const humanRef = useRef<any>();
   const shaderRef = useRef<any>();
-  const effectComposerRef = useRef<any>();
 
   const envMap = useMemo(() => {
     if (renderer) {
@@ -68,7 +38,13 @@ const Human = () => {
     }
   }, [renderer]);
 
-  useFrame(({ clock, gl, camera, scene }) => {
+  const { camera } = useThree();
+
+  const oldCamera = useMemo(() => {
+    return camera.clone().position;
+  }, []);
+
+  useFrame(({ clock, gl, camera, scene, pointer }, delta) => {
     setTime(clock.getElapsedTime());
     setRenderer(gl);
 
@@ -80,11 +56,22 @@ const Human = () => {
     }
 
     scene.environment = envMap!;
+    gl.toneMapping = ACESFilmicToneMapping;
+    gl.toneMappingExposure = 2.0;
+    easing.damp3(
+      camera.position,
+      [
+        oldCamera.x - pointer.x * 30,
+        oldCamera.y + pointer.y * 20,
+        oldCamera.z + pointer.y * 10
+      ],
+      0.2,
+      delta
+    );
+    camera.lookAt(0, 0, 0);
   });
 
-  useEffect(() => {
-    setIntensity(500);
-  }, [renderer]);
+  useEffect(() => {}, []);
 
   const onBeforeCompile = (shader: WebGLProgramParametersWithUniforms) => {
     // 给shader添加uniform
@@ -105,38 +92,24 @@ const Human = () => {
 
   return (
     <>
-      {/* <mesh geometry={nodes.human.geometry} position={[0, -16, 0]}>
-        <meshStandardMaterial
-          color={'hotpink'}
-          emissive={'hotpink'}
-          emissiveIntensity={4 * exposure}
-        />
-      </mesh> */}
       <group>
+        <hemisphereLight args={[0xffffff]} intensity={100} />
         <mesh
           ref={humanRef}
           geometry={(nodes.human as any).geometry}
-          position={[0, -16, 0]}
+          position={[0, -16.5, 0]}
         >
           <meshStandardMaterial
-            toneMapped={false}
+            toneMapped={true}
             ref={shaderRef}
-            roughness={0.28}
-            metalness={0.5}
+            roughness={0.42}
+            metalness={1}
             envMap={envMap}
-            color={'#fff'}
+            color={'#a8a8a8'}
             onBeforeCompile={onBeforeCompile}
           />
         </mesh>
       </group>
-
-      <EffectComposer ref={effectComposerRef}>
-        <Bloom luminanceThreshold={0.9} intensity={intensity} mipmapBlur={true} />
-        <BrightnessContrast brightness={0.01} contrast={0.6} />
-        {/* <Scanline density={5} /> */}
-        <ToneMapping mode={ToneMappingMode.LINEAR} />
-        {/* <SMAA /> */}
-      </EffectComposer>
     </>
   );
 };
