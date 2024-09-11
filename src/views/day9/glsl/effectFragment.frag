@@ -14,7 +14,7 @@ void main() {
     float noise = gnoise(vec3(0.0, 100.0, uTime));
     vec2 uv = vUv;
 
-    float strength = 0.1 + 0.2 * gnoise(vec3(0.0, 1.0, uTime));
+    float strength = 0.1 * gnoise(vec3(0.0, 1.0, uTime));
 
     float dis = mod(uv.y * 1000.0 + uTime * 0.1, 4.0) < 2.0 ? 1.0 : -1.0;
     uv.x += dis * (1.0 + 4.0 * noise) / tSize.x;

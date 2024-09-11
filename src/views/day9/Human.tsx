@@ -44,7 +44,7 @@ const Human = () => {
   }, [renderer]);
 
   useFrame(({ clock, gl, camera, scene, pointer }, delta) => {
-    setTime(clock.getElapsedTime());
+    setTime(time + 0.01);
     setRenderer(gl);
 
     if (shaderRef.current.userData.shader) {

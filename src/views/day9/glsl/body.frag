@@ -28,7 +28,7 @@ vec3 getIBLRadiance(const in vec3 viewDir, const in vec3 normal, const in float 
 
     reflectVec = rotate(reflectVec, 1.5, vec3(0., 1.0, 0.0));
 
-    reflectVec = rotateX(reflectVec, uTime * (0.5 + 0.8 * uStrength));
+    reflectVec = rotateX(reflectVec, uTime * (0.5 + 0.7 * uStrength));
 
     vec4 envMapColor = textureCubeUV(envMap, envMapRotation * reflectVec, roughness);
     return envMapColor.rgb * envMapIntensity;
