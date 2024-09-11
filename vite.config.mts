@@ -29,5 +29,6 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lygia']
-  }
+  },
+  worker: { plugins: () => [react()] }
 });

@@ -21,6 +21,7 @@
         "@react-three/csg": "^3.2.0",
         "@react-three/drei": "^9.109.2",
         "@react-three/fiber": "^8.14.3",
+        "@react-three/offscreen": "^0.0.8",
         "@react-three/postprocessing": "^2.16.0",
         "animejs": "^3.2.2",
         "class-variance-authority": "^0.7.0",
