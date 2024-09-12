@@ -26,7 +26,7 @@ vec3 getIBLRadiance(const in vec3 viewDir, const in vec3 normal, const in float 
     reflectVec = normalize(mix(reflectVec, normal, roughness * roughness));
     reflectVec = inverseTransformDirection(reflectVec, viewMatrix);
 
-    reflectVec = rotate(reflectVec, 1.5, vec3(0., 1.0, 0.0));
+    reflectVec = rotate(reflectVec, 1.5, vec3(.0,1.0,.0));
 
     reflectVec = rotateX(reflectVec, uTime * (0.5 + 0.7 * uStrength));
 

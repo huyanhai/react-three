@@ -4,12 +4,12 @@ import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap/gsap-core';
 import { useFrame, useThree } from '@react-three/fiber';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { OrbitControls } from '@react-three/drei';
 import { useLine } from './hooks/useLine';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { PerspectiveCamera } from 'three';
 import { useDay9 } from '@/store/day9Store';
 import { easing } from 'maath';
+import { FIRST_ROTATION } from './constants';
 
 const Render = () => {
   const { camera } = useThree();
@@ -63,42 +63,24 @@ const Render = () => {
           (camera as PerspectiveCamera).updateProjectionMatrix();
         },
         onToggle: (self) => {
-          console.log("end");
-          
+          console.log('end');
+
           setScrolling(self.isActive);
 
-          console.log(scrolling,self.isActive);
-          
+          console.log(scrolling, self.isActive);
         }
       }
     });
-    tl.fromTo(
-      camera.rotation,
-      {
-        x: -1.5001040237792025,
-        y: 0.013779495702584453,
-        z: 0.19218940543350874
-      },
-      {
-        x: -0.378338441934772,
-        y: 12,
-        z: 0.09531055245982788
-      }
-    );
-    //   // 表示一个时间轴上的一段效果动画
-    //   // t.current?.fromTo(
-    //   //   '#text',
-    //   //   {
-    //   //     y: '-100%',
-    //   //     opacity: 0
-    //   //   },
-    //   //   { y: '0', opacity: 1 },
-    //   //   '+=0.1'
-    //   // );
-    //   // t.current?.to(groupRef.current.rotation, {
-    //   //   z: Math.PI,
-    //   //   duration: 1
-    //   // });
+    tl.fromTo(camera.rotation, FIRST_ROTATION, {
+      x: -0.378338441934772,
+      y: 12,
+      z: 0.09531055245982788
+    });
+
+    tl.to('#text', {
+      opacity: 0,
+      y: -100
+    });
   });
 
   return (

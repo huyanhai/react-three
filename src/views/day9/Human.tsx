@@ -1,4 +1,4 @@
-import { useGLTF, useTexture } from '@react-three/drei';
+import { useGLTF, useTexture, Text } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import headShader from './glsl/head.frag';
@@ -13,6 +13,7 @@ import {
 } from 'three';
 import { easing } from 'maath';
 import { useDay9 } from '@/store/day9Store';
+import { tips } from '@/constants';
 
 const genPmrTexture = (renderer: WebGLRenderer, texture: Texture) => {
   const pmremGenerator = new PMREMGenerator(renderer!);
@@ -44,7 +45,7 @@ const Human = () => {
   }, [renderer]);
 
   useFrame(({ clock, gl, camera, scene, pointer }, delta) => {
-    setTime(time + 0.01);
+    setTime(clock.getElapsedTime());
     setRenderer(gl);
 
     if (shaderRef.current.userData.shader) {
@@ -94,11 +95,10 @@ const Human = () => {
   return (
     <>
       <group>
-        <hemisphereLight args={[0xffffff]} intensity={100} />
         <mesh
           ref={humanRef}
           geometry={(nodes.human as any).geometry}
-          position={[0, -16.5, 0]}
+          position={[-0.1, -16.5, 0]}
         >
           <meshStandardMaterial
             toneMapped={true}

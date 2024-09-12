@@ -22,8 +22,23 @@
   src: url("/font/MontserratAlternates-Thin.ttf");
 }
 
+
+@font-face {
+  font-family: 'BodoniModaSC';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/font/BodoniModaSC-Italic-VariableFont_opsz,wght.ttf");
+}
+
 .montserrat-alternates-bold {
   font-family: 'Montserrat Alternates', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.bodoni-moda {
+  font-family: 'BodoniModaSC', sans-serif;
   font-weight: 700;
   font-style: normal;
 }
