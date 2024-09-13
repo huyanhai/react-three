@@ -5,6 +5,7 @@ import { Loader } from '@react-three/drei';
 import { initSmoothScrolling } from '@/utils/smoothScroll';
 import { FIRST_POINT, FIRST_ROTATION } from './constants';
 import { tips } from '@/constants/index';
+import './index.scss';
 
 const Render = lazy(() => import('./Render'));
 const worker = new Worker(new URL('./worker.tsx', import.meta.url), {
@@ -31,7 +32,10 @@ const Human = () => {
       onMouseUp={onMouseUp}
     >
       <div className="fixed w-full h-screen top-0 left-0">
-        <div id='text' className="montserrat-alternates-bold text-9xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-white whitespace-nowrap">
+        <div
+          id="text"
+          className="montserrat-alternates-bold text-9xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-white whitespace-nowrap text-linear"
+        >
           {tips}
         </div>
         <Canvas

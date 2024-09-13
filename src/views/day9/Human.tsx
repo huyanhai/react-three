@@ -26,7 +26,7 @@ const genPmrTexture = (renderer: WebGLRenderer, texture: Texture) => {
 const Human = () => {
   const env = useTexture('env.jpg');
   const { nodes } = useGLTF('human.glb');
-  const { isTouch, scrollProgress } = useDay9();
+  const { isTouch, isScrolling, scrollProgress } = useDay9();
 
   const [renderer, setRenderer] = useState<WebGLRenderer>();
   const [time, setTime] = useState(0);
@@ -62,7 +62,7 @@ const Human = () => {
     gl.toneMapping = ACESFilmicToneMapping;
     gl.toneMappingExposure = 2.0;
 
-    if (scrollProgress < 1) return;
+    if (isScrolling || scrollProgress < 1) return;
     if (isTouch) {
       strength.value < 1 && easing.damp(strength, 'value', 1, 0.5, delta);
     } else {

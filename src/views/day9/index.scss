@@ -1,0 +1,5 @@
+.text-linear {
+  -webkit-background-clip: text; /* 裁剪背景到文字 */
+  -webkit-text-fill-color: transparent; /* 使文字颜色透明，以显示背景 */
+  color: transparent; /* 为了兼容Firefox */
+}

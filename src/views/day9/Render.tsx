@@ -5,24 +5,26 @@ import { gsap } from 'gsap/gsap-core';
 import { useFrame, useThree } from '@react-three/fiber';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLine } from './hooks/useLine';
-import { useMemo, useState } from 'react';
-import { PerspectiveCamera } from 'three';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PerspectiveCamera, Vector3 } from 'three';
 import { useDay9 } from '@/store/day9Store';
 import { easing } from 'maath';
 import { FIRST_ROTATION } from './constants';
+import { Html } from '@react-three/drei';
 
 const Render = () => {
   const { camera } = useThree();
+
   const { shape, points, getPointAt } = useLine();
-  const { scrollProgress, changeScrollProgress } = useDay9();
-  const [scrolling, setScrolling] = useState(false);
+  const { isScrolling, changeScrolling, scrollProgress, changeScrollProgress } =
+    useDay9();
 
   const oldCamera = useMemo(() => {
     return camera.clone().position;
   }, [scrollProgress]);
 
   useFrame(({ pointer, camera }, delta) => {
-    if (scrollProgress < 1) return;
+    if (isScrolling || scrollProgress < 1) return;
     easing.damp3(
       camera.position,
       [
@@ -48,7 +50,7 @@ const Render = () => {
         trigger: `#scroll`,
         pin: false, // pin the trigger element while active
         start: 'top+=100 top', // 当滚动条距离顶部100的位置开始动画
-        end: 'center center', // 当滚动条到达窗口中心的时候就停止
+        end: 'center center-=200', // 当滚动条到达窗口中心的时候就停止
         // 正向和反向
         scrub: true,
         // 标记，开启后会出现滚动条
@@ -57,30 +59,54 @@ const Render = () => {
           const progress = self.progress;
           changeScrollProgress(progress);
           const point = getPointAt(progress);
-          camera.position.set(point.x, point.y, point.z);
+          if (progress > 0.85) {
+            easing.damp3(camera.position, [point.x, point.y, point.z], 0.05);
+          } else {
+            camera.position.set(point.x, point.y, point.z);
+          }
+
           camera.lookAt(0, 0, 0);
           (camera as PerspectiveCamera).fov = 3 + (6 * progress) / 3;
           (camera as PerspectiveCamera).updateProjectionMatrix();
         },
         onToggle: (self) => {
-          console.log('end');
-
-          setScrolling(self.isActive);
-
-          console.log(scrolling, self.isActive);
+          changeScrolling(self.isActive);
         }
       }
     });
+
     tl.fromTo(camera.rotation, FIRST_ROTATION, {
       x: -0.378338441934772,
       y: 12,
       z: 0.09531055245982788
     });
 
-    tl.to('#text', {
-      opacity: 0,
-      y: -100
+    const tl1 = gsap.timeline({
+      scrollTrigger: {
+        start: 'top+=100 top',
+        end: 'center top-=10',
+        scrub: true
+      }
     });
+
+    tl1.to('#text', {
+      opacity: 0,
+      y: -400,
+      scale: 0.5
+    });
+
+    gsap.fromTo(
+      '#text',
+      {
+        backgroundImage: 'linear-gradient(90deg, #ff4700, black, #ff4700)'
+      },
+      {
+        backgroundImage: 'linear-gradient(90deg, black, #ff4700, black)',
+        repeat: -1,
+        duration: 5,
+        yoyo: true
+      }
+    );
   });
 
   return (
