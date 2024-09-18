@@ -1,16 +1,18 @@
 import { lazy, useEffect } from 'react';
-import { Canvas } from '@react-three/offscreen';
+// import { Canvas } from '@react-three/offscreen';
 import { useDay9 } from '@/store/day9Store';
 import { Loader } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
 import { initSmoothScrolling } from '@/utils/smoothScroll';
 import { FIRST_POINT, FIRST_ROTATION } from './constants';
 import { tips } from '@/constants/index';
 import './index.scss';
+import Render from './Render';
 
-const Render = lazy(() => import('./Render'));
-const worker = new Worker(new URL('./worker.tsx', import.meta.url), {
-  type: 'module'
-});
+// const Render = lazy(() => import('./Render'));
+// const worker = new Worker(new URL('./worker.tsx', import.meta.url), {
+//   type: 'module'
+// });
 
 const Human = () => {
   const { changeState } = useDay9();
@@ -40,8 +42,6 @@ const Human = () => {
         </div>
         <Canvas
           className="w-full h-full absolute"
-          worker={worker}
-          fallback={<Render />}
           camera={{
             position: FIRST_POINT,
             fov: 3,
@@ -49,7 +49,9 @@ const Human = () => {
             near: 0.1
           }}
           shadows
-        />
+        >
+          <Render />
+        </Canvas>
         <Loader />
       </div>
       <div id="scroll">
