@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { Loader } from '@react-three/drei';
 
 import Text from './Text';
 
@@ -25,6 +26,7 @@ export default function App() {
       <article className="flex items-center justify-center h-screen w-full text-9xl text-green-500 relative">
         <Image />
       </article>
+      <Loader />
     </div>
   );
 }

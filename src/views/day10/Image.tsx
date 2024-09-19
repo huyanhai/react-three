@@ -8,7 +8,6 @@ import { a, useSpring } from '@react-spring/three';
 import {
   MeshWobbleMaterial,
   OrbitControls,
-  SoftShadows,
   useTexture
 } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
@@ -53,7 +52,6 @@ const Test = ({ inViewport }: ScrollSceneChildProps) => {
             rotation={0.5}
           /> */}
         </MeshWobbleMaterial>
-        <SoftShadows />
       </a.mesh>
       <OrbitControls />
     </group>
