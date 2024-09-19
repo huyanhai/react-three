@@ -16,6 +16,7 @@
         "@nodetoy/react-nodetoy": "^0.1.24",
         "@radix-ui/react-portal": "1.0.2",
         "@radix-ui/react-slot": "^1.1.0",
+        "@react-spring/three": "^9.7.4",
         "@react-three/a11y": "^3.0.0",
         "@react-three/cannon": "^6.6.0",
         "@react-three/csg": "^3.2.0",

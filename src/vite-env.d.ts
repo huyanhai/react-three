@@ -2,6 +2,7 @@
 
 declare module '*.vert';
 declare module '*.frag';
+declare module '@14islands/r3f-scroll-rig/powerups';
 
 declare namespace JSX {
   interface IntrinsicElements {
