@@ -2,7 +2,7 @@ name: continuous deployment
 on:
   push:
     branches:
-      - master #当master分支推送的时候,我们部署到生产服务器
+      - main #当master分支推送的时候,我们部署到生产服务器
       - test #当test分支推送的时候,我们部署到测试服务器
 
 jobs:
