@@ -31,7 +31,7 @@ jobs:
       #     remote_path: '/www/web' #测试服务器部署路径
 
       - name: deploy file to prod server
-        if: github.ref == 'refs/heads/master' #对分支进行检测
+        if: github.ref == 'refs/heads/main' #对分支进行检测
         uses: wlixcc/SFTP-Deploy-Action@v1.0
         with:
           username: 'root'
