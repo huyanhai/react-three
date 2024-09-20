@@ -1,0 +1,41 @@
+name: continuous deployment
+on:
+  push:
+    branches:
+      - master #当master分支推送的时候,我们部署到生产服务器
+      - test #当test分支推送的时候,我们部署到测试服务器
+
+jobs:
+  deploy_job:
+    runs-on: ubuntu-latest
+
+    name: build&deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies #install
+        run: pnpm install
+
+      - name: build #build
+        run: pnpm run build
+
+      # - name: deploy file to test server
+      #   if: github.ref == 'refs/heads/test' #对分支进行检测
+      #   uses: wlixcc/SFTP-Deploy-Action@v1.0
+      #   with:
+      #     username: 'root'
+      #     server: '${{ secrets.TEST_SERVER_IP }}' #测试服务器地址
+      #     ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     local_path: './build/*'
+      #     remote_path: '/www/web' #测试服务器部署路径
+
+      - name: deploy file to prod server
+        if: github.ref == 'refs/heads/master' #对分支进行检测
+        uses: wlixcc/SFTP-Deploy-Action@v1.0
+        with:
+          username: 'root'
+          server: '${{ secrets.SERVER_IP }}' #正式服务器地址
+          ssh_private_key: ${{ secrets.WEB_TOKEN }}
+          local_path: './dist/*'
+          remote_path: '/www/web' #服务器部署路径
