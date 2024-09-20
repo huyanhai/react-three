@@ -9,16 +9,16 @@ jobs:
   deploy_job:
     runs-on: ubuntu-latest
 
-    name: build&deploy
+    name: 部署到服务器 #deploy to production server
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Dependencies #install
-        run: pnpm install
+      - name: 安装依赖 #install
+        run: yarn
 
-      - name: build #build
-        run: pnpm run build
+      - name: 构建 #build
+        run: yarn build
 
       # - name: deploy file to test server
       #   if: github.ref == 'refs/heads/test' #对分支进行检测
@@ -30,7 +30,7 @@ jobs:
       #     local_path: './build/*'
       #     remote_path: '/www/web' #测试服务器部署路径
 
-      - name: deploy file to prod server
+      - name: 部署
         if: github.ref == 'refs/heads/main' #对分支进行检测
         uses: wlixcc/SFTP-Deploy-Action@v1.0
         with:
