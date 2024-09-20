@@ -12,13 +12,16 @@ jobs:
     name: 部署到服务器 #deploy to production server
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      
+      - name: 切换pnpm #switch to pnpm
+        uses: dafnik/setup-node-pnpm@v3
 
       - name: 安装依赖 #install
-        run: yarn
+        run: pnpm install
 
       - name: 构建 #build
-        run: yarn build
+        run: pnpm run build
 
       # - name: deploy file to test server
       #   if: github.ref == 'refs/heads/test' #对分支进行检测
