@@ -25,7 +25,7 @@ jobs:
 
       - name: 测试部署
         if: github.ref == 'refs/heads/test' #对test分支进行检测
-        uses: wearesection/sftp-action@v1.0.0
+        uses: wearesection/sftp-remote@1.0.1
         with:
           username: 'root'
           server: '${{ secrets.SERVER_IP }}' #正式服务器地址
