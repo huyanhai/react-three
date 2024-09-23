@@ -25,7 +25,7 @@ jobs:
 
       - name: 测试部署
         if: github.ref == 'refs/heads/test' #对test分支进行检测
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.22
         with:
           username: 'root'
           server: '${{ secrets.SERVER_IP }}' #测试服务器地址
@@ -36,7 +36,7 @@ jobs:
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.22
         with:
           username: 'root'
           server: '${{ secrets.SERVER_IP }}' #正式服务器地址
