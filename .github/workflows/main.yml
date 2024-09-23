@@ -33,15 +33,16 @@ jobs:
           source: './dist/*'
           target: '/home/www' #服务器部署路径
           rm: true
+          strip_components: 1
 
-      - name: 部署
-        if: github.ref == 'refs/heads/main' #对main分支进行检测
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.3
+      - name: 正式部署
+        if: github.ref == 'refs/heads/test' #对test分支进行检测
+        uses: appleboy/scp-action@v0.1.7
         with:
           username: 'root'
-          server: '${{ secrets.SERVER_IP }}' #正式服务器地址
-          ssh_private_key: ${{ secrets.WEB_TOKEN }}
-          local_path: './dist/*'
-          remote_path: '/home/www' #服务器部署路径
-          sftp_only: false
-          sftpArgs: '-o ConnectTimeout=5'
+          host: '${{ secrets.SERVER_IP }}' #正式服务器地址
+          key: ${{ secrets.WEB_TOKEN }}
+          source: './dist/*'
+          target: '/home/www' #服务器部署路径
+          rm: true
+          strip_components: 1
