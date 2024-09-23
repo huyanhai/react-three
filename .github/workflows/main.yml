@@ -25,17 +25,13 @@ jobs:
 
       - name: 测试部署
         if: github.ref == 'refs/heads/test' #对test分支进行检测
-        env:
-          PRIVATE_KEY: ${{ secrets.WEB_TOKEN }}
-          HOSTNAME: ${{secrets.SERVER_IP}}
-          USER_NAME: 'root'
-          LOCAL_PATH: './dist'
-          REMOTE_PATH: '/home/www'
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          sftp -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-            put -r -O ${LOCAL_PATH} ${REMOTE_PATH}
-          '
+        uses: wearesection/sftp-action@v1.0.0
+        with:
+          username: 'root'
+          server: '${{ secrets.SERVER_IP }}' #正式服务器地址
+          privateKey: ${{ secrets.WEB_TOKEN }}
+          localPath: './dist/*'
+          remotePath: '/home/www' #服务器部署路径
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
