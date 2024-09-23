@@ -29,10 +29,12 @@ jobs:
           PRIVATE_KEY: ${{ secrets.WEB_TOKEN }}
           HOSTNAME: ${{secrets.SERVER_IP}}
           USER_NAME: 'root'
+          LOCAL_PATH: './dist'
+          REMOTE_PATH: '/home/www'
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-            cd /home/www/ && ls
+          sftp -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            put -r -O ${LOCAL_PATH} ${REMOTE_PATH}
           '
 
       - name: 部署
