@@ -25,13 +25,13 @@ jobs:
 
       - name: 测试部署
         if: github.ref == 'refs/heads/test' #对test分支进行检测
-        uses: easingthemes/ssh-deploy@v2.0.7
+        uses: burnett01/rsync-deployments@5.1
         with:
-          REMOTE_USER: 'root'
-          REMOTE_HOST: '${{ secrets.SERVER_IP }}' #测试服务器地址
-          SSH_PRIVATE_KEY: ${{ secrets.WEB_TOKEN }}
-          SOURCE: 'dist/'
-          TARGET: '/home/www' #服务器部署路径
+          remote_user: 'root'
+          remote_host: '${{ secrets.SERVER_IP }}' #测试服务器地址
+          remote_key: ${{ secrets.WEB_TOKEN }}
+          path: 'dist/'
+          remote_path: '/home/www' #服务器部署路径
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
