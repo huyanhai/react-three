@@ -27,19 +27,19 @@ jobs:
         if: github.ref == 'refs/heads/test' #对test分支进行检测
         uses: appleboy/scp-action@v0.1.7
         with:
-          username: 'root'
+          username: '${{ secrets.USER_NAME }}'
           host: '${{ secrets.SERVER_IP }}' #正式服务器地址
           key: ${{ secrets.WEB_TOKEN }}
           source: './dist/*'
           target: '/home/www' #服务器部署路径
           rm: true
-          strip_components: 1
+          strip_components: 1 #去掉路径中的第一层目录
 
       - name: 正式部署
-        if: github.ref == 'refs/heads/test' #对test分支进行检测
+        if: github.ref == 'refs/heads/main' #对main分支进行检测
         uses: appleboy/scp-action@v0.1.7
         with:
-          username: 'root'
+          username: '${{ secrets.USER_NAME }}'
           host: '${{ secrets.SERVER_IP }}' #正式服务器地址
           key: ${{ secrets.WEB_TOKEN }}
           source: './dist/*'
