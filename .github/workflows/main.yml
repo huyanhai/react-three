@@ -40,6 +40,7 @@ jobs:
           username: 'root'
           server: '${{ secrets.SERVER_IP }}' #正式服务器地址
           ssh_private_key: ${{ secrets.WEB_TOKEN }}
+          sftp_only: false
+          delete_remote_files: true
           local_path: './dist/*'
           remote_path: '/home/www' #服务器部署路径
-        run: cd '/home/www' && ls
