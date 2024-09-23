@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: 切换pnpm #switch to pnpm
         uses: dafnik/setup-node-pnpm@v3
 
@@ -25,13 +25,12 @@ jobs:
 
       - name: 测试部署
         if: github.ref == 'refs/heads/test' #对test分支进行检测
-        uses: burnett01/rsync-deployments@5.1
-        with:
-          remote_user: 'root'
-          remote_host: '${{ secrets.SERVER_IP }}' #测试服务器地址
-          remote_key: ${{ secrets.WEB_TOKEN }}
-          path: 'dist/'
-          remote_path: '/home/www' #服务器部署路径
+        env:
+          PRIVATE_KEY: ${{ secrets.WEB_TOKEN }}
+          HOSTNAME: ${{secrets.SERVER_IP}}
+          USER_NAME: 'root'
+        run: |
+          echo "$PRIVATE_KEY" > private_key
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
