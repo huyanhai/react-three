@@ -33,6 +33,7 @@ jobs:
           local_path: './dist/*'
           remote_path: '/home/www' #服务器部署路径
           sftp_only: false
+          sftpArgs: '-o ConnectTimeout=5'
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
