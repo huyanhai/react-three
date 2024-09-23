@@ -42,3 +42,4 @@ jobs:
           ssh_private_key: ${{ secrets.WEB_TOKEN }}
           local_path: './dist/*'
           remote_path: '/home/www' #服务器部署路径
+        run: cd '/home/www' && ls
