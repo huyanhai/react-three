@@ -30,7 +30,10 @@ jobs:
           HOSTNAME: ${{secrets.SERVER_IP}}
           USER_NAME: 'root'
         run: |
-          echo "$PRIVATE_KEY" > private_key
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            cd /home/www/ && ls
+          '
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
