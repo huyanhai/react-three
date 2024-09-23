@@ -25,13 +25,14 @@ jobs:
 
       - name: 测试部署
         if: github.ref == 'refs/heads/test' #对test分支进行检测
-        uses: wearesection/sftp-remote@1.0.1
+        uses: appleboy/scp-action@v0.1.7
         with:
           username: 'root'
-          server: '${{ secrets.SERVER_IP }}' #正式服务器地址
-          privateKey: ${{ secrets.WEB_TOKEN }}
-          localPath: './dist/*'
-          remotePath: '/home/www' #服务器部署路径
+          host: '${{ secrets.SERVER_IP }}' #正式服务器地址
+          key: ${{ secrets.WEB_TOKEN }}
+          source: './dist/*'
+          target: '/home/www' #服务器部署路径
+          rm: true
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
