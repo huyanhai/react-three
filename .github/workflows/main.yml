@@ -23,24 +23,22 @@ jobs:
       - name: 构建 #build
         run: pnpm run build
 
-      # - name: deploy file to test server
-      #   if: github.ref == 'refs/heads/test' #对分支进行检测
-      #   uses: wlixcc/SFTP-Deploy-Action@v1.0
-      #   with:
-      #     username: 'root'
-      #     server: '${{ secrets.TEST_SERVER_IP }}' #测试服务器地址
-      #     ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     local_path: './build/*'
-      #     remote_path: '/www/web' #测试服务器部署路径
-
-      - name: 部署
-        if: github.ref == 'refs/heads/main' #对分支进行检测
-        uses: wlixcc/SFTP-Deploy-Action@v1.0
+      - name: 测试部署
+        if: github.ref == 'refs/heads/test' #对test分支进行检测
+        uses: actions/checkout@v2.3.4
         with:
           username: 'root'
           server: '${{ secrets.SERVER_IP }}' #正式服务器地址
-          ssh_private_key: ${{ secrets.WEB_TOKEN }}
-          sftp_only: false
-          delete_remote_files: true
-          local_path: './dist/*'
-          remote_path: '/home/www' #服务器部署路径
+          privateKey: ${{ secrets.WEB_TOKEN }}
+          localPath: './dist/*'
+          remotePath: '/home/www' #服务器部署路径
+
+      - name: 部署
+        if: github.ref == 'refs/heads/main' #对mian分支进行检测
+        uses: actions/checkout@v2.3.4
+        with:
+          username: 'root'
+          server: '${{ secrets.SERVER_IP }}' #正式服务器地址
+          privateKey: ${{ secrets.WEB_TOKEN }}
+          localPath: './dist/*'
+          remotePath: '/home/www' #服务器部署路径
