@@ -41,4 +41,4 @@ jobs:
           server: '${{ secrets.SERVER_IP }}' #正式服务器地址
           ssh_private_key: ${{ secrets.WEB_TOKEN }}
           local_path: './dist/*'
-          remote_path: '/www' #服务器部署路径
+          remote_path: '/home/www' #服务器部署路径
