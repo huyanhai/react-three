@@ -25,15 +25,13 @@ jobs:
 
       - name: 测试部署
         if: github.ref == 'refs/heads/test' #对test分支进行检测
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.3
+        uses: easingthemes/ssh-deploy@v5.1.0
         with:
-          username: 'root'
-          server: '${{ secrets.SERVER_IP }}' #测试服务器地址
-          ssh_private_key: ${{ secrets.WEB_TOKEN }}
-          local_path: './dist/*'
-          remote_path: '/home/www' #服务器部署路径
-          sftp_only: false
-          sftpArgs: '-o ConnectTimeout=5'
+          REMOTE_USER: 'root'
+          REMOTE_HOST: '${{ secrets.SERVER_IP }}' #测试服务器地址
+          SSH_PRIVATE_KEY: ${{ secrets.WEB_TOKEN }}
+          SOURCE: './dist/*'
+          TARGET: '/home/www' #服务器部署路径
 
       - name: 部署
         if: github.ref == 'refs/heads/main' #对main分支进行检测
