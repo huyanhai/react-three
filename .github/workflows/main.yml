@@ -28,17 +28,17 @@ jobs:
         uses: actions/checkout@v2.3.4
         with:
           username: 'root'
-          server: '${{ secrets.SERVER_IP }}' #正式服务器地址
-          privateKey: ${{ secrets.WEB_TOKEN }}
-          localPath: './dist/*'
-          remotePath: '/home/www' #服务器部署路径
+          server: '${{ secrets.SERVER_IP }}' #测试服务器地址
+          ssh_private_key: ${{ secrets.WEB_TOKEN }}
+          local_path: './dist/*'
+          remote_path: '/home/www' #服务器部署路径
 
       - name: 部署
-        if: github.ref == 'refs/heads/main' #对mian分支进行检测
+        if: github.ref == 'refs/heads/main' #对main分支进行检测
         uses: actions/checkout@v2.3.4
         with:
           username: 'root'
           server: '${{ secrets.SERVER_IP }}' #正式服务器地址
-          privateKey: ${{ secrets.WEB_TOKEN }}
-          localPath: './dist/*'
-          remotePath: '/home/www' #服务器部署路径
+          ssh_private_key: ${{ secrets.WEB_TOKEN }}
+          local_path: './dist/*'
+          remote_path: '/home/www' #服务器部署路径
