@@ -41,7 +41,7 @@ const Render = forwardRef<HTMLElement>((_, ref) => {
         {(globalChildren) => (
           <Lens>
             <WebGLBackground />
-            <Environment files="/hdr/studio_small_09_4k.exr" />
+            <Environment files="/hdr/studio_small_09_4k.jpg" />
             {globalChildren}
           </Lens>
         )}

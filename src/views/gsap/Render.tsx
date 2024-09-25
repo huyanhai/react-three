@@ -126,4 +126,4 @@ const Render = () => {
 };
 
 export default Render;
-// useTexture.preload('/hdr/studio_small_09_4k.exr')
+// useTexture.preload('/hdr/studio_small_09_4k.jpg')

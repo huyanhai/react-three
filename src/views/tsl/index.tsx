@@ -26,7 +26,7 @@ const Day4 = () => {
     >
       <Render />
       <Environment
-        files={'/hdr/studio_small_09_4k.exr'}
+        files={'/hdr/studio_small_09_4k.jpg'}
         environmentRotation={[Math.PI / 2, 0, 0]}
         environmentIntensity={0.12}
       ></Environment>

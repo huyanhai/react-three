@@ -14,7 +14,7 @@ const Day2 = () => {
     <CanvasLayout camera={{ position: [0, -5, 8] }} shadows>
       <color attach={'background'} args={['blue']} />
       <Render />
-      <Environment files={'/hdr/studio_small_09_4k.exr'}>
+      <Environment files={'/hdr/studio_small_09_4k.jpg'}>
         <Lightformer
           color={'white'}
           intensity={1}

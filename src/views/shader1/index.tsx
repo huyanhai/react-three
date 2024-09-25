@@ -12,7 +12,7 @@ const Shader1 = () => {
   return (
     <div className="w-screen h-screen bg-slate-600">
       <Canvas shadows camera={{ position: [0, 0, 8], fov: 80 }}>
-        <Environment files={'studio_small_09_4k.exr'} />
+        <Environment files={'/hdr/studio_small_09_4k.jpg'} />
         <Sky />
         {/* <color attach="background" args={['blue']} /> */}
 
