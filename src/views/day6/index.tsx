@@ -19,7 +19,7 @@ const index = () => {
           <Render />
         </ScrollControls>
         {/* <OrbitControls /> */}
-        <Environment files={'/hdr/studio_small_09_4k.jpg'} />
+        <Environment files={'/hdr/studio_small_08_2k.exr'} />
       </CanvasLayout>
       <Overlay />
     </div>

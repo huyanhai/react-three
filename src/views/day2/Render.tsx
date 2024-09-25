@@ -36,7 +36,7 @@ const Ware = () => {
 
 const TextCom = () => {
   const { nodes } = useGLTF('/modules/sp1.glb');
-  const envMap = useTexture('/hdr/studio_small_09_4k.jpg');
+  const envMap = useTexture('/hdr/studio_small_08_2k.exr');
 
   const spRef = useRef<Mesh>(new Mesh());
 
@@ -138,4 +138,4 @@ const Render = () => {
 
 export default Render;
 
-useTexture.preload('/hdr/studio_small_09_4k.jpg')
+useTexture.preload('/hdr/studio_small_08_2k.exr')
