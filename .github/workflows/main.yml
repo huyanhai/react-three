@@ -31,7 +31,7 @@ jobs:
           host: '${{ secrets.SERVER_IP }}' #正式服务器地址
           key: ${{ secrets.WEB_TOKEN }}
           source: './dist/*'
-          target: '/www/web' #服务器部署路径
+          target: '/www/sites/${{ secrets.SERVER_IP }}/index' #服务器部署路径
           rm: true
           strip_components: 1 #去掉路径中的第一层目录
 
@@ -43,6 +43,6 @@ jobs:
           host: '${{ secrets.SERVER_IP }}' #正式服务器地址
           key: ${{ secrets.WEB_TOKEN }}
           source: './dist/*'
-          target: '/www/web' #服务器部署路径
+          target: '/www/sites/${{ secrets.SERVER_IP }}/index' #服务器部署路径
           rm: true
           strip_components: 1
