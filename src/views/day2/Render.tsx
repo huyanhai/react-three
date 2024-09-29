@@ -137,5 +137,3 @@ const Render = () => {
 };
 
 export default Render;
-
-useTexture.preload('/hdr/studio_small_08_2k.exr')
