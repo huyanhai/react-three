@@ -3,77 +3,83 @@ import {
   WebGLProgramParametersWithUniforms,
   WebGLRenderer,
   Vector2,
-  MeshPhysicalMaterial
+  MeshPhysicalMaterial,
+  MeshDepthMaterial,
+  RGBADepthPacking,
+  IcosahedronGeometry
 } from 'three';
-import vertexHead from './glsl/vertexHead.vert';
 import vertexBody from './glsl/vertexBody.vert';
-import fragmentHead from './glsl/fragmentHead.frag';
 import fragmentBody from './glsl/fragmentBody.frag';
 
 import { useFrame } from '@react-three/fiber';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import CustomShaderMaterial from 'three-custom-shader-material';
+import { useControls } from 'leva';
+import { mergeVertices } from 'three-stdlib';
 
 const Box = () => {
-  const shaderRef = useRef<MeshPhysicalMaterial>(null);
+  const shaderRef = useRef<typeof CustomShaderMaterial>();
+  const depthMaterialRef = useRef<typeof CustomShaderMaterial>();
   const [mouse, setMouse] = useState<Vector2>(new Vector2());
+  const [time, setTime] = useState(0);
+
+  const uniforms = {
+    uTime: { value: 0 },
+    uMouse: { value: mouse }
+  };
 
   useFrame(({ clock, gl, camera, scene, pointer }) => {
     setMouse(new Vector2(pointer.x, pointer.y));
+    setTime(clock.getElapsedTime());
+    shaderRef.current.uniforms.uTime.value = clock.getElapsedTime();
+    shaderRef.current.uniforms.uMouse.value = mouse;
 
-    if (shaderRef.current!.userData.shader) {
-      shaderRef.current!.userData.shader.uniforms.uTime = {
-        value: clock.getElapsedTime()
-      };
-      shaderRef.current!.userData.shader.uniforms.uMouse = {
-        value: mouse
-      };
-    }
+    // depthMaterialRef.current.uniforms.uTime.value = clock.getElapsedTime();
+    // depthMaterialRef.current.uniforms.uMouse.value = mouse;
   });
 
-  const onBeforeCompile = (
-    shader: WebGLProgramParametersWithUniforms,
-    renderer: WebGLRenderer
-  ) => {
-    shader.uniforms = {
-      ...shader.uniforms,
-      uTime: { value: 0 },
-      uMouse: { value: mouse }
-    };
+  // const { x, y, z } = useControls({
+  //   x: { value: 0, min: -10, max: 10, step: 0.1 },
+  //   y: { value: 0, min: -10, max: 10, step: 0.1 },
+  //   z: { value: 5, min: -10, max: 10, step: 0.1 }
+  // });
 
-    shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>\n', `#include <common>\n${fragmentHead}\n`)
-      .replace(
-        '#include <dithering_fragment>\n',
-        `#include <dithering_fragment>\n${fragmentBody}\n`
-      );
-
-    shader.vertexShader = shader.vertexShader
-      .replace(`#include <common>\n`, `#include <common>\n${vertexHead}\n`)
-      .replace(
-        `#include <fog_vertex>\n`,
-        `#include <fog_vertex>\n${vertexBody}\n`
-      );
-
-    shaderRef.current!.userData.shader = shader;
-  };
+  // const geometry = useMemo(() => {
+  //   const geometry = mergeVertices(new IcosahedronGeometry(4, 200));
+  //   geometry.computeTangents();
+  //   return geometry;
+  // }, []);
 
   return (
     <group>
       <mesh rotation={[0, 0, 0]} scale={1.2}>
-        <sphereGeometry args={[4, 320, 320]} />
-        <meshPhysicalMaterial
+        {/* <sphereGeometry args={[4, 320, 320]} /> */}
+        <icosahedronGeometry args={[4, 200]} />
+        <CustomShaderMaterial
           ref={shaderRef}
+          baseMaterial={MeshPhysicalMaterial}
+          roughness={0.6}
+          metalness={0.95}
+          clearcoat={1}
+          ior={1.81}
+          iridescence={0} // 清漆效果
+          silent
+          vertexShader={vertexBody}
+          fragmentShader={fragmentBody}
+          uniforms={uniforms}
           color={'black'}
-          emissive={'black'}
-          envMap={null}
-          envMapIntensity={1.0}
-          roughness={0.5}
-          thickness={1.0}
-          ior={1.52}
-          vertexColors
-          onBeforeCompile={onBeforeCompile}
         />
+        {/* <CustomShaderMaterial
+          ref={depthMaterialRef}
+          baseMaterial={MeshDepthMaterial}
+          vertexShader={vertexBody}
+          uniforms={uniforms}
+          silent
+          depthPacking={RGBADepthPacking}
+          attach="customDepthMaterial"
+        /> */}
       </mesh>
+      <directionalLight intensity={100} position={[0, 0, 5]} color={'white'} />
     </group>
   );
 };

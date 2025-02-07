@@ -1,6 +1,6 @@
 import CanvasLayout from '@/layouts/CanvasLayout';
 import { Environment } from '@react-three/drei';
-import Render from './Render';
+// import Render from './Render';
 // import WebGPURenderer from 'three/examples/jsm/renderers/webgpu/WebGPURenderer.js';
 import WebGPUCapabilities from 'three/examples/jsm/capabilities/WebGPU.js';
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three';
@@ -24,7 +24,7 @@ const Day4 = () => {
       //   return renderer;
       // }}
     >
-      <Render />
+      {/* <Render /> */}
       <Environment
         files={'/hdr/studio_small_08_2k.exr'}
         environmentRotation={[Math.PI / 2, 0, 0]}

@@ -19,7 +19,8 @@ import {
   WaterPass,
   UnrealBloomPass,
   LUTPass,
-  LUTCubeLoader
+  LUTCubeLoader,
+  FXAAShader
 } from 'three-stdlib';
 import CanvasLayout from '@/layouts/CanvasLayout';
 
@@ -41,7 +42,8 @@ const Day1 = () => {
         // background // 将环境作为背景显示
       /> */}
       {/* 透视相机-近大远小 */}
-      <PresentationControls
+      <Render />
+      {/* <PresentationControls
         snap
         global
         zoom={0.8}
@@ -50,7 +52,7 @@ const Day1 = () => {
         azimuth={[-Math.PI / 4, Math.PI / 4]}
       >
         <Render />
-      </PresentationControls>
+      </PresentationControls> */}
       {/* 正交相机 */}
       {/* <OrbitControls
         autoRotateSpeed={0.85}
@@ -59,18 +61,7 @@ const Day1 = () => {
         maxPolarAngle={Math.PI / 2.55}
       /> */}
 
-      {/* <EffectComposer>
-        <Bloom
-          mipmapBlur
-          luminanceSmoothing={0.025}
-          luminanceThreshold={0.9}
-          intensity={0.42}
-          radius={0.92}
-        />
-        <BrightnessContrast brightness={0.1} contrast={0.3} />
-      </EffectComposer> */}
-
-      <Environment>
+      {/* <Environment>
         <Lightformer
           color={'white'}
           intensity={2}
@@ -87,9 +78,10 @@ const Day1 = () => {
           onUpdate={(self) => self.lookAt(0, 0, 0)}
           form={'circle'}
         />
-      </Environment>
+      </Environment> */}
 
       {/* <Effects disableGamma>
+        <shaderPass args={[FXAAShader]} /> // 抗锯齿
         <waterPass factor={0.1} />
         <unrealBloomPass args={[undefined, 0.4, 0.1, 0.1]} />
         <filmPass args={[1, 0.1, 1500, false]} />

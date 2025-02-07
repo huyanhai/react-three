@@ -19,15 +19,15 @@ import { DoubleSide, BackSide, Mesh } from 'three';
 import Cap from './Cap';
 const Render = () => {
   const sphereRef = useRef<Mesh>(new Mesh());
-  useFrame(({ pointer, camera, gl, scene }, delta) => {
-    easing.damp3(camera.position, [-pointer.x, -pointer.y, 10], 0.2, delta);
-    camera.lookAt(0, 0, 0);
+  // useFrame(({ pointer, camera, gl, scene }, delta) => {
+  //   easing.damp3(camera.position, [-pointer.x, -pointer.y, 10], 0.2, delta);
+  //   camera.lookAt(0, 0, 0);
 
-    sphereRef.current.rotation.y = +0.1;
-    sphereRef.current.rotation.x = +0.1;
-    sphereRef.current.rotation.z = +0.1;
-  });
-  const matcap = useTexture('/matcap/11.png');
+  //   sphereRef.current.rotation.y = +0.1;
+  //   sphereRef.current.rotation.x = +0.1;
+  //   sphereRef.current.rotation.z = +0.1;
+  // });
+  const matcap = useTexture('/matcap/4.png');
 
   return (
     <>

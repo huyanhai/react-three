@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 const CanvasLayout = (props: CanvasProps) => {
   return (
     <>
-      <Canvas camera={{ far: 200, position: [0, 0, 10] }} {...props}>
+      <Canvas camera={{ far: 200, position: [0, 0, 10]}} {...props}>
         <Suspense fallback={<Loading />}>{props.children}</Suspense>
       </Canvas>
       <Loader />
