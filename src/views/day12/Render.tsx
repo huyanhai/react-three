@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useTexture } from '@react-three/drei';
+import { RoundedBox, useTexture } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
@@ -28,18 +28,33 @@ import {
   modelViewMatrix,
   timerLocal,
   timerGlobal,
-  length
+  length,
+  vec2,
+  float
 } from 'three/nodes';
+
+const sdCircle = (
+  n: ReturnType<typeof vec2>,
+  r: ReturnType<typeof float> | number
+) => {
+  return length(n).sub(r);
+};
 
 const CustomMaterial = () => {
   const img = useTexture('/pics/6.jpg');
   const [mouse, setMouse] = useState(new Vector2(0, 0));
+  const [aspect, setAspect] = useState(0);
+  const [screen, setScreen] = useState(new Vector2(0, 0));
 
-  useFrame(({ mouse }) => {
-    setMouse(mouse);
+  useFrame(({ mouse, viewport }) => {
+    setMouse(mouse); // 范围是[-1,1],中心是[0,0]
+    setAspect(viewport.aspect);
+    setScreen(new Vector2(viewport.width, viewport.height));
   });
 
-  // const t = uniform(time); // 使用uniform
+  const uMouse = uniform(mouse); // 使用uniform
+  const uAspect = uniform(aspect);
+  const uScreen = uniform(screen);
 
   const material: Material = new MeshStandardNodeMaterial({
     color: '#fff',
@@ -51,18 +66,24 @@ const CustomMaterial = () => {
   });
 
   const colorFn = tslFn(([x, y, z]) => {
-    // const textureColor = texture(img, attribute('aPixelUV'));
-    // return textureColor;
     return vec3(1, 0, 0);
   });
 
   const positionFn = tslFn(() => {
-    const textureColor = texture(img, attribute('aPixelUV'));
+    const pixUv = attribute('aPixelUV');
+    const textureColor = texture(img, pixUv);
+    const pixel = uAspect;
+    // return textureColor;
+    // uv*2-1,将圆圈放到中心
+    const uvCenter = pixUv.mul(2).sub(1);
+    const mouseFormate = uMouse.mul(pixel);
+    const s = length(uvCenter.sub(mouseFormate)).sub(0.1);
+
     const p = positionLocal;
     // p.z.addAssign(
     //   textureColor.x.mul(textureColor.y).mul(sin(timerGlobal()).add(1).mul(10))
     // );
-    p.z.addAssign(length(mouse).mul(10))
+    // p.z.addAssign(sin(timerGlobal()).mul(10));
     return p;
   });
 
@@ -92,7 +113,7 @@ const Base = () => {
   // 总个数
   const count = row * col;
   // 间距
-  const gap = 1;
+  const gap = 0;
   // 单个尺寸
   const size = 2;
 
@@ -108,13 +129,14 @@ const Base = () => {
         let newSize = gap + size;
         m.setPosition(
           i * newSize - (newSize * (row - 1)) / 2,
-          j * newSize - (newSize * (col - 1)) / 2,
-          0
+          0,
+          j * newSize - (newSize * (col - 1)) / 2
         );
         instanceRef.current?.setMatrixAt(index, m);
       }
     }
     (instanceRef.current as InstancedMesh).instanceMatrix.needsUpdate = true;
+    (instanceRef.current as InstancedMesh).computeBoundingSphere();
     geometryRef.current?.setAttribute(
       'aPixelUV',
       new InstancedBufferAttribute(uv, 2, false)
@@ -124,6 +146,8 @@ const Base = () => {
   return (
     <>
       <instancedMesh
+        castShadow
+        receiveShadow
         ref={instanceRef}
         args={[null, null, count]}
         material={CustomMaterial()}

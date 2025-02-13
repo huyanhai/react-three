@@ -9,13 +9,12 @@ const index = () => {
 
   const aspect = width / height;
   return (
-    <CanvasLayout
-      gl={(canvas) => new WebGPURenderer({ canvas })}
-      camera={{ position: [0, 0, 50] }}
-    >
+    <CanvasLayout camera={{ position: [2, 2, 3] }}>
+      <color attach="background" args={['#000']} />
+      <ambientLight intensity={0.5} />
       <Render />
+      {/* autoRotate 自动旋转 */}
       <OrbitControls />
-      <PerspectiveCamera aspect={aspect} makeDefault position={[0, 0, 50]} />
     </CanvasLayout>
   );
 };
