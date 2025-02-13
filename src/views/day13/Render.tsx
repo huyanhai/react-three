@@ -5,17 +5,34 @@ import { useMemo, useRef } from 'react';
 import vertexShader from './glsl/vertex.vert';
 import fragmentShader from './glsl/fragment.frag';
 import Noise from './Noise';
-import { AdditiveBlending, Camera, Scene } from 'three';
+import { AdditiveBlending, Camera, MathUtils, Scene } from 'three';
 
 const FBOParticles = () => {
-  const { nodes } = useGLTF('test1.glb');
+  const count = 100000;
+
   const points = useRef();
   const scene = new Scene();
-  const camera = new Camera()
+  const camera = new Camera();
 
   // const { scene, camera } = useThree();
 
   const fbo = useFBO();
+
+  const positions = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const distance = Math.sqrt(Math.random()) * 1;
+      const theta = MathUtils.randFloatSpread(360);
+      const phi = MathUtils.randFloatSpread(360);
+
+      let x = distance * Math.sin(theta) * Math.cos(phi);
+      let y = distance * Math.sin(theta) * Math.sin(phi);
+      let z = distance * Math.cos(theta);
+
+      positions.set([x, y, z], i * 3);
+    }
+    return positions;
+  }, []);
 
   const uniforms = useMemo(
     () => ({
@@ -46,12 +63,15 @@ const FBOParticles = () => {
     <>
       {/* createPortal(<mesh></mesh>, scene) 在指定对象渲染 */}
       {createPortal(<Noise />, scene)}
-      {/* <points>
-        <bufferGeometry attributes={nodes.head1.geometry.attributes} />
-        <pointsMaterial size={0.01} color={'red'} />
-      </points> */}
       <points ref={points}>
-        <planeGeometry args={[1, 1, 100, 100]} />
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            array={positions}
+            count={count}
+            itemSize={3}
+          />
+        </bufferGeometry>
         <shaderMaterial
           // AdditiveBlending颜色叠加
           blending={AdditiveBlending}

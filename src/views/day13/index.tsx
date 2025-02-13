@@ -9,7 +9,7 @@ const index = () => {
 
   const aspect = width / height;
   return (
-    <CanvasLayout camera={{ position: [2, 2, 3] }}>
+    <CanvasLayout camera={{ position: [1, 1, 2] }}>
       <color attach="background" args={['#000']} />
       <ambientLight intensity={0.5} />
       <Render />
