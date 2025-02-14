@@ -23,14 +23,28 @@ import {
   FXAAShader
 } from 'three-stdlib';
 import CanvasLayout from '@/layouts/CanvasLayout';
+import { useRef } from 'react';
+import mp3 from './water.mp3';
 
 extend({ WaterPass, UnrealBloomPass, FilmPass, LUTPass });
 
 const Day1 = () => {
+  const audioRef = useRef();
+  const play = () => {
+    audioRef.current.play();
+  };
   return (
-    <CanvasLayout>
-      {/* <color args={['#000']} attach="background" /> */}
-      {/* <Environment
+    <>
+      <audio controls hidden ref={audioRef} loop src={mp3}></audio>
+      <CanvasLayout
+        camera={{
+          position: [-7, -1, 7]
+        }}
+        onClick={play}
+      >
+        {/* <OrbitControls /> */}
+        {/* <color args={['#000']} attach="background" /> */}
+        {/* <Environment
         files={[
           'cube/px.jpg',
           'cube/nx.jpg',
@@ -41,9 +55,9 @@ const Day1 = () => {
         ]}
         // background // 将环境作为背景显示
       /> */}
-      {/* 透视相机-近大远小 */}
-      <Render />
-      {/* <PresentationControls
+        {/* 透视相机-近大远小 */}
+        <Render />
+        {/* <PresentationControls
         snap
         global
         zoom={0.8}
@@ -53,15 +67,15 @@ const Day1 = () => {
       >
         <Render />
       </PresentationControls> */}
-      {/* 正交相机 */}
-      {/* <OrbitControls
+        {/* 正交相机 */}
+        {/* <OrbitControls
         autoRotateSpeed={0.85}
         zoomSpeed={0.75}
         minPolarAngle={Math.PI / 2.5}
         maxPolarAngle={Math.PI / 2.55}
       /> */}
 
-      {/* <Environment>
+        {/* <Environment>
         <Lightformer
           color={'white'}
           intensity={2}
@@ -80,14 +94,15 @@ const Day1 = () => {
         />
       </Environment> */}
 
-      {/* <Effects disableGamma>
+        {/* <Effects disableGamma>
         <shaderPass args={[FXAAShader]} /> // 抗锯齿
         <waterPass factor={0.1} />
         <unrealBloomPass args={[undefined, 0.4, 0.1, 0.1]} />
         <filmPass args={[1, 0.1, 1500, false]} />
         <lUTPass lut={data.texture} intensity={0.75} />
       </Effects> */}
-    </CanvasLayout>
+      </CanvasLayout>
+    </>
   );
 };
 

@@ -44,8 +44,10 @@ float smoothMod(float axis, float amp, float rad) {
 
 float getDisplacement(vec3 position) {
     vec3 pos = position;
-    pos.z -= uTime * 0.03 ;
-    pos += cnoise(pos * 1.65) * 1.0;
+    pos.y -= uTime * 0.2;
+    pos.z += uTime * 0.02;
+    pos.x += uTime * 0.2;
+    pos += cnoise(pos * 0.55) * 1.0;
 
     return smoothMod(pos.y * 1.0, 1., 1.5) * 1.0;
 }

@@ -62,24 +62,17 @@ const Box = () => {
           metalness={0.95}
           clearcoat={1}
           ior={1.81}
-          iridescence={0} // 清漆效果
+          iridescence={0.01} // 清漆效果
           silent
           vertexShader={vertexBody}
           fragmentShader={fragmentBody}
           uniforms={uniforms}
           color={'black'}
         />
-        {/* <CustomShaderMaterial
-          ref={depthMaterialRef}
-          baseMaterial={MeshDepthMaterial}
-          vertexShader={vertexBody}
-          uniforms={uniforms}
-          silent
-          depthPacking={RGBADepthPacking}
-          attach="customDepthMaterial"
-        /> */}
       </mesh>
-      <directionalLight intensity={100} position={[0, 0, 5]} color={'white'} />
+      <directionalLight intensity={2} position={[10, 0, 5]} color={'white'} />
+      <directionalLight intensity={10} position={[-10, 10, 5]} color={'white'} />
+      <directionalLight intensity={30} position={[0, 0, 20]} color={'white'} />
     </group>
   );
 };
